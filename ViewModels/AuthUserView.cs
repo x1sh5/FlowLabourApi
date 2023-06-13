@@ -1,6 +1,6 @@
 ﻿namespace FlowLabourApi.ViewModels
 {
-    public class AuthUserBase
+    public class AuthUserView
     {
 
         public DateTime DateJoined { get; set; }

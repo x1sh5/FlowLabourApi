@@ -13,4 +13,6 @@ public partial class SigninLog
     public DateTime Lasttime { get; set; }
 
     public string? Lastiplocation { get; set; }
+
+    public AuthUser AuthUser { get; set; } = null!;
 }

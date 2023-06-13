@@ -48,7 +48,7 @@ public partial class Assignment
 
     public string? Description { get; set; }
 
-    public DateTime Finishtime { get; set; }
+    public DateTime? Finishtime { get; set; }
 
     /// <summary>
     /// 0:未审核通过，1：审核通过。

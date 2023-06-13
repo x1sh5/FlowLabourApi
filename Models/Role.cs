@@ -14,5 +14,4 @@ public partial class Role
 
     public string Privilege { get; set; } = null!;
 
-    public virtual ICollection<AuthUser> Users { get; set; } = new List<AuthUser>();
 }

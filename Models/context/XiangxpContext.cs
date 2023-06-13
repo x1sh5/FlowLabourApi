@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FlowLabourApi.Config;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Models.context;
@@ -43,7 +44,7 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Message> Messages { get; set; }
 
-    public virtual DbSet<Relatedtask> Relatedtasks { get; set; }
+    public virtual DbSet<RelatedAssignment> Relatedtasks { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
@@ -53,11 +54,13 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<TendencyUser> TendencyUsers { get; set; }
 
+    public virtual DbSet<Userrole> Userroles { get; set; }
+
     public virtual DbSet<VideoInfo> VideoInfos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySQL("server=47.109.27.40;port=3306;user=xiangxp;password=myjhqD3hJQvUuzrh;database=xiangxp;CHARSET=utf8;");
+        => optionsBuilder.UseMySQL(DbConfig.ConnectStr);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -109,6 +112,8 @@ public partial class XiangxpContext : DbContext
                 .HasColumnName("description");
             entity.Property(e => e.Finishtime)
                 .HasColumnType("datetime")
+                .HasDefaultValue(null)
+                .IsRequired(false)
                 .HasColumnName("finishtime");
             entity.Property(e => e.Presumedtime)
                 .HasComment("单位：分钟")
@@ -146,7 +151,7 @@ public partial class XiangxpContext : DbContext
 
             entity.HasOne(d => d.Publish).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.Publishid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_assignment_authuser");
         });
 
@@ -230,11 +235,8 @@ public partial class XiangxpContext : DbContext
                 .HasComment("程序页面显示的名字")
                 .HasColumnName("username");
 
-            entity.HasOne(d => d.Identity).WithOne(p => p.User)
-                .HasForeignKey<AuthUser>(d => d.Id).IsRequired();
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d=>d.Id).IsRequired();
+            entity.HasMany(d=>d.Assignments).WithOne(p=>p.Publish)
+                .HasForeignKey(d=>d.Publishid);
         });
 
         modelBuilder.Entity<AuthUserGroup>(entity =>
@@ -351,12 +353,12 @@ public partial class XiangxpContext : DbContext
 
             entity.HasOne(d => d.Group).WithMany()
                 .HasForeignKey(d => d.Groupid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_grouprole_groupid_authusergroup_id");
 
             entity.HasOne(d => d.Role).WithMany()
                 .HasForeignKey(d => d.Roleid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_grouprole_roleid_roleid_role_id");
         });
 
@@ -474,18 +476,22 @@ public partial class XiangxpContext : DbContext
                 .HasConstraintName("fk_message_to_authuser_id");
         });
 
-        modelBuilder.Entity<Relatedtask>(entity =>
+        modelBuilder.Entity<RelatedAssignment>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToTable("relatedtask", tb => tb.HasComment("关联任务"));
+                .ToTable("relatedassignment", tb => tb.HasComment("关联任务"));
 
-            entity.Property(e => e.Relatedid)
+            entity.Property(e => e.RelatedId)
                 .HasColumnType("int(11)")
                 .HasColumnName("relatedid");
-            entity.Property(e => e.Taskid)
+            entity.Property(e => e.AssignmentId)
                 .HasColumnType("int(11)")
-                .HasColumnName("taskid");
+                .HasColumnName("assignmentid");
+            entity.HasOne(d=>d.Assignment)
+                .WithMany()
+                .HasForeignKey(d => d.RelatedId)
+                .IsRequired();
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -539,6 +545,9 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Userid)
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
+            entity.HasOne(d=>d.AuthUser).WithMany()
+                .HasForeignKey(d => d.Userid)
+                .IsRequired();
         });
 
         modelBuilder.Entity<TendencyUser>(entity =>
@@ -556,6 +565,27 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(20)
                 .HasColumnName("password");
+        });
+
+        modelBuilder.Entity<Userrole>(entity =>
+        {
+            entity.HasKey(e => new { e.Userid, e.Roleid });
+            entity.ToTable("userrole");
+            entity.HasIndex(e => e.Roleid, "fk_userrole_roleid_role_id_idx");
+            entity.Property(e => e.Userid)
+                .HasColumnType("int(11)")
+                .HasColumnName("userid");
+            entity.Property(e => e.Roleid)
+                .HasColumnType("int(11)")
+                .HasColumnName("roleid");
+            entity.HasOne(d=>d.User).WithMany()
+                .HasForeignKey(d=>d.Userid)
+                .OnDelete(DeleteBehavior.ClientNoAction)
+                .HasConstraintName("fk_userrole_userid_authuser_id");
+            entity.HasOne(d=>d.Role).WithMany()
+                .HasForeignKey(Role=>Role.Roleid)
+                .OnDelete(DeleteBehavior.ClientNoAction)
+                .HasConstraintName("fk_userrole_roleid_role_id");
         });
 
         modelBuilder.Entity<VideoInfo>(entity =>

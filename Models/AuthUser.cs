@@ -29,7 +29,4 @@ public partial class AuthUser
 
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 
-    public virtual Identityinfo Identity { get; set; }
-
-    public virtual Role Role { get; set; }
 }

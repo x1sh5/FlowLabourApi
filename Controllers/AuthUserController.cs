@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.ViewModels;
 
 namespace FlowLabourApi.Controllers
 {
@@ -53,8 +54,7 @@ namespace FlowLabourApi.Controllers
                 Email = authUserView.Email,
                 DateJoined = authUserView.DateJoined,
                 IsActive = authUserView.IsActive,
-                LastLogin = authUserView.LastLogin,
-                Roles
+                LastLogin = authUserView.LastLogin
             };
             if (id != authUser.Id)
             {

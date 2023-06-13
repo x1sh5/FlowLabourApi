@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FlowLabourApi
 {
@@ -15,9 +17,11 @@ namespace FlowLabourApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(o => {//解决json循环引用
+                o.JsonSerializerOptions
+                  .ReferenceHandler = ReferenceHandler.Preserve;
+            });
             builder.Services.AddDbContext<XiangxpContext>((options) =>
             {
                 options.UseMySQL(

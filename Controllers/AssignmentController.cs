@@ -24,6 +24,7 @@ public class AssignmentController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Assignment>> GetAssignment(int id)
     {
+        //var assignment = await _context.Assignments.Include(a => a.Publish).FirstOrDefaultAsync(x=>x.Id==id);
         var assignment = await _context.Assignments.FindAsync(id);
 
         if (assignment == null)
@@ -37,6 +38,7 @@ public class AssignmentController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Assignment>> PostAssignment(AssignmentView assignmentView)
     {
+        //var s
         Assignment assignment = new Assignment
         {
             Id = assignmentView.Id,
@@ -50,7 +52,7 @@ public class AssignmentController : ControllerBase
             Verify = assignmentView.Verify,
             Reward = assignmentView.Reward,
             Rewardtype = assignmentView.Rewardtype,
-            Publish = _context.AuthUsers.Find(assignmentView.Id),
+            Publish = _context.AuthUsers.Find(assignmentView.Publishid),
         };
         _context.Assignments.Add(assignment);
         await _context.SaveChangesAsync();
