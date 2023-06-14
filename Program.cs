@@ -1,5 +1,6 @@
 using FlowLabourApi.Config;
 using FlowLabourApi.Hubs;
+using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -27,6 +28,11 @@ namespace FlowLabourApi
                 options.UseMySQL(
                     DbConfig.ConnectStr);
             });
+
+            builder.Services.AddScoped<AuthUser>().AddScoped<Role>();
+
+            builder.Services.AddIdentity<AuthUser, Role>();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
