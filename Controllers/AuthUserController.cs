@@ -45,6 +45,10 @@ namespace FlowLabourApi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAuthUser(int id, AuthUserView authUserView)
         {
+            if (id != authUserView.Id)
+            {
+                return BadRequest();
+            }
             AuthUser authUser = new AuthUser
             {
                 Id = id,
@@ -56,11 +60,6 @@ namespace FlowLabourApi.Controllers
                 IsActive = authUserView.IsActive,
                 LastLogin = authUserView.LastLogin
             };
-            if (id != authUser.Id)
-            {
-                return BadRequest();
-            }
-
             _context.Entry(authUser).State = EntityState.Modified;
 
             try
@@ -84,8 +83,19 @@ namespace FlowLabourApi.Controllers
 
         // POST: api/AuthUser
         [HttpPost]
-        public async Task<ActionResult<AuthUser>> PostAuthUser(AuthUser authUser)
+        public async Task<ActionResult<AuthUser>> PostAuthUser(AuthUserView authUserView)
         {
+            AuthUser authUser = new AuthUser
+            {
+                Id = authUserView.Id,
+                Username = authUserView.Username,
+                Passwordhash = authUserView.Passwordhash,
+                PhoneNo = authUserView.PhoneNo,
+                Email = authUserView.Email,
+                DateJoined = authUserView.DateJoined,
+                IsActive = authUserView.IsActive,
+                LastLogin = authUserView.LastLogin
+            };
             _context.AuthUsers.Add(authUser);
             await _context.SaveChangesAsync();
 

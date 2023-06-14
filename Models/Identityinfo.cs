@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlowLabourApi.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace FlowLabourApi.Models;
@@ -8,17 +9,38 @@ namespace FlowLabourApi.Models;
 /// </summary>
 public partial class Identityinfo
 {
+    private sbyte? _age;
+    private string _identityNo;
+
     public int Id { get; set; }
 
     public string Realname { get; set; } = null!;
 
-    public string IdentityNo { get; set; } = null!;
+    public string IdentityNo
+    {
+        get
+        {
+            return _identityNo;
+        }
+        set
+        {
+            _identityNo = value;
+            DateTime dateTime = IdentityNoUtil.GetBirthDateFromID(value);
+            _age = (sbyte?)(DateTime.Now.Year - dateTime.Year);
+        }
+    }
 
     public sbyte Checked { get; set; }
 
-    public sbyte? Age { get; set; }
+    public sbyte? Age
+    {
+        private set
+        {
+            _age = value;
+        }
+        get { return _age; }
+    }
 
     public DateTime Checkeddate { get; set; }
 
-    public virtual AuthUser User { get; set; }
 }

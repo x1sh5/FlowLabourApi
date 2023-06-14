@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.ViewModels;
 
 namespace FlowLabourApi.Controllers
 {
@@ -30,7 +31,7 @@ namespace FlowLabourApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Identityinfo>> GetIdentityinfo(int id)
         {
-            var identityinfo = await _context.Identityinfos.FindAsync(id);
+            var identityinfo = await _context.Identityinfos.FirstOrDefaultAsync(i=>i.Id==id);
 
             if (identityinfo == null)
             {
@@ -42,12 +43,20 @@ namespace FlowLabourApi.Controllers
 
         // PUT: api/Identityinfo/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutIdentityinfo(int id, Identityinfo identityinfo)
+        public async Task<IActionResult> PutIdentityinfo(int id, IdentityinfoView identityinfoView)
         {
-            if (id != identityinfo.Id)
+            if (id != identityinfoView.Id)
             {
                 return BadRequest();
             }
+            Identityinfo identityinfo = new Identityinfo()
+            {
+                Id = identityinfoView.Id,
+                Realname = identityinfoView.Realname,
+                IdentityNo = identityinfoView.IdentityNo,
+                Checked = identityinfoView.Checked,
+                Checkeddate = identityinfoView.Checkeddate,
+            };
 
             _context.Entry(identityinfo).State = EntityState.Modified;
 
@@ -72,8 +81,16 @@ namespace FlowLabourApi.Controllers
 
         // POST: api/Identityinfo
         [HttpPost]
-        public async Task<ActionResult<Identityinfo>> PostIdentityinfo(Identityinfo identityinfo)
+        public async Task<ActionResult<Identityinfo>> PostIdentityinfo(IdentityinfoRegister identityinfoRegister)
         {
+            if(!identityinfoRegister.IsValidate) {
+                return BadRequest("不合法的身份信息。");
+            }
+            Identityinfo identityinfo = new Identityinfo()
+            {
+                Realname = identityinfoRegister.Realname,
+                IdentityNo = identityinfoRegister.IdentityNo,
+            };
             _context.Identityinfos.Add(identityinfo);
             await _context.SaveChangesAsync();
 
