@@ -2,7 +2,7 @@
 {
     public class LoginView
     {
-        public string Passwordhash { get; set; } = null!;
+        public string Password { get; set; } = null!;
 
         /// <summary>
         /// 程序页面显示的名字

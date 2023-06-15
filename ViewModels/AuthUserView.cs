@@ -2,17 +2,13 @@
 {
     public class AuthUserView
     {
+        public int Id { get; set; }
 
         public DateTime DateJoined { get; set; }
 
         public string Email { get; set; } = null!;
-        public int Id { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public DateTime? LastLogin { get; set; }
-
-        public string Passwordhash { get; set; } = null!;
+        public string Password { get; set; } = null!;
 
         public string PhoneNo { get; set; } = null!;
 

@@ -16,8 +16,7 @@ namespace FlowLabourApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddControllers()
+            builder.Services.AddControllersWithViews()
                 .AddJsonOptions(o => {//解决json循环引用
                 o.JsonSerializerOptions
                   .ReferenceHandler = ReferenceHandler.Preserve;
@@ -65,11 +64,11 @@ namespace FlowLabourApi
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             // <snippet_UseWebSockets>
             var webSocketOptions = new WebSocketOptions
@@ -79,8 +78,16 @@ namespace FlowLabourApi
 
             app.UseWebSockets(webSocketOptions);
             // </snippet_UseWebSockets>
+            #region 新加
+            app.UseDefaultFiles();
+
+            //app.UseHttpsRedirection(); //nginx配置失败原因
+            app.UseStaticFiles();
+
+            //app.UseRouting();
 
             app.UseHttpsRedirection();
+            #endregion
 
             app.UseAuthentication();
             app.UseAuthorization();
