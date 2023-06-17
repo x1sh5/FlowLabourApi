@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
+using FlowLabourApi.Utils;
 
 namespace FlowLabourApi.Controllers
 {
@@ -54,12 +55,10 @@ namespace FlowLabourApi.Controllers
             {
                 Id = id,
                 Username = authUserView.Username,
-                Passwordhash = authUserView.Passwordhash,
+                Passwordhash = HashUtil.GetHash(authUserView.Password),
                 PhoneNo = authUserView.PhoneNo,
                 Email = authUserView.Email,
                 DateJoined = authUserView.DateJoined,
-                IsActive = authUserView.IsActive,
-                LastLogin = authUserView.LastLogin
             };
             _context.Entry(authUser).State = EntityState.Modified;
 
@@ -83,19 +82,17 @@ namespace FlowLabourApi.Controllers
         }
 
         // POST: api/AuthUser
+        //also use to register
         [HttpPost]
         public async Task<ActionResult<AuthUser>> PostAuthUser(AuthUserView authUserView)
         {
             AuthUser authUser = new AuthUser
             {
-                Id = authUserView.Id,
                 Username = authUserView.Username,
-                Passwordhash = authUserView.Passwordhash,
+                Passwordhash = HashUtil.GetHash(authUserView.Password),
                 PhoneNo = authUserView.PhoneNo,
                 Email = authUserView.Email,
                 DateJoined = authUserView.DateJoined,
-                IsActive = authUserView.IsActive,
-                LastLogin = authUserView.LastLogin
             };
             _context.AuthUsers.Add(authUser);
             await _context.SaveChangesAsync();
