@@ -32,6 +32,7 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult<AuthUser>> GetAuthUser(int id)
         {
             var authUser = await _context.AuthUsers.FindAsync(id);
+            
 
             if (authUser == null)
             {
