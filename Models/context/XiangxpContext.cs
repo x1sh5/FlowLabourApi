@@ -636,6 +636,12 @@ public partial class XiangxpContext : DbContext
             entity.Property(entity => entity.LoginProvider)
                 .HasMaxLength(45)
                 .HasColumnName("loginprovider");
+
+            entity.HasOne(entity => entity.User)
+                  .WithMany()
+                  .OnDelete(DeleteBehavior.ClientNoAction)
+                  .HasForeignKey(e => e.UserId)
+                  .IsRequired();
         });
 
         #region VideoInfo

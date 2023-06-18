@@ -6,6 +6,7 @@ using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using System.Text.Json;
@@ -70,7 +71,13 @@ namespace FlowLabourApi
                     ExpireTimeSpan = TimeSpan.FromMinutes(5)
                 });
 
-            builder.Services.AddIdentityCore<AuthUser>(o =>
+            //IdentityDbContext
+
+            builder.Services.AddIdentity
+            //自定义身份验证
+            builder.Services.AddIdentity
+
+                .AddIdentityCore<AuthUser>(o =>
             {
                 o.Stores.MaxLengthForKeys = 128;
                 o.SignIn.RequireConfirmedAccount = true;
