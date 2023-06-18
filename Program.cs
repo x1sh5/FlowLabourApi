@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MySql.EntityFrameworkCore.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -36,6 +37,8 @@ namespace FlowLabourApi
             builder.Services.AddScoped<Role>();
             builder.Services.AddScoped<UserToken>();
             builder.Services.AddScoped<SigninLog>();
+
+
 
             builder.Services.Configure<MyIdentityOptions>(options =>
             {
@@ -67,6 +70,15 @@ namespace FlowLabourApi
                     ExpireTimeSpan = TimeSpan.FromMinutes(5)
                 });
 
+            builder.Services.AddIdentityCore<AuthUser>(o =>
+            {
+                o.Stores.MaxLengthForKeys = 128;
+                o.SignIn.RequireConfirmedAccount = true;
+            })
+                .AddDefaultTokenProviders();
+            
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -89,6 +101,8 @@ namespace FlowLabourApi
 
             //app.UseHttpsRedirection(); //nginx≈‰÷√ ß∞‹‘≠“Ú
             app.UseStaticFiles();
+
+            
 
             //app.UseRouting();
 
