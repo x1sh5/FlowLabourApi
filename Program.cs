@@ -1,5 +1,6 @@
 using FlowLabourApi.Config;
 using FlowLabourApi.Hubs;
+using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -30,6 +31,11 @@ namespace FlowLabourApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSignalR();
+
+            builder.Services.AddScoped<AuthUser>();
+            builder.Services.AddScoped<Role>();
+            builder.Services.AddScoped<UserToken>();
+            builder.Services.AddScoped<SigninLog>();
 
             builder.Services.Configure<MyIdentityOptions>(options =>
             {

@@ -14,4 +14,6 @@ public partial class Role
 
     public string Privilege { get; set; } = null!;
 
+    public string ConcurrencyStamp { set; get; } = null!;
+
 }
