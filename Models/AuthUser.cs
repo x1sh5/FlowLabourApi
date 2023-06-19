@@ -12,7 +12,7 @@ public partial class AuthUser
 
     public string Passwordhash { get; set; } = null!;
 
-    public DateTime? LastLogin { get; set; }
+    public String? SecurityStamp { get; set; }
 
     /// <summary>
     /// 程序页面显示的名字
@@ -23,9 +23,23 @@ public partial class AuthUser
 
     public string Email { get; set; } = null!;
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = false;
 
     public DateTime DateJoined { get; set; }
+
+    public string? ConcurrencyStamp { get; set; }
+
+    /// <summary>
+    /// 多次登录失败后的锁定时间，单位：分钟。
+    /// </summary>
+    public int LockoutEnd { set; get; } = 0;
+
+    /// <summary>
+    /// 锁定状态，1：锁定，0：非锁定。
+    /// </summary>
+    public sbyte LockoutEnabled { get; set; } = 0;
+
+    public int AccessFailedCount { set; get; }
 
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 

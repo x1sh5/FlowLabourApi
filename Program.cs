@@ -6,7 +6,9 @@ using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MySql.EntityFrameworkCore.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -17,8 +19,7 @@ namespace FlowLabourApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddControllers()
+            builder.Services.AddControllersWithViews()
                 .AddJsonOptions(o => {//解决json循环引用
                 o.JsonSerializerOptions
                   .ReferenceHandler = ReferenceHandler.Preserve;
@@ -37,6 +38,13 @@ namespace FlowLabourApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSignalR();
+
+            builder.Services.AddScoped<AuthUser>();
+            builder.Services.AddScoped<Role>();
+            builder.Services.AddScoped<UserToken>();
+            builder.Services.AddScoped<SigninLog>();
+
+
 
             builder.Services.Configure<MyIdentityOptions>(options =>
             {
@@ -68,14 +76,29 @@ namespace FlowLabourApi
                     ExpireTimeSpan = TimeSpan.FromMinutes(5)
                 });
 
+            //IdentityDbContext
+
+            builder.Services.AddIdentity
+            //自定义身份验证
+            builder.Services.AddIdentity
+
+                .AddIdentityCore<AuthUser>(o =>
+            {
+                o.Stores.MaxLengthForKeys = 128;
+                o.SignIn.RequireConfirmedAccount = true;
+            })
+                .AddDefaultTokenProviders();
+            
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            //if (app.Environment.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
+            //}
 
             // <snippet_UseWebSockets>
             var webSocketOptions = new WebSocketOptions
@@ -85,8 +108,18 @@ namespace FlowLabourApi
 
             app.UseWebSockets(webSocketOptions);
             // </snippet_UseWebSockets>
+            #region 新加
+            app.UseDefaultFiles();
+
+            //app.UseHttpsRedirection(); //nginx配置失败原因
+            app.UseStaticFiles();
+
+            
+
+            //app.UseRouting();
 
             app.UseHttpsRedirection();
+            #endregion
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -14,5 +14,9 @@ public partial class SigninLog
 
     public string? Lastiplocation { get; set; }
 
+    public string LoginProvider { get; set; }
+
+    public string ProviderKey { get; set; }
+
     public AuthUser AuthUser { get; set; } = null!;
 }
