@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebSocketsSample.Controllers;
 
 // <snippet>
+[ApiExplorerSettings(IgnoreApi = true)]
 public class WebSocketController : ControllerBase
 {
     private static List<WebSocket> _WebSockets = new List<WebSocket>();

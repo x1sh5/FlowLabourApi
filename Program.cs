@@ -1,3 +1,4 @@
+using FlowLabourApi.Authentication;
 using FlowLabourApi.Config;
 using FlowLabourApi.Hubs;
 using FlowLabourApi.Models;
@@ -32,14 +33,16 @@ namespace FlowLabourApi
 
             builder.Services.AddScoped<AuthUser>().AddScoped<Role>();
 
-            builder.Services.AddIdentity<AuthUser, Role>();
-
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSignalR();
 
             builder.Services.AddScoped<AuthUser>();
+            builder.Services.AddScoped<IUserStore<AuthUser>,FlowUserStore>();
+            builder.Services.AddScoped<IRoleStore<Role>,FlowRoleStore>();
+            builder.Services.AddScoped<IRoleValidator<Role>,FlowRoleValidator>();
+            builder.Services.AddScoped<ILookupNormalizer,FlowLookupNormalizer>();
             builder.Services.AddScoped<Role>();
             builder.Services.AddScoped<UserToken>();
             builder.Services.AddScoped<SigninLog>();
@@ -67,6 +70,10 @@ namespace FlowLabourApi
                 options.User.RequireUniquePhoneNo = true;
             });
 
+            // Force Identity's security stamp to be validated every minute.
+            builder.Services.Configure<SecurityStampValidatorOptions>(o =>
+                               o.ValidationInterval = TimeSpan.FromMinutes(1));
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                 options => builder.Configuration.Bind("JwtSettings", options))
@@ -77,18 +84,16 @@ namespace FlowLabourApi
                 });
 
             //IdentityDbContext
+            builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
 
-            builder.Services.AddIdentity
             //自定义身份验证
-            builder.Services.AddIdentity
+            //builder.Services.AddIdentityCore<AuthUser>(o =>
+            //{
+            //    o.Stores.MaxLengthForKeys = 128;
+            //    o.SignIn.RequireConfirmedAccount = true;
+            //})
+            //    .AddDefaultTokenProviders();
 
-                .AddIdentityCore<AuthUser>(o =>
-            {
-                o.Stores.MaxLengthForKeys = 128;
-                o.SignIn.RequireConfirmedAccount = true;
-            })
-                .AddDefaultTokenProviders();
-            
 
 
             var app = builder.Build();

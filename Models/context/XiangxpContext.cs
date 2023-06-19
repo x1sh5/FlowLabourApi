@@ -210,7 +210,7 @@ public partial class XiangxpContext : DbContext
 
             entity.ToTable("auth_user", tb => tb.HasComment("用户表"));
 
-            entity.HasIndex(e => e.Username, "username").IsUnique();
+            entity.HasIndex(e => e.UserName, "username").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
@@ -232,7 +232,7 @@ public partial class XiangxpContext : DbContext
                 .HasMaxLength(12)
                 .IsFixedLength()
                 .HasColumnName("phoneNo");
-            entity.Property(e => e.Username)
+            entity.Property(e => e.UserName)
                 .HasMaxLength(150)
                 .HasComment("程序页面显示的名字")
                 .HasColumnName("username");
