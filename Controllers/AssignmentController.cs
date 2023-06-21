@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
+using System.Net;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -35,6 +36,11 @@ public class AssignmentController : ControllerBase
         return assignment;
     }
 
+    /// <summary>
+    /// 新建任务
+    /// </summary>
+    /// <param name="assignmentView"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<Assignment>> PostAssignment(AssignmentView assignmentView)
     {
