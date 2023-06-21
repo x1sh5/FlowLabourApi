@@ -1,10 +1,13 @@
 ﻿namespace FlowLabourApi.ViewModels
 {
+    /// <summary>
+    /// 任务详细的前端视图
+    /// </summary>
     public class AssignmentView
     {
 
         /// <summary>
-        /// branch表的id外键
+        /// 所属部门，对应branch表的id
         /// </summary>
         public int Branchid { get; set; }
 
@@ -17,6 +20,10 @@
         /// 预计完成时间
         /// </summary>
         public DateTime Finishtime { get; set; }
+
+        /// <summary>
+        /// id
+        /// </summary>
         public int Id { get; set; }
 
         /// <summary>
@@ -25,12 +32,18 @@
         public int? Presumedtime { get; set; }
 
         /// <summary>
-        /// auth_user的id外键
+        /// 发布人id，对应auth_user表中的id
         /// </summary>
         public int Publishid { get; set; }
 
+        /// <summary>
+        /// 发布时间
+        /// </summary>
         public DateTime Publishtime { get; set; }
 
+        /// <summary>
+        /// 回馈值
+        /// </summary>
         public int Reward { get; set; }
 
         /// <summary>
@@ -43,6 +56,9 @@
         /// </summary>
         public sbyte Status { get; set; }
 
+        /// <summary>
+        /// 标题
+        /// </summary>
         public string? Title { get; set; }
 
         /// <summary>
