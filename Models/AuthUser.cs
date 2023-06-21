@@ -29,7 +29,7 @@ public partial class AuthUser
     /// 小程序页面显示的名字。并非真实姓名。
     /// </summary>
     /// <example>张三</example>
-    public string Username { get; set; } = null!;
+    public string UserName { get; set; } = null!;
 
     /// <summary>
     /// 电话号码
