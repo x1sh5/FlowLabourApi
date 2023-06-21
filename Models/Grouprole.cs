@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace FlowLabourApi.Models;
 
+/// <summary>
+/// 
+/// </summary>
 public partial class Grouprole
 {
     public int Groupid { get; set; }

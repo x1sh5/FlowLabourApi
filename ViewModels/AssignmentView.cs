@@ -8,8 +8,14 @@
         /// </summary>
         public int Branchid { get; set; }
 
+        /// <summary>
+        /// 详细描述
+        /// </summary>
         public string? Description { get; set; }
 
+        /// <summary>
+        /// 预计完成时间
+        /// </summary>
         public DateTime Finishtime { get; set; }
         public int Id { get; set; }
 

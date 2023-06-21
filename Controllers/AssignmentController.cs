@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
+using System.Net;
+using Swashbuckle.AspNetCore.Annotations;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -16,6 +18,8 @@ public class AssignmentController : ControllerBase
     }
 
     [HttpGet]
+    [SwaggerResponse((int)HttpStatusCode.OK, "获取所有任务", typeof(IEnumerable<Assignment>))]
+    //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
     public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignments()
     {
         return await _context.Assignments.ToListAsync();
@@ -35,6 +39,11 @@ public class AssignmentController : ControllerBase
         return assignment;
     }
 
+    /// <summary>
+    /// 新建任务
+    /// </summary>
+    /// <param name="assignmentView"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<Assignment>> PostAssignment(AssignmentView assignmentView)
     {
