@@ -7,7 +7,7 @@ namespace FlowLabourApi.Models;
 /// <summary>
 /// 用户身份信息表，对应数据库表identityinfo
 /// </summary>
-public partial class Identityinfo
+public partial class IdentityInfo
 {
     private sbyte? _age;
     private string _identityNo;

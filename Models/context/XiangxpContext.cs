@@ -40,7 +40,7 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Groupuser> Groupusers { get; set; }
 
-    public virtual DbSet<Identityinfo> Identityinfos { get; set; }
+    public virtual DbSet<IdentityInfo> Identityinfos { get; set; }
 
     public virtual DbSet<Message> Messages { get; set; }
 
@@ -410,7 +410,7 @@ public partial class XiangxpContext : DbContext
                 .HasConstraintName("fk_groupuser_userid_authuser_id");
         });
 
-        modelBuilder.Entity<Identityinfo>(entity =>
+        modelBuilder.Entity<IdentityInfo>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 

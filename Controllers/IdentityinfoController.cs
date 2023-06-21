@@ -20,16 +20,16 @@ namespace FlowLabourApi.Controllers
             _context = context;
         }
 
-        // GET: api/Identityinfo
+        // GET: api/IdentityInfo
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Identityinfo>>> GetIdentityinfos()
+        public async Task<ActionResult<IEnumerable<IdentityInfo>>> GetIdentityinfos()
         {
             return await _context.Identityinfos.ToListAsync();
         }
 
-        // GET: api/Identityinfo/5
+        // GET: api/IdentityInfo/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Identityinfo>> GetIdentityinfo(int id)
+        public async Task<ActionResult<IdentityInfo>> GetIdentityinfo(int id)
         {
             var identityinfo = await _context.Identityinfos.FirstOrDefaultAsync(i=>i.Id==id);
 
@@ -41,7 +41,7 @@ namespace FlowLabourApi.Controllers
             return identityinfo;
         }
 
-        // PUT: api/Identityinfo/5
+        // PUT: api/IdentityInfo/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIdentityinfo(int id, IdentityinfoView identityinfoView)
         {
@@ -49,7 +49,7 @@ namespace FlowLabourApi.Controllers
             {
                 return BadRequest();
             }
-            Identityinfo identityinfo = new Identityinfo()
+            IdentityInfo identityinfo = new IdentityInfo()
             {
                 Id = identityinfoView.Id,
                 Realname = identityinfoView.Realname,
@@ -79,14 +79,14 @@ namespace FlowLabourApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Identityinfo
+        // POST: api/IdentityInfo
         [HttpPost]
-        public async Task<ActionResult<Identityinfo>> PostIdentityinfo(IdentityinfoRegister identityinfoRegister)
+        public async Task<ActionResult<IdentityInfo>> PostIdentityinfo(IdentityinfoRegister identityinfoRegister)
         {
             if(!identityinfoRegister.IsValidate) {
                 return BadRequest("不合法的身份信息。");
             }
-            Identityinfo identityinfo = new Identityinfo()
+            IdentityInfo identityinfo = new IdentityInfo()
             {
                 Realname = identityinfoRegister.Realname,
                 IdentityNo = identityinfoRegister.IdentityNo,
@@ -97,7 +97,7 @@ namespace FlowLabourApi.Controllers
             return CreatedAtAction(nameof(GetIdentityinfo), new { id = identityinfo.Id }, identityinfo);
         }
 
-        // DELETE: api/Identityinfo/5
+        // DELETE: api/IdentityInfo/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIdentityinfo(int id)
         {
