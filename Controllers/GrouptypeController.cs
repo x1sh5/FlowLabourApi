@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace FlowLabourApi.Controllers
 {
+    /// <summary>
+    /// 组信息的rest API
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class GrouptypeController : ControllerBase
@@ -20,6 +23,10 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/Grouptype
+        /// <summary>
+        /// 获取所有组类型信息
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Grouptype>>> GetGrouptypes()
         {
@@ -27,6 +34,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/Grouptype/5
+        /// <summary>
+        /// 根据ID，获取组类型信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Grouptype>> GetGrouptype(int id)
         {
@@ -41,6 +53,12 @@ namespace FlowLabourApi.Controllers
         }
 
         // PUT: api/Grouptype/5
+        /// <summary>
+        /// 根据ID，修改组类型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="grouptype"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGrouptype(int id, Grouptype grouptype)
         {
@@ -71,6 +89,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // POST: api/Grouptype
+        /// <summary>
+        /// 添加组类型
+        /// </summary>
+        /// <param name="grouptype"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<Grouptype>> PostGrouptype(Grouptype grouptype)
         {
@@ -81,6 +104,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE: api/Grouptype/5
+        /// <summary>
+        /// 根据组ID，删除组类型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGrouptype(int id)
         {

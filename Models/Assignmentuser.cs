@@ -11,11 +11,13 @@ public partial class Assignmentuser
     /// <summary>
     /// 任务id,对应assignmen表中的id
     /// </summary>
+    /// <example>1</example>
     public int Assignmentid { get; set; }
 
     /// <summary>
     /// 用户id，对应auth_user表中的id。
     /// </summary>
+    /// <example>1</example>
     public int Userid { get; set; }
 
     /// <summary>

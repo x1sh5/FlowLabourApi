@@ -22,6 +22,10 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/AuthUser
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AuthUser>>> GetAuthUsers()
         {
@@ -29,6 +33,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/AuthUser/{id}
+        /// <summary>
+        /// 获取所有用户信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<AuthUser>> GetAuthUser(int id)
         {
@@ -44,6 +53,12 @@ namespace FlowLabourApi.Controllers
         }
 
         // PUT: api/AuthUser/{id}
+        /// <summary>
+        /// 根据ID获取用户信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="authUserView"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAuthUser(int id, AuthUserView authUserView)
         {
@@ -83,6 +98,11 @@ namespace FlowLabourApi.Controllers
 
         // POST: api/AuthUser
         //also use to register
+        /// <summary>
+        /// 添加用户信息
+        /// </summary>
+        /// <param name="authUserView"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<AuthUser>> PostAuthUser(AuthUserView authUserView)
         {
@@ -101,6 +121,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE: api/AuthUser/{id}
+        /// <summary>
+        /// 根据ID删除用户信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthUser(int id)
         {

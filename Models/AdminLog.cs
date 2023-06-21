@@ -9,13 +9,15 @@ namespace FlowLabourApi.Models;
 public partial class AdminLog
 {
     /// <summary>
-    /// 操作时间
+    /// 操作日期
     /// </summary>
+    /// example: 2019-01-01
     public DateTime Time { get; set; }
 
     /// <summary>
     /// 操作类型
     /// </summary>
+    /// example: 1
     public sbyte ActionType { get; set; }
 
     /// <summary>

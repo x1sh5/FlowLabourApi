@@ -9,18 +9,29 @@ using FlowLabourApi.ViewModels;
 
 namespace FlowLabourApi.Controllers
 {
+    /// <summary>
+    /// 操作日志记录
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AdminLogController : ControllerBase
     {
         private readonly XiangxpContext _context;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public AdminLogController(XiangxpContext context)
         {
             _context = context;
         }
 
         // GET: api/AdminLog
+        /// <summary>
+        /// 获取所有记录
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AdminLog>>> GetAdminLog()
         {
@@ -28,6 +39,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/AdminLog/5
+        /// <summary>
+        /// 根据ID，获取相应记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<AdminLog>> GetAdminLog(int id)
         {
@@ -42,6 +58,12 @@ namespace FlowLabourApi.Controllers
         }
 
         // PUT: api/AdminLog/5
+        /// <summary>
+        /// 根据ID，修改记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="adminLogView"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAdminLog(int id, AdminLogView adminLogView)
         {
@@ -79,6 +101,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // POST: api/AdminLog
+        /// <summary>
+        /// 添加操作记录
+        /// </summary>
+        /// <param name="adminLogView"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<AdminLog>> PostAdminLog(AdminLogView adminLogView)
         {
@@ -96,6 +123,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE: api/AdminLog/5
+        /// <summary>
+        /// 根据ID，删除操作记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAdminLog(int id)
         {

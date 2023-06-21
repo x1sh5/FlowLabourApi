@@ -17,7 +17,7 @@
         public string? Description { get; set; }
 
         /// <summary>
-        /// 预计完成时间
+        /// 预计完成日期
         /// </summary>
         public DateTime Finishtime { get; set; }
 
@@ -37,7 +37,7 @@
         public int Publishid { get; set; }
 
         /// <summary>
-        /// 发布时间
+        /// 发布日期
         /// </summary>
         public DateTime Publishtime { get; set; }
 

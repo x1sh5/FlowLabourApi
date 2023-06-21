@@ -79,7 +79,7 @@ public partial class XiangxpContext : DbContext
                 .HasColumnType("text")
                 .HasColumnName("describe");
             entity.Property(e => e.Time)
-                .HasComment("操作时间")
+                .HasComment("操作日期")
                 .HasColumnType("datetime")
                 .HasColumnName("time");
             entity.Property(e => e.UserId)

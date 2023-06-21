@@ -15,16 +15,19 @@ public partial class IdentityInfo
     /// <summary>
     /// 记录唯一标识ID
     /// </summary>
+    /// <example>1</example>
     public int Id { get; set; }
 
     /// <summary>
     /// 真实名字
     /// </summary>
+    /// <example>张三</example>
     public string Realname { get; set; } = null!;
 
     /// <summary>
     /// 身份证号码
     /// </summary>
+    /// <example>512431197812131037</example>
     public string IdentityNo
     {
         get
@@ -42,11 +45,13 @@ public partial class IdentityInfo
     /// <summary>
     /// 是否验证通过
     /// </summary>
+    /// <example>1</example>
     public sbyte Checked { get; set; }
 
     /// <summary>
     /// 年龄，根据身份证号码自动推算
     /// </summary>
+    /// <example>18</example>
     public sbyte? Age
     {
         private set

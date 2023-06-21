@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class BranchController : ControllerBase
@@ -19,6 +22,10 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/Branch
+        /// <summary>
+        /// 获取所有部门
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult<IEnumerable<Branch>> GetBranches()
         {
@@ -26,6 +33,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/Branch/5
+        /// <summary>
+        /// 根据ID，获取相应部门
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public ActionResult<Branch> GetBranch(int id)
         {
@@ -41,7 +53,7 @@ namespace FlowLabourApi.Controllers
 
         // POST: api/Branch
         /// <summary>
-        /// 
+        /// 添加新部门
         /// </summary>
         /// <param name="branch"></param>
         /// <returns></returns>
@@ -55,6 +67,12 @@ namespace FlowLabourApi.Controllers
         }
 
         // PUT: api/Branch/5
+        /// <summary>
+        /// 根据ID，修改相应的部门
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="branch"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public IActionResult PutBranch(int id, Branch branch)
         {
@@ -70,6 +88,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE: api/Branch/5
+        /// <summary>
+        /// 根据ID，删除部门
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult DeleteBranch(int id)
         {

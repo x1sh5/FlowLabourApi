@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthUserGroupController : ControllerBase
@@ -18,6 +21,10 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/AuthUserGroup
+        /// <summary>
+        /// 获取所有的组
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetAuthUserGroups()
         {
@@ -25,6 +32,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/AuthUserGroup/5
+        /// <summary>
+        /// 根据ID获取组
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public IActionResult GetAuthUserGroup(int id)
         {
@@ -39,6 +51,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // POST: api/AuthUserGroup
+        /// <summary>
+        /// 添加组
+        /// </summary>
+        /// <param name="authUserGroup"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult PostAuthUserGroup(AuthUserGroup authUserGroup)
         {
@@ -49,6 +66,12 @@ namespace FlowLabourApi.Controllers
         }
 
         // PUT: api/AuthUserGroup/5
+        /// <summary>
+        /// 根据ID修改组
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="authUserGroup"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public IActionResult PutAuthUserGroup(int id, AuthUserGroup authUserGroup)
         {
@@ -64,6 +87,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE: api/AuthUserGroup/5
+        /// <summary>
+        /// 根据ID删除组
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult DeleteAuthUserGroup(int id)
         {
