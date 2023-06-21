@@ -1,7 +1,7 @@
 ﻿namespace FlowLabourApi.Models
 {
     /// <summary>
-    /// 用户-身份信息表,对应数据库表: useridentity
+    /// 用户-身份信息表, 对应数据库表: useridentity
     /// </summary>
     public partial class UserIdentity
     {
