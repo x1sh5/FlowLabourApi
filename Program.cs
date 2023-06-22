@@ -14,6 +14,7 @@ namespace FlowLabourApi
 {
     public class Program
     {
+        //public static string basepth = "/usr/local/xxp/webApps/FlowLabourApi";
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -34,7 +35,7 @@ namespace FlowLabourApi
                 c.SwaggerDoc("v1",
                     new OpenApiInfo
                     {
-                        Title = "My API - V1",
+                        Title = "FlowLabourApi - V1",
                         Version = "v1"
                     }
                  );
