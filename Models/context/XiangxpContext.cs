@@ -52,15 +52,11 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<SigninLog> SigninLogs { get; set; }
 
-    //public virtual DbSet<TendencyUser> TendencyUsers { get; set; }
-
-    public virtual DbSet<UserIdentity> UserIdentities { get; set; }
+    public virtual DbSet<TendencyUser> TendencyUsers { get; set; }
 
     public virtual DbSet<Userrole> Userroles { get; set; }
 
-    public virtual DbSet<UserToken> Usertokens { get; set; }
-
-    //public virtual DbSet<VideoInfo> VideoInfos { get; set; }
+    public virtual DbSet<VideoInfo> VideoInfos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -224,9 +220,9 @@ public partial class XiangxpContext : DbContext
                 .HasMaxLength(254)
                 .HasColumnName("email");
             entity.Property(e => e.IsActive).HasColumnName("is_active");
-            entity.Property(e => e.SecurityStamp)
-                .HasMaxLength(64)
-                .HasColumnName("securitystamp");
+            entity.Property(e => e.LastLogin)
+                .HasMaxLength(6)
+                .HasColumnName("last_login");
             entity.Property(e => e.Passwordhash)
                 .HasMaxLength(128)
                 .HasColumnName("passwordhash");
@@ -238,23 +234,9 @@ public partial class XiangxpContext : DbContext
                 .HasMaxLength(150)
                 .HasComment("程序页面显示的名字")
                 .HasColumnName("username");
-            entity.Property(e => e.ConcurrencyStamp)
-                .HasMaxLength(64)
-                .HasColumnName("concurrencystamp");
-            entity.Property(e => e.LockoutEnabled)
-                  .HasDefaultValue(0)
-                  .HasColumnType("tinyint")
-                  .HasColumnName("lockoutenabled");
-            entity.Property(e => e.LockoutEnd)
-                  .HasDefaultValue(0)
-                  .HasColumnType("int(11)")
-                  .HasColumnName("lockoutend");
-            entity.Property(e => e.AccessFailedCount)
-                  .HasColumnName("accessfailedcount")
-                  .HasColumnType("int(11)");
 
-            entity.HasMany(d=>d.Assignments).WithOne(p=>p.Publish)
-                .HasForeignKey(d=>d.Publishid);
+            entity.HasMany(d => d.Assignments).WithOne(p => p.Publish)
+                .HasForeignKey(d => d.Publishid);
         });
 
         modelBuilder.Entity<AuthUserGroup>(entity =>
@@ -506,7 +488,7 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.AssignmentId)
                 .HasColumnType("int(11)")
                 .HasColumnName("assignmentid");
-            entity.HasOne(d=>d.Assignment)
+            entity.HasOne(d => d.Assignment)
                 .WithMany()
                 .HasForeignKey(d => d.RelatedId)
                 .IsRequired();
@@ -529,9 +511,6 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Privilege)
                 .HasMaxLength(45)
                 .HasColumnName("privilege");
-            entity.Property(e => e.ConcurrencyStamp)
-                .HasMaxLength(64)
-                .HasColumnName("concurrencystamp");
         });
 
         modelBuilder.Entity<Session>(entity =>
@@ -566,57 +545,26 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Userid)
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
-            entity.Property(e => e.LoginProvider)
-                  .HasColumnType("varchar(45)")
-                  .IsRequired()
-                  .HasColumnName("loginprovider");
-            entity.Property(e => e.ProviderKey)
-                  .HasColumnType("varchar(64)")
-                  .IsRequired()
-                  .HasColumnName("providerkey");
-
-            entity.HasOne(d=>d.AuthUser).WithMany()
+            entity.HasOne(d => d.AuthUser).WithMany()
                 .HasForeignKey(d => d.Userid)
                 .IsRequired();
         });
 
-        #region TendencyUser
-        //modelBuilder.Entity<TendencyUser>(entity =>
-        //{
-        //    entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        //    entity.ToTable("tendency_user");
-
-        //    entity.Property(e => e.Id)
-        //        .HasColumnType("int(11)")
-        //        .HasColumnName("id");
-        //    entity.Property(e => e.Name)
-        //        .HasMaxLength(20)
-        //        .HasColumnName("name");
-        //    entity.Property(e => e.Password)
-        //        .HasMaxLength(20)
-        //        .HasColumnName("password");
-        //});
-        #endregion
-
-        modelBuilder.Entity<UserIdentity>(entity =>
+        modelBuilder.Entity<TendencyUser>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.IdentityId });
-            entity.ToTable("useridentity");
-            entity.Property(entity => entity.UserId)
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("tendency_user");
+
+            entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
-                .HasColumnName("userid");
-            entity.Property(entity => entity.IdentityId)
-                .HasColumnType("int(11)")
-                .HasColumnName("identityid");
-            entity.HasOne(d => d.User).WithOne()
-                .OnDelete(DeleteBehavior.ClientNoAction)
-                .HasForeignKey<AuthUser>(d => d.Id)
-                .HasConstraintName("fk_useridenty_userid_authuser_id");
-            entity.HasOne(d => d.Identity).WithOne()
-                .HasForeignKey<IdentityInfo>(d=>d.Id)//
-                .OnDelete(DeleteBehavior.ClientNoAction)
-                .HasConstraintName("fk_useridenty_identityid_identityinfo_id");
+                .HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(20)
+                .HasColumnName("name");
+            entity.Property(e => e.Password)
+                .HasMaxLength(20)
+                .HasColumnName("password");
         });
 
         modelBuilder.Entity<Userrole>(entity =>
@@ -630,65 +578,37 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Roleid)
                 .HasColumnType("int(11)")
                 .HasColumnName("roleid");
-            entity.HasOne(d=>d.User).WithMany()
-                .HasForeignKey(d=>d.Userid)
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.Userid)
                 .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_userrole_userid_authuser_id");
-            entity.HasOne(d=>d.Role).WithMany()
-                .HasForeignKey(Role=>Role.Roleid)
+            entity.HasOne(d => d.Role).WithMany()
+                .HasForeignKey(Role => Role.Roleid)
                 .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_userrole_roleid_role_id");
         });
 
-        modelBuilder.Entity<UserToken>(entity =>
+        modelBuilder.Entity<VideoInfo>(entity =>
         {
-            entity.HasNoKey().ToTable("usertoken");
-            entity.Property(e => e.UserId)
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("video_info");
+
+            entity.HasIndex(e => e.Id, "id_UNIQUE").IsUnique();
+
+            entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
-                .HasColumnName("userid");
-            entity.Property(e => e.Value)
-                .HasMaxLength(64)
-                .HasColumnName("value");
-            entity.Property(entity => entity.ExpireAt)
-                .HasColumnType("datetime")
-                .HasColumnName("expireat");
-            entity.Property(entity =>entity.Name)
+                .HasColumnName("id");
+            entity.Property(e => e.SharedUrl)
                 .HasMaxLength(45)
-                .HasColumnName("name");
-            entity.Property(entity => entity.LoginProvider)
+                .HasColumnName("sharedUrl");
+            entity.Property(e => e.Text)
+                .HasColumnType("text")
+                .HasColumnName("text");
+            entity.Property(e => e.Title)
                 .HasMaxLength(45)
-                .HasColumnName("loginprovider");
-
-            entity.HasOne(entity => entity.User)
-                  .WithMany()
-                  .OnDelete(DeleteBehavior.ClientNoAction)
-                  .HasForeignKey(e => e.UserId)
-                  .IsRequired();
+                .HasColumnName("title");
         });
-
-        #region VideoInfo
-        //modelBuilder.Entity<VideoInfo>(entity =>
-        //{
-        //    entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-        //    entity.ToTable("video_info");
-
-        //    entity.HasIndex(e => e.Id, "id_UNIQUE").IsUnique();
-
-        //    entity.Property(e => e.Id)
-        //        .HasColumnType("int(11)")
-        //        .HasColumnName("id");
-        //    entity.Property(e => e.SharedUrl)
-        //        .HasMaxLength(45)
-        //        .HasColumnName("sharedUrl");
-        //    entity.Property(e => e.Text)
-        //        .HasColumnType("text")
-        //        .HasColumnName("text");
-        //    entity.Property(e => e.Title)
-        //        .HasMaxLength(45)
-        //        .HasColumnName("title");
-        //});
-        #endregion
 
         OnModelCreatingPartial(modelBuilder);
     }
