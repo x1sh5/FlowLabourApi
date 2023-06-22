@@ -69,7 +69,7 @@ namespace FlowLabourApi.Controllers
             AuthUser authUser = new AuthUser
             {
                 Id = id,
-                Username = authUserView.Username,
+                UserName = authUserView.Username,
                 Passwordhash = HashUtil.GetHash(authUserView.Password),
                 PhoneNo = authUserView.PhoneNo,
                 Email = authUserView.Email,
@@ -108,7 +108,7 @@ namespace FlowLabourApi.Controllers
         {
             AuthUser authUser = new AuthUser
             {
-                Username = authUserView.Username,
+                UserName = authUserView.Username,
                 Passwordhash = HashUtil.GetHash(authUserView.Password),
                 PhoneNo = authUserView.PhoneNo,
                 Email = authUserView.Email,

@@ -54,6 +54,8 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<TendencyUser> TendencyUsers { get; set; }
 
+    public virtual DbSet<UserIdentity> UserIdentities { get; set; }
+
     public virtual DbSet<Userrole> Userroles { get; set; }
 
     public virtual DbSet<VideoInfo> VideoInfos { get; set; }
