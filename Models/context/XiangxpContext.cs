@@ -40,7 +40,7 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Groupuser> Groupusers { get; set; }
 
-    public virtual DbSet<Identityinfo> Identityinfos { get; set; }
+    public virtual DbSet<IdentityInfo> Identityinfos { get; set; }
 
     public virtual DbSet<Message> Messages { get; set; }
 
@@ -53,6 +53,8 @@ public partial class XiangxpContext : DbContext
     public virtual DbSet<SigninLog> SigninLogs { get; set; }
 
     //public virtual DbSet<TendencyUser> TendencyUsers { get; set; }
+
+    public virtual DbSet<UserIdentity> UserIdentities { get; set; }
 
     public virtual DbSet<Userrole> Userroles { get; set; }
 
@@ -426,7 +428,7 @@ public partial class XiangxpContext : DbContext
                 .HasConstraintName("fk_groupuser_userid_authuser_id");
         });
 
-        modelBuilder.Entity<Identityinfo>(entity =>
+        modelBuilder.Entity<IdentityInfo>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -596,6 +598,26 @@ public partial class XiangxpContext : DbContext
         //        .HasColumnName("password");
         //});
         #endregion
+
+        modelBuilder.Entity<UserIdentity>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.IdentityId });
+            entity.ToTable("useridentity");
+            entity.Property(entity => entity.UserId)
+                .HasColumnType("int(11)")
+                .HasColumnName("userid");
+            entity.Property(entity => entity.IdentityId)
+                .HasColumnType("int(11)")
+                .HasColumnName("identityid");
+            entity.HasOne(d => d.User).WithOne()
+                .OnDelete(DeleteBehavior.ClientNoAction)
+                .HasForeignKey<AuthUser>(d => d.Id)
+                .HasConstraintName("fk_useridenty_userid_authuser_id");
+            entity.HasOne(d => d.Identity).WithOne()
+                .HasForeignKey<IdentityInfo>(d => d.Id)//
+                .OnDelete(DeleteBehavior.ClientNoAction)
+                .HasConstraintName("fk_useridenty_identityid_identityinfo_id");
+        });
 
         modelBuilder.Entity<Userrole>(entity =>
         {
