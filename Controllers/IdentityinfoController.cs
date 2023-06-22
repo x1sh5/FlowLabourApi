@@ -14,11 +14,11 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class IdentityinfoController : ControllerBase
+    public class IdentityInfoController : ControllerBase
     {
         private readonly XiangxpContext _context;
 
-        public IdentityinfoController(XiangxpContext context)
+        public IdentityInfoController(XiangxpContext context)
         {
             _context = context;
         }
