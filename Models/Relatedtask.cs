@@ -8,7 +8,13 @@ namespace FlowLabourApi.Models;
 /// </summary>
 public partial class Relatedtask
 {
+    /// <summary>
+    /// 主任务的id
+    /// </summary>
     public int? Taskid { get; set; }
 
+    /// <summary>
+    /// 相关任务的id
+    /// </summary>
     public int? Relatedid { get; set; }
 }

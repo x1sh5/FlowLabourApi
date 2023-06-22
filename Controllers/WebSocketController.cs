@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebSocketsSample.Controllers;
 
 // <snippet>
+//swagger 不记录
 [ApiExplorerSettings(IgnoreApi = true)]
 public class WebSocketController : ControllerBase
 {
