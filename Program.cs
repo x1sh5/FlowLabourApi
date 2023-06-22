@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using MySql.EntityFrameworkCore.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -35,7 +36,18 @@ namespace FlowLabourApi
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {//Ìí¼Ó×Ö¶Î×¢ÊÍ
+                c.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Title = "FlowLabourApi - V1",
+                        Version = "v1"
+                    }
+                 );
+                var filePath = Path.Combine(System.AppContext.BaseDirectory, "FlowLabourApi.xml");
+                c.IncludeXmlComments(filePath);
+            });
             builder.Services.AddSignalR();
 
             builder.Services.AddScoped<AuthUser>();
@@ -46,8 +58,6 @@ namespace FlowLabourApi
             builder.Services.AddScoped<Role>();
             builder.Services.AddScoped<UserToken>();
             builder.Services.AddScoped<SigninLog>();
-
-
 
             builder.Services.Configure<MyIdentityOptions>(options =>
             {
@@ -93,8 +103,6 @@ namespace FlowLabourApi
             //    o.SignIn.RequireConfirmedAccount = true;
             //})
             //    .AddDefaultTokenProviders();
-
-
 
             var app = builder.Build();
 
