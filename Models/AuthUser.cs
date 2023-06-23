@@ -16,7 +16,7 @@ public partial class AuthUser
     /// <summary>
     /// 密码哈希
     /// </summary>
-    public string Passwordhash { get; set; } = null!;
+    public string Passwordhash { get; set; }
 
     /// <summary>
     /// 
@@ -26,17 +26,17 @@ public partial class AuthUser
     /// <summary>
     /// 程序页面显示的名字
     /// </summary>
-    public string UserName { get; set; } = null!;
+    public string UserName { get; set; }
 
     /// <summary>
     /// 电话号码
     /// </summary>
-    public string PhoneNo { get; set; } = null!;
+    public string PhoneNo { get; set; }
 
     /// <summary>
     /// 邮件
     /// </summary>
-    public string Email { get; set; } = null!;
+    public string Email { get; set; }
 
     /// <summary>
     /// 是否实名验证。为实名验证的用户只能浏览。

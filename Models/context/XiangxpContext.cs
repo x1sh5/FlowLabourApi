@@ -611,10 +611,10 @@ public partial class XiangxpContext : DbContext
                 .HasColumnName("identityid");
             entity.HasOne(d => d.User).WithOne()
                 .OnDelete(DeleteBehavior.ClientNoAction)
-                .HasForeignKey<AuthUser>(d => d.Id)
+                .HasForeignKey<UserIdentity>(d => d.UserId)
                 .HasConstraintName("fk_useridenty_userid_authuser_id");
             entity.HasOne(d => d.Identity).WithOne()
-                .HasForeignKey<IdentityInfo>(d => d.Id)//
+                .HasForeignKey<UserIdentity>(d => d.IdentityId)//
                 .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_useridenty_identityid_identityinfo_id");
         });

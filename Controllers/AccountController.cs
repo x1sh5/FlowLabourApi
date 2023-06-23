@@ -25,10 +25,24 @@ namespace FlowLabourApi.Controllers
         /// <param name="register"></param>
         /// <returns></returns>
         [HttpPost("register")]
+        [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterView register)
         {
             // code to handle registration
             return Ok();
+        }
+
+        /// <summary>
+        /// 登录提示
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        [HttpGet("login")]
+        //[HttpPost("Login")]
+        [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return Content("请登录后再试！");
         }
 
         /// <summary>
@@ -37,6 +51,8 @@ namespace FlowLabourApi.Controllers
         /// <param name="login"></param>
         /// <returns></returns>
         [HttpPost("login")]
+        //[HttpPost("Login")]
+        [AllowAnonymous]
         public IActionResult Login([FromBody] LoginView login)
         {
             if (!ModelState.IsValid)
@@ -47,7 +63,10 @@ namespace FlowLabourApi.Controllers
             {
                 return BadRequest("Invalid client request");
             }
-            var user = _context.AuthUsers.Find(login.UserName, HashUtil.GetHash(login.Password));
+            var user = _context.AuthUsers.FirstOrDefault(
+                e =>  e.UserName == login.UserName &&
+                e.Passwordhash == HashUtil.GetHash(login.Password)
+               );
             if(user == null)
             {
                 return Unauthorized();

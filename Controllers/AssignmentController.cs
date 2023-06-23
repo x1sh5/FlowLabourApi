@@ -5,6 +5,7 @@ using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
 using System.Net;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -22,6 +23,7 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
+    [AllowAnonymous]
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
     public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignments()
     {
