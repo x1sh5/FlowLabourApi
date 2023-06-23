@@ -601,6 +601,7 @@ public partial class XiangxpContext : DbContext
 
         modelBuilder.Entity<UserIdentity>(entity =>
         {
+            entity.HasNoKey();
             entity.ToTable("useridentity");
             entity.Property(entity => entity.UserId)
                 .HasColumnType("int(11)")
