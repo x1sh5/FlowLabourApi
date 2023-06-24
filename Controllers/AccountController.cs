@@ -3,6 +3,7 @@ using FlowLabourApi.Utils;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Common;
 
 namespace FlowLabourApi.Controllers
 {
@@ -42,8 +43,38 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public IActionResult Login()
         {
-            return Content("«Îµ«¬º∫Û‘Ÿ ‘£°");
+            return Unauthorized("«Îµ«¬º∫Û‘Ÿ ‘£°");
         }
+
+        ///// <summary>
+        ///// µ«¬ºÃ· æ
+        ///// </summary>
+        ///// <param name="login"></param>
+        ///// <returns></returns>
+        //[HttpPost("login")]
+        ////[HttpPost("Login")]
+        //[AllowAnonymous]
+        //public IActionResult Login([FromBody] LoginView login)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+        //    if (login == null)
+        //    {
+        //        return BadRequest("Invalid client request");
+        //    }
+        //    var user = _context.AuthUsers.FirstOrDefault(
+        //        e => e.UserName == login.UserName &&
+        //        e.Passwordhash == HashUtil.GetHash(login.Password)
+        //    );
+        //    if (user == null)
+        //    {
+        //        return Unauthorized();
+        //    }
+        //    var tokenString = Token.GenerateJSONWebToken(login.UserName);
+        //    return Ok(new { token = tokenString });
+        //}
 
         /// <summary>
         /// µ«¬º
@@ -86,5 +117,7 @@ namespace FlowLabourApi.Controllers
             // code to handle logout
             return Ok();
         }
+
+
     }
 }

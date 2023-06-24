@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlowLabourApi.Controllers
 {

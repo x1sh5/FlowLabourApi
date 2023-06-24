@@ -72,29 +72,35 @@ namespace FlowLabourApi.Authentication
         }
 
 
-        public Task<AuthUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        public async Task<AuthUser> FindByIdAsync(int userId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var user = await _context.AuthUsers.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            if(user == null) throw new ArgumentNullException(nameof(user));
+            return user;
         }
 
-        public Task<AuthUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        public async Task<AuthUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var user = await _context.AuthUsers.FirstOrDefaultAsync(u => u.UserName == normalizedUserName, cancellationToken);
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            return user;
         }
 
         public Task<string> GetNormalizedUserNameAsync(AuthUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); 
         }
 
-        public Task<string> GetUserIdAsync(AuthUser user, CancellationToken cancellationToken)
+        public async Task<string> GetUserIdAsync(AuthUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var user1 = await FindByIdAsync(user.Id, cancellationToken);
+            return user1.Id.ToString();
         }
 
-        public Task<string> GetUserNameAsync(AuthUser user, CancellationToken cancellationToken)
+        public async Task<string> GetUserNameAsync(AuthUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var user1 = await FindByIdAsync(user.Id, cancellationToken);
+            return user1.UserName;
         }
 
         public Task SetNormalizedUserNameAsync(AuthUser user, string normalizedName, CancellationToken cancellationToken)
@@ -102,11 +108,6 @@ namespace FlowLabourApi.Authentication
             throw new NotImplementedException();
         }
 
-        public async Task<IdentityResult> SetUserNameAsync(AuthUser user, string userName, CancellationToken cancellationToken)
-        {
-            user.UserName = userName;
-            return await UpdateAsync(user, cancellationToken);
-        }
 
         public async Task<IdentityResult> UpdateAsync(AuthUser user, CancellationToken cancellationToken)
         {
@@ -148,6 +149,24 @@ namespace FlowLabourApi.Authentication
             }
         }
 
+        public async Task SetUserNameAsync(AuthUser user, string userName, CancellationToken cancellationToken)
+        {
+            user.UserName = userName;
+            await UpdateAsync(user, cancellationToken);
+        }
+
+        public async Task<AuthUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
+        {
+            int? id;
+            id = int.TryParse(userId, out int result) ? result : null;
+            if(id==null)throw new ArgumentNullException(nameof(userId));
+            var user = await _context.AuthUsers.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+            if(user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            return user;
+        }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -178,9 +197,5 @@ namespace FlowLabourApi.Authentication
             GC.SuppressFinalize(this);
         }
 
-        Task IUserStore<AuthUser>.SetUserNameAsync(AuthUser user, string userName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

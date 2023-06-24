@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MySql.EntityFrameworkCore.Extensions;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -60,6 +61,21 @@ namespace FlowLabourApi
                  );
                 var filePath = Path.Combine(System.AppContext.BaseDirectory, "FlowLabourApi.xml");
                 c.IncludeXmlComments(filePath);
+                // 开启小锁
+                c.OperationFilter<AddResponseHeadersFilter>();
+                c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
+
+                // 在header中添加token，传递到后台
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
+
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+
+                    Description = "JWT授权(数据将在请求头中进行传输) 直接在下框中输入Bearer {token}（注意两者之间是一个空格）\"",
+                    Name = "Authorization",//jwt默认的参数名称
+                    In = ParameterLocation.Header,//jwt默认存放Authorization信息的位置(请求头中)
+                    Type = SecuritySchemeType.ApiKey
+                });
             });
             builder.Services.AddSignalR();
 
