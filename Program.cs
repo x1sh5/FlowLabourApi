@@ -92,7 +92,9 @@ namespace FlowLabourApi
             //IdentityDbContext
             //builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
             //自定义身份验证
+            //AddDefaultTokenProviders
 
+            //builder.Services.AddTransient< Provider>();
 
             builder.Services.Configure<MyIdentityOptions>(options =>
             {
@@ -116,6 +118,8 @@ namespace FlowLabourApi
                 //options.User.AllowedUserNameCharacters =
                 //"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniquePhoneNo = true;
+                //token settings
+                //options.Tokens.AuthenticatorTokenProvider
             });
 
             // Force Identity's security stamp to be validated every minute.
@@ -152,6 +156,10 @@ namespace FlowLabourApi
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
+                options.AddPolicy("default", policy => policy.RequireRole("default").Build());//单独角色
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+                options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System"));//或的关系
+                options.AddPolicy("SystemAndAdmin", policy => policy.RequireRole("Admin").RequireRole("System"));//且的关系
             });
 
             var app = builder.Build();
