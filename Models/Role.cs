@@ -26,6 +26,6 @@ public partial class Role
     /// <example>can add</example>
     public string Privilege { get; set; } = null!;
 
-    public string ConcurrencyStamp { set; get; } = null!;
+    public string? ConcurrencyStamp { set; get; } = null!;
 
 }

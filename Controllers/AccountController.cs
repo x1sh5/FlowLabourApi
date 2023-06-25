@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Common;
@@ -114,7 +115,8 @@ namespace FlowLabourApi.Controllers
             {
                 return Unauthorized();
             }
-            Userrole? role = _context.Userroles.FirstOrDefault(e => e.Userid== user.Id);
+            UserRole? role = _context.Userroles.Include(o=>o.Role).FirstOrDefault(e => e.UserId == user.Id);
+                //.FirstOrDefault(e => e.UserId== user.Id);
             //
             List<Claim>? clams = new List<Claim>();
             clams.Add(new Claim("UserName", login.UserName));

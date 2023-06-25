@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace FlowLabourApi.Models;
 
-public partial class Userrole
+public partial class UserRole
 {
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
-    public int Roleid { get; set; }
+    public int RoleId { get; set; }
 
-    public virtual AuthUser User { get; set; } = null!;
+    public virtual AuthUser? User { get; set; }
 
-    public virtual Role Role { get; set; } = null!;
+    public virtual Role? Role { get; set; }
 }

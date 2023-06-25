@@ -39,7 +39,7 @@ namespace FlowLabourApi
                 o.JsonSerializerOptions
                   .ReferenceHandler = ReferenceHandler.Preserve;
             });
-            builder.Services.AddDbContext<XiangxpContext>((options) =>
+            builder.Services.AddDbContext<XiangxpContext>((DbContextOptionsBuilder options) =>
             {
                 options.UseMySQL(
                     DbConfig.ConnectStr);

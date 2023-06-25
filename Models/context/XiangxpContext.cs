@@ -11,7 +11,7 @@ public partial class XiangxpContext : DbContext
     {
     }
 
-    public XiangxpContext(DbContextOptions<XiangxpContext> options)
+    public XiangxpContext(DbContextOptions options)
         : base(options)
     {
     }
@@ -56,7 +56,7 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<UserIdentity> UserIdentities { get; set; }
 
-    public virtual DbSet<Userrole> Userroles { get; set; }
+    public virtual DbSet<UserRole> Userroles { get; set; }
 
     public virtual DbSet<UserToken> Usertokens { get; set; }
 
@@ -619,23 +619,23 @@ public partial class XiangxpContext : DbContext
                 .HasConstraintName("fk_useridenty_identityid_identityinfo_id");
         });
 
-        modelBuilder.Entity<Userrole>(entity =>
+        modelBuilder.Entity<UserRole>(entity =>
         {
-            entity.HasKey(e => new { e.Userid, e.Roleid });
+            entity.HasKey(e => new { e.UserId, e.RoleId });
             entity.ToTable("userrole");
-            entity.HasIndex(e => e.Roleid, "fk_userrole_roleid_role_id_idx");
-            entity.Property(e => e.Userid)
+            entity.HasIndex(e => e.RoleId, "fk_userrole_roleid_role_id_idx");
+            entity.Property(e => e.UserId)
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
-            entity.Property(e => e.Roleid)
+            entity.Property(e => e.RoleId)
                 .HasColumnType("int(11)")
                 .HasColumnName("roleid");
-            entity.HasOne(d=>d.User).WithMany()
-                .HasForeignKey(d=>d.Userid)
+            entity.HasOne(d=>d.User).WithOne()
+                .HasForeignKey<UserRole>(d=>d.UserId)
                 .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_userrole_userid_authuser_id");
-            entity.HasOne(d=>d.Role).WithMany()
-                .HasForeignKey(Role=>Role.Roleid)
+            entity.HasOne(d=>d.Role).WithOne()
+                .HasForeignKey<UserRole>(Role=>Role.RoleId)
                 .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_userrole_roleid_role_id");
         });
