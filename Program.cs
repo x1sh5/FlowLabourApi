@@ -45,6 +45,9 @@ namespace FlowLabourApi
                     DbConfig.ConnectStr);
             });
 
+            //IdentityDbContext
+            builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
+
             builder.Services.AddScoped<AuthUser>().AddScoped<Role>();
 
             // Learn more about configuring Swagger/OpenAPI
@@ -80,6 +83,9 @@ namespace FlowLabourApi
             builder.Services.AddSignalR();
 
             builder.Services.AddScoped<AuthUser>();
+            //builder.Services.AddScoped<UserManager<AuthUser>>();
+            //builder.Services.AddScoped<RoleManager<Role>>();
+            //builder.Services.AddScoped<SignInManager<AuthUser>>();
             builder.Services.AddScoped<IUserStore<AuthUser>,FlowUserStore>();
             builder.Services.AddScoped<IRoleStore<Role>,FlowRoleStore>();
             builder.Services.AddScoped<IRoleValidator<Role>,FlowRoleValidator>();
@@ -89,8 +95,7 @@ namespace FlowLabourApi
             builder.Services.AddScoped<SigninLog>();
             //builder.Services.AddSingleton<>();
 
-            //IdentityDbContext
-            //builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
+            
             //自定义身份验证
             //AddDefaultTokenProviders
 

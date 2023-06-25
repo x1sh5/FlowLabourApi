@@ -1,12 +1,18 @@
+using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Utils;
 using FlowLabourApi.ViewModels;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using NuGet.Common;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace FlowLabourApi.Controllers
 {
@@ -18,10 +24,12 @@ namespace FlowLabourApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly XiangxpContext _context;
+        private SignInManager<AuthUser> signInManager;
 
-        public AccountController(XiangxpContext context)
+        public AccountController(XiangxpContext context, SignInManager<AuthUser> signInManager)
         {
             _context = context;
+            this.signInManager = signInManager;
         }
         /// <summary>
         /// зЂВс
@@ -87,8 +95,9 @@ namespace FlowLabourApi.Controllers
         [HttpPost("login")]
         //[HttpPost("Login")]
         [AllowAnonymous]
-        public IActionResult Login([FromBody] LoginView login)
+        public async Task<IActionResult> Login([FromBody] LoginView login)
         {
+            RsaSecurityKey? secret = new RsaSecurityKey(RSA.Create());
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -105,10 +114,30 @@ namespace FlowLabourApi.Controllers
             {
                 return Unauthorized();
             }
+            Userrole? role = _context.Userroles.FirstOrDefault(e => e.Userid== user.Id);
+            //
+            List<Claim>? clams = new List<Claim>();
+            clams.Add(new Claim("UserName", login.UserName));
+            clams.Add(new Claim("Role", role.Role.Privilege));
+            var identity = new ClaimsIdentity(clams, JwtBearerDefaults.AuthenticationScheme);
+            //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+            await signInManager.SignInAsync(user, true);
+
+
             JwtSecurityTokenHandler? tokenHandler = new JwtSecurityTokenHandler();
-            tokenHandler.CreateJwtSecurityToken();
+            SecurityToken? token = tokenHandler.CreateToken(new SecurityTokenDescriptor()
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, login.UserName),
+                    new Claim(ClaimTypes.Role, role.Role.Privilege)
+                }),
+                SigningCredentials = new SigningCredentials(secret, SecurityAlgorithms.RsaSha256)
+            });
+            
+
             // code to handle login
-            return Ok();
+            return Ok(token);
         }
 
         /// <summary>
@@ -120,7 +149,8 @@ namespace FlowLabourApi.Controllers
         public IActionResult Logout()
         {
             // code to handle logout
-            return Ok();
+            bool isAuth = User.Identity.IsAuthenticated;
+            return Content($"user is {isAuth}");
         }
 
 
