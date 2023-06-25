@@ -9,18 +9,25 @@ using FlowLabourApi.ViewModels;
 
 namespace FlowLabourApi.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class IdentityinfoController : ControllerBase
+    public class IdentityInfoController : ControllerBase
     {
         private readonly XiangxpContext _context;
 
-        public IdentityinfoController(XiangxpContext context)
+        public IdentityInfoController(XiangxpContext context)
         {
             _context = context;
         }
 
         // GET: api/IdentityInfo
+        /// <summary>
+        /// 获取所有身份信息
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<IdentityInfo>>> GetIdentityinfos()
         {
@@ -28,6 +35,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET: api/IdentityInfo/5
+        /// <summary>
+        /// 根据ID，获取相应的身份信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<IdentityInfo>> GetIdentityinfo(int id)
         {
@@ -42,6 +54,12 @@ namespace FlowLabourApi.Controllers
         }
 
         // PUT: api/IdentityInfo/5
+        /// <summary>
+        /// 根据ID，修改身份信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="identityinfoView"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIdentityinfo(int id, IdentityinfoView identityinfoView)
         {
@@ -80,6 +98,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // POST: api/IdentityInfo
+        /// <summary>
+        /// 添加身份信息
+        /// </summary>
+        /// <param name="identityinfoRegister"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<IdentityInfo>> PostIdentityinfo(IdentityinfoRegister identityinfoRegister)
         {
@@ -98,6 +121,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE: api/IdentityInfo/5
+        /// <summary>
+        /// 根据ID，删除身份信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteIdentityinfo(int id)
         {

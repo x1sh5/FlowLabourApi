@@ -1,20 +1,10 @@
 ﻿namespace FlowLabourApi.ViewModels
 {
     /// <summary>
-    /// 用户信息视图
+    /// 注册时传入的数据
     /// </summary>
-    public class AuthUserView
+    public class RegisterView
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// 加入日期
-        /// </summary>
-        public DateTime DateJoined { get; set; }
-
         /// <summary>
         /// 邮件
         /// </summary>

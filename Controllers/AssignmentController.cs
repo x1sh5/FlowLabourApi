@@ -4,6 +4,8 @@ using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
 using System.Net;
+using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -16,12 +18,23 @@ public class AssignmentController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// 获取所有任务
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
+    [AllowAnonymous]
+    //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
     public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignments()
     {
         return await _context.Assignments.ToListAsync();
     }
 
+    /// <summary>
+    /// 根据ID获取任务
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
     public async Task<ActionResult<Assignment>> GetAssignment(int id)
     {
@@ -66,6 +79,12 @@ public class AssignmentController : ControllerBase
         return CreatedAtAction(nameof(GetAssignment), new { id = assignment.Id }, assignment);
     }
 
+    /// <summary>
+    /// 根据ID修改任务
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="assignmentView"></param>
+    /// <returns></returns>
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAssignment(int id, AssignmentView assignmentView)
     {
@@ -110,6 +129,11 @@ public class AssignmentController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// 根据ID删除任务
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAssignment(int id)
     {
