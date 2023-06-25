@@ -1,9 +1,12 @@
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Utils;
 using FlowLabourApi.ViewModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using NuGet.Common;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace FlowLabourApi.Controllers
 {
@@ -102,6 +105,8 @@ namespace FlowLabourApi.Controllers
             {
                 return Unauthorized();
             }
+            JwtSecurityTokenHandler? tokenHandler = new JwtSecurityTokenHandler();
+            tokenHandler.CreateJwtSecurityToken();
             // code to handle login
             return Ok();
         }
