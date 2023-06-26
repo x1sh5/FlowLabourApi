@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using MySql.EntityFrameworkCore.Extensions;
 using Swashbuckle.AspNetCore.Filters;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -97,6 +98,7 @@ namespace FlowLabourApi
             builder.Services.AddScoped<Role>();
             builder.Services.AddScoped<UserToken>();
             builder.Services.AddScoped<SigninLog>();
+            builder.Services.AddScoped<AppJwtBearerEvents>();
             //builder.Services.AddSingleton<>();
 
             
@@ -143,9 +145,10 @@ namespace FlowLabourApi
                 options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    //CookieAuthenticationDefaults.AuthenticationScheme;
+                    //options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    //options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
@@ -183,20 +186,20 @@ namespace FlowLabourApi
                         options.SecurityTokenValidators.Add(new JwtSecurityTokenHandler());
 
                         options.EventsType = typeof(AppJwtBearerEvents);
-                    })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-                    options => 
-                    {
-                        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                        options.LoginPath = new PathString("/api/Account/Login");
-                        //options.AccessDeniedPath = new PathString("/api/Account/Login");
-                        //options.Events.OnRedirectToLogin = context =>
-                        //    {
-                        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
-                        //        return Task.CompletedTask;
-                        //    };
-                    }
-                );
+                    });
+                //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                //    options => 
+                //    {
+                //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                //        options.LoginPath = new PathString("/api/Account/Login");
+                //        //options.AccessDeniedPath = new PathString("/api/Account/Login");
+                //        //options.Events.OnRedirectToLogin = context =>
+                //        //    {
+                //        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
+                //        //        return Task.CompletedTask;
+                //        //    };
+                //    }
+                //);
 
             builder.Services.AddAuthorization(options =>
             {
@@ -239,11 +242,22 @@ namespace FlowLabourApi
             app.UseHttpsRedirection();
             #endregion
 
+            app.MapControllers();
+
             app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.UseStatusCodePages(async contextAccessor =>
+            {
+                var response = contextAccessor.HttpContext.Response;
+
+                if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
+                    response.StatusCode == (int)HttpStatusCode.Forbidden)
+                {
+                    response.Redirect("/api/Account/Login");
+                }
+            });
 
             app.MapHub<ChatHub>("/chatHub");
 
