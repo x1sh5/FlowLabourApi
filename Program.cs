@@ -248,16 +248,16 @@ namespace FlowLabourApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseStatusCodePages(async contextAccessor =>
-            {
-                var response = contextAccessor.HttpContext.Response;
+            //app.UseStatusCodePages(async contextAccessor =>
+            //{
+            //    var response = contextAccessor.HttpContext.Response;
 
-                if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
-                    response.StatusCode == (int)HttpStatusCode.Forbidden)
-                {
-                    response.Redirect("/api/Account/Login");
-                }
-            });
+            //    if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
+            //        response.StatusCode == (int)HttpStatusCode.Forbidden)
+            //    {
+            //        response.Redirect("/api/Account/Login");
+            //    }
+            //});
 
             app.MapHub<ChatHub>("/chatHub");
 
