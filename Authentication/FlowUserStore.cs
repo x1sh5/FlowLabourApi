@@ -1,5 +1,7 @@
 ﻿using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Utils;
+using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +22,7 @@ namespace FlowLabourApi.Authentication
 
         public async Task<IdentityResult> CreateAsync(AuthUser user, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.CreateAsync run");
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -47,6 +50,7 @@ namespace FlowLabourApi.Authentication
 
         public async Task<IdentityResult> DeleteAsync(AuthUser user, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.DeleteAsync run");
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -74,13 +78,27 @@ namespace FlowLabourApi.Authentication
 
         public async Task<AuthUser> FindByIdAsync(int userId, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.FindByIdAsync run");
             var user = await _context.AuthUsers.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
             if(user == null) throw new ArgumentNullException(nameof(user));
             return user;
         }
 
+        public async Task<AuthUser> FindByLoginViewAsync(LoginView login, CancellationToken cancellationToken)
+        {
+            Console.Out.WriteLine("FlowUserStore.FindByLoginViewAsync run");
+            var user =await _context.AuthUsers.FirstOrDefaultAsync(
+                e => e.UserName == login.UserName &&
+                e.Passwordhash == HashUtil.GetHash(login.Password),
+                cancellationToken
+               );
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            return user;
+        }
+
         public async Task<AuthUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.FindByNameAsync run");
             var user = await _context.AuthUsers.FirstOrDefaultAsync(u => u.UserName == normalizedUserName, cancellationToken);
             if (user == null) throw new ArgumentNullException(nameof(user));
             return user;
@@ -93,12 +111,14 @@ namespace FlowLabourApi.Authentication
 
         public async Task<string> GetUserIdAsync(AuthUser user, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.GetUserIdAsync run");
             var user1 = await FindByIdAsync(user.Id, cancellationToken);
             return user1.Id.ToString();
         }
 
         public async Task<string> GetUserNameAsync(AuthUser user, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.GetUserNameAsync run");
             var user1 = await FindByIdAsync(user.Id, cancellationToken);
             return user1.UserName;
         }
@@ -111,6 +131,7 @@ namespace FlowLabourApi.Authentication
 
         public async Task<IdentityResult> UpdateAsync(AuthUser user, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.UpdateAsync run");
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
@@ -151,12 +172,14 @@ namespace FlowLabourApi.Authentication
 
         public async Task SetUserNameAsync(AuthUser user, string userName, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.SetUserNameAsync run");
             user.UserName = userName;
             await UpdateAsync(user, cancellationToken);
         }
 
         public async Task<AuthUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowUserStore.FindByIdAsync run");
             int? id;
             id = int.TryParse(userId, out int result) ? result : null;
             if(id==null)throw new ArgumentNullException(nameof(userId));

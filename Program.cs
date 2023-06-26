@@ -1,5 +1,6 @@
 using FlowLabourApi.Authentication;
 using FlowLabourApi.Config;
+using FlowLabourApi.Events;
 using FlowLabourApi.Hubs;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
@@ -10,9 +11,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MySql.EntityFrameworkCore.Extensions;
 using Swashbuckle.AspNetCore.Filters;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -39,6 +42,7 @@ namespace FlowLabourApi
                 o.JsonSerializerOptions
                   .ReferenceHandler = ReferenceHandler.Preserve;
             });
+
             builder.Services.AddDbContext<XiangxpContext>((DbContextOptionsBuilder options) =>
             {
                 options.UseMySQL(
@@ -80,8 +84,8 @@ namespace FlowLabourApi
                     Type = SecuritySchemeType.ApiKey
                 });
             });
-            builder.Services.AddSignalR();
 
+            builder.Services.AddSignalR();
             builder.Services.AddScoped<AuthUser>();
             //builder.Services.AddScoped<UserManager<AuthUser>>();
             //builder.Services.AddScoped<RoleManager<Role>>();
@@ -131,6 +135,10 @@ namespace FlowLabourApi
             builder.Services.Configure<SecurityStampValidatorOptions>(o =>
                                o.ValidationInterval = TimeSpan.FromMinutes(1));
 
+
+            JwtOptions? jwtOptions = new JwtOptions();
+
+
             builder.Services.AddAuthentication(
                 options =>
                 {
@@ -141,7 +149,41 @@ namespace FlowLabourApi
                     //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                    options => builder.Configuration.Bind("JwtSettings", options))
+                    options =>
+                    {
+                        //builder.Configuration.Bind("JwtSettings", options);
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256, SecurityAlgorithms.RsaSha256 },
+                            ValidTypes = new[] { JwtConstants.HeaderType },
+
+                            ValidIssuer = jwtOptions.Issuer,
+                            ValidateIssuer = true,
+
+                            ValidAudience = jwtOptions.Audience,
+                            ValidateAudience = true,
+
+                            IssuerSigningKey = jwtOptions.SecurityKey,
+                            ValidateIssuerSigningKey = true,
+
+                            ValidateLifetime = true,
+
+                            RequireSignedTokens = true,
+                            RequireExpirationTime = true,
+
+                            NameClaimType = JwtBearerDefaults.AuthenticationScheme,
+                            RoleClaimType = "default",
+
+                            //ClockSkew = TimeSpan.Zero,
+                        };
+
+                        options.SaveToken = true;
+
+                        options.SecurityTokenValidators.Clear();
+                        options.SecurityTokenValidators.Add(new JwtSecurityTokenHandler());
+
+                        options.EventsType = typeof(AppJwtBearerEvents);
+                    })
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
                     options => 
                     {

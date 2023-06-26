@@ -8,6 +8,7 @@ namespace FlowLabourApi.Authentication
         /// <inheritdoc/>
         public async Task<IdentityResult> ValidateAsync(RoleManager<Role> manager, Role role)
         {
+            await Console.Out.WriteLineAsync("FlowRoleValidator.ValidateAsync run");
             var role1 = await manager.FindByIdAsync(role.Roleid.ToString());
             if (role1 == null)
             {

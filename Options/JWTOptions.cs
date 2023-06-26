@@ -1,11 +1,45 @@
-﻿namespace FlowLabourApi.Options
+﻿using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace FlowLabourApi.Options
 {
-    public class JWTOptions
+    public class JwtOptions
     {
-        public static string Issuer { get; set; } = "default";
+        public const string Name = "Jwt";
+        public readonly static Encoding DefaultEncoding = Encoding.UTF8;
+        public readonly static double DefaultExpiresMinutes = 30d;
 
-        public static string SecretKey { get; set; } = "We are our choices.";
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Audience { get; set; }
 
-        public static string Audience { get; set; } = "/authuser";
+        /// <summary>
+        /// 发行人
+        /// </summary>
+        public string Issuer { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SecretKeyString { get; set; } = "We are our choices.";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public double ExpiresMinutes { get; set; } = DefaultExpiresMinutes;
+
+        public Encoding Encoding { get; set; } = DefaultEncoding;
+
+        public SecurityKey SecurityKey => new RsaSecurityKey(RSA.Create());
     }
+    //public class JWTOptions
+    //{
+    //    public static string Issuer { get; set; } = "default";
+
+    //    public static string SecretKey { get; set; } = "We are our choices.";
+
+    //    public static string Audience { get; set; } = "/authuser";
+    //}
 }

@@ -20,6 +20,7 @@ namespace FlowLabourApi.Authentication
 
         public async Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowRoleStore.CreateAsync run");
             try
             {
                 // 在此添加代码以创建新角色
@@ -57,6 +58,7 @@ namespace FlowLabourApi.Authentication
 
         public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowRoleStore.FindByIdAsync run");
             int? id;
             id = int.TryParse(roleId, out int result) ? result : (int?)null;
             if (id == null)
@@ -82,7 +84,8 @@ namespace FlowLabourApi.Authentication
 
         public async Task<string> GetRoleIdAsync(Role role, CancellationToken cancellationToken)
         {
-            if(role == null)
+            Console.Out.WriteLine("FlowRoleStore.GetRoleIdAsync run");
+            if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
@@ -93,6 +96,7 @@ namespace FlowLabourApi.Authentication
 
         public async Task<string> GetRoleNameAsync(Role role, CancellationToken cancellationToken)
         {
+            Console.Out.WriteLine("FlowRoleStore.GetRoleNameAsync run");
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
