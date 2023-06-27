@@ -175,7 +175,7 @@ namespace FlowLabourApi.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim("Name", userName),
+                    new Claim(JwtBearerDefaults.AuthenticationScheme/*"Name"*/, userName),
                     new Claim("Role", role.Role.Privilege)
                 }),
                 Issuer = _jwtOptions.Issuer,
