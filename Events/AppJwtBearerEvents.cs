@@ -148,9 +148,11 @@ public class AppJwtBearerEvents : JwtBearerEvents
 
         Console.WriteLine($"Token SecurityKey: {token.SecurityKey}");
 
-        if (token.SigningKey is SymmetricSecurityKey ssk)
+        //SymmetricSecurityKey
+
+        if (token.SigningKey is RsaSecurityKey  ssk)
         {
-            Console.WriteLine($"Token SigningKey: {_jwtOptions.Encoding.GetString(ssk.Key)}");
+            Console.WriteLine($"Token SigningKey: {_jwtOptions.Encoding.GetString(ssk.ComputeJwkThumbprint())}");
         }
         else
         {

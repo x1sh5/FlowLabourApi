@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class AssignmentController : ControllerBase
 {
     private readonly XiangxpContext _context;

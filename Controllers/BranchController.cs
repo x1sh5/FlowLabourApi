@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BranchController : ControllerBase
     {
         private readonly XiangxpContext _context;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlowLabourApi.Controllers
 {
@@ -14,6 +15,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class IdentityInfoController : ControllerBase
     {
         private readonly XiangxpContext _context;

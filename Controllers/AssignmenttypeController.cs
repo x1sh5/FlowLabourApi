@@ -1,5 +1,6 @@
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace FlowLabourApi.Controllers
     /// 任务类型，技术，管理，建设，等等。
     /// </summary>
     [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
     public class AssignmenttypeController : Controller
     {
         private readonly XiangxpContext _context;

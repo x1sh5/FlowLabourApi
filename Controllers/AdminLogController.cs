@@ -15,6 +15,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles ="admin")]
     public class AdminLogController : ControllerBase
     {
         private readonly XiangxpContext _context;

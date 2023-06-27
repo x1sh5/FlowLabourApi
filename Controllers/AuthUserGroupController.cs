@@ -3,6 +3,7 @@ using System.Linq;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlowLabourApi.Controllers
 {
@@ -11,6 +12,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthUserGroupController : ControllerBase
     {
         private readonly XiangxpContext _context;

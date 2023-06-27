@@ -32,7 +32,7 @@ namespace FlowLabourApi.Options
 
         public Encoding Encoding { get; set; } = DefaultEncoding;
 
-        public SecurityKey SecurityKey => new RsaSecurityKey(RSA.Create());
+        public SymmetricSecurityKey SecurityKey => new (DefaultEncoding.GetBytes(SecretKeyString));
     }
     //public class JWTOptions
     //{

@@ -1,5 +1,6 @@
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GrouptypeController : ControllerBase
     {
         private readonly XiangxpContext _context;

@@ -7,11 +7,13 @@ using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
 using FlowLabourApi.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlowLabourApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AuthUserController : ControllerBase
     {
         private readonly XiangxpContext _context;
@@ -27,6 +29,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<AuthUser>>> GetAuthUsers()
         {
             return await _context.AuthUsers.ToListAsync();

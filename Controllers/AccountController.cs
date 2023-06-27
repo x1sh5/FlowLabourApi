@@ -57,12 +57,12 @@ namespace FlowLabourApi.Controllers
         }
 
         /// <summary>
-        /// 登录提示
+        /// 默认重定向地址
         /// </summary>
         /// <param name="login"></param>
         /// <returns></returns>
-        [HttpGet("login")]
-        //[HttpPost("Login")]
+        // 直接以/开头的路由，会当成决对路径。
+        [HttpGet("/Account/Login")]
         [AllowAnonymous]
         public IActionResult Login()
         {
@@ -162,7 +162,7 @@ namespace FlowLabourApi.Controllers
         [NonAction]
         private SecurityToken? GenerateToken(string userName,UserRole role)
         {
-            RsaSecurityKey? secret = new RsaSecurityKey(RSA.Create());
+            SecurityKey? secret = _jwtOptions.SecurityKey;
             List<Claim>? clams = new List<Claim>();
             clams.Add(new Claim("UserName", userName));
             clams.Add(new Claim("Role", role.Role.Privilege));
@@ -181,7 +181,7 @@ namespace FlowLabourApi.Controllers
                 Issuer = _jwtOptions.Issuer,
                 Audience = _jwtOptions.Audience,
                 Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiresMinutes),
-                SigningCredentials = new SigningCredentials(secret, SecurityAlgorithms.RsaSha256)
+                SigningCredentials = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256)
             });
             //tokenHandler.WriteToken(token);
 

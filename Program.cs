@@ -167,15 +167,16 @@ namespace FlowLabourApi
                             ValidateAudience = true,
 
                             IssuerSigningKey = jwtOptions.SecurityKey,
-                            ValidateIssuerSigningKey = true,
+                            //ValidateIssuerSigningKey = true,
 
-                            ValidateLifetime = true,
+                            //ValidateLifetime = true,
 
-                            RequireSignedTokens = true,
-                            RequireExpirationTime = true,
+                            //RequireSignedTokens = true,
+                            //RequireExpirationTime = true,
 
                             NameClaimType = JwtBearerDefaults.AuthenticationScheme,
                             RoleClaimType = "default",
+                            //TokenDecryptionKey = jwtOptions.SecurityKey,
 
                             //ClockSkew = TimeSpan.Zero,
                         };
@@ -188,7 +189,7 @@ namespace FlowLabourApi
                         options.EventsType = typeof(AppJwtBearerEvents);
                     });
                 //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-                //    options => 
+                //    options =>
                 //    {
                 //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                 //        options.LoginPath = new PathString("/api/Account/Login");
@@ -200,6 +201,7 @@ namespace FlowLabourApi
                 //        //    };
                 //    }
                 //);
+
 
             builder.Services.AddAuthorization(options =>
             {
