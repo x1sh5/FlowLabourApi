@@ -20,6 +20,7 @@ using MySql.EntityFrameworkCore.Extensions;
 using Swashbuckle.AspNetCore.Filters;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -102,9 +103,11 @@ namespace FlowLabourApi
             builder.Services.AddScoped<UserToken>();
             builder.Services.AddScoped<SigninLog>();
             builder.Services.AddScoped<AppJwtBearerEvents>();
+            builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
+                x=>new RolesAuthorizationRequirement(new[] { "admin" }));
             //builder.Services.AddSingleton<>();
 
-            
+
             //自定义身份验证
             //AddDefaultTokenProviders
 
@@ -191,36 +194,42 @@ namespace FlowLabourApi
 
                         options.EventsType = typeof(AppJwtBearerEvents);
                     });
-                //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-                //    options =>
-                //    {
-                //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                //        options.LoginPath = new PathString("/api/Account/Login");
-                //        //options.AccessDeniedPath = new PathString("/api/Account/Login");
-                //        //options.Events.OnRedirectToLogin = context =>
-                //        //    {
-                //        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
-                //        //        return Task.CompletedTask;
-                //        //    };
-                //    }
-                //);
+            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+            //    options =>
+            //    {
+            //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            //        options.LoginPath = new PathString("/api/Account/Login");
+            //        //options.AccessDeniedPath = new PathString("/api/Account/Login");
+            //        //options.Events.OnRedirectToLogin = context =>
+            //        //    {
+            //        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
+            //        //        return Task.CompletedTask;
+            //        //    };
+            //    }
+            //);
 
 
+#pragma warning disable CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
             builder.Services.AddAuthorization(options =>
             {
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
-                options.AddPolicy(Permission.Default, 
+                options.AddPolicy(Permission.Default,
                     policy => policy.RequireRole(Permission.Default).Build());//单独角色
-                options.AddPolicy(Permission.Admin, 
+                options.AddPolicy(Permission.Admin,
                     policy => policy.RequireRole(Permission.Admin).Build());
                 options.AddPolicy(Permission.SystemOrAmin,
                     policy => policy.RequireRole(Permission.Admin, Permission.System));//或的关系
-                options.AddPolicy(Permission.SystemAndAmin, 
+                options.AddPolicy(Permission.SystemAndAmin,
                     policy => policy.RequireRole(Permission.Admin).RequireRole(Permission.System));//且的关系
-            })
-                .TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, RolesAuthorizationRequirement>()); ;
+            });
+                //.TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, RolesAuthorizationRequirement>(
+                //    x=>new RolesAuthorizationRequirement(
+                //        typeof(Permission).GetFields(BindingFlags.Public | BindingFlags.Static)
+                //                .Select(field => field.GetValue(null).ToString())
+                //        )));
+#pragma warning restore CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
 
             var app = builder.Build();
 
