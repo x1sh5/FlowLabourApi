@@ -9,9 +9,11 @@ using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MySql.EntityFrameworkCore.Extensions;
@@ -217,7 +219,8 @@ namespace FlowLabourApi
                     policy => policy.RequireRole(Permission.Admin, Permission.System));//或的关系
                 options.AddPolicy(Permission.SystemAndAmin, 
                     policy => policy.RequireRole(Permission.Admin).RequireRole(Permission.System));//且的关系
-            });
+            })
+                .TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, RolesAuthorizationRequirement>()); ;
 
             var app = builder.Build();
 
