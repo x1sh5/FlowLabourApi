@@ -127,12 +127,15 @@ namespace FlowLabourApi.Controllers
                 return Unauthorized();
             }
             UserRole? role = _context.Userroles.Include(o=>o.Role).FirstOrDefault(e => e.UserId == user.Id);
-                //.FirstOrDefault(e => e.UserId== user.Id);
+            //.FirstOrDefault(e => e.UserId== user.Id);
 
             //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+            List<Claim>? claims = new List<Claim>();
+            claims.Add(new Claim("UserName", login.UserName));
+            claims.Add(new Claim("Role", role.Role.Privilege));
             await signInManager.SignInAsync(user, true);
 
-            SecurityToken? token = GenerateToken(login.UserName, role);
+            SecurityToken? token = GenerateToken(claims, role);
 
             // code to handle login
             return Ok(new { V = new JwtSecurityTokenHandler().WriteToken(token) });
@@ -142,6 +145,7 @@ namespace FlowLabourApi.Controllers
         [Authorize()]
         public IActionResult Edit(int id)
         {
+            var u = User;
             ClaimsIdentity? claims = User.Identities.FirstOrDefault(x=>x.Claims.Contains(new Claim("Role", "default")));
             return Ok(claims);
         }
@@ -160,24 +164,18 @@ namespace FlowLabourApi.Controllers
         }
 
         [NonAction]
-        private SecurityToken? GenerateToken(string userName,UserRole role)
+        private SecurityToken? GenerateToken(IEnumerable<Claim> claims,UserRole role)
         {
             SecurityKey? secret = _jwtOptions.SecurityKey;
-            List<Claim>? clams = new List<Claim>();
-            clams.Add(new Claim("UserName", userName));
-            clams.Add(new Claim("Role", role.Role.Privilege));
-            var identity = new ClaimsIdentity(clams, JwtBearerDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme,
+                JwtBearerDefaults.AuthenticationScheme, "Role");
             //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
 
             JwtSecurityTokenHandler? tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken? token = tokenHandler.CreateToken(new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(JwtBearerDefaults.AuthenticationScheme/*"Name"*/, userName),
-                    new Claim("Role", role.Role.Privilege)
-                }),
+                Subject = identity,
                 Issuer = _jwtOptions.Issuer,
                 Audience = _jwtOptions.Audience,
                 Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiresMinutes),

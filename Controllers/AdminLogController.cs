@@ -7,6 +7,7 @@ using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using FlowLabourApi.Models.state;
 
 namespace FlowLabourApi.Controllers
 {
@@ -15,7 +16,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles ="admin")]
+    [Authorize(Roles =Permission.Admin)]
     public class AdminLogController : ControllerBase
     {
         private readonly XiangxpContext _context;

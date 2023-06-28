@@ -4,6 +4,7 @@ using FlowLabourApi.Events;
 using FlowLabourApi.Hubs;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.state;
 using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -208,10 +209,14 @@ namespace FlowLabourApi
                 options.FallbackPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
-                options.AddPolicy("default", policy => policy.RequireRole("default").Build());//单独角色
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
-                options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System"));//或的关系
-                options.AddPolicy("SystemAndAdmin", policy => policy.RequireRole("Admin").RequireRole("System"));//且的关系
+                options.AddPolicy(Permission.Default, 
+                    policy => policy.RequireRole(Permission.Default).Build());//单独角色
+                options.AddPolicy(Permission.Admin, 
+                    policy => policy.RequireRole(Permission.Admin).Build());
+                options.AddPolicy(Permission.SystemOrAmin,
+                    policy => policy.RequireRole(Permission.Admin, Permission.System));//或的关系
+                options.AddPolicy(Permission.SystemAndAmin, 
+                    policy => policy.RequireRole(Permission.Admin).RequireRole(Permission.System));//且的关系
             });
 
             var app = builder.Build();
