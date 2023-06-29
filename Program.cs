@@ -166,7 +166,7 @@ namespace FlowLabourApi
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
                     options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
@@ -219,7 +219,12 @@ namespace FlowLabourApi
                         //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
                         //        return Task.CompletedTask;
                         //    };
-                    });
+                    })
+                .AddCookie(IdentityConstants.ExternalScheme, o =>
+                {
+                    o.Cookie.Name = IdentityConstants.ExternalScheme;
+                    o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                });
                 
 
 
