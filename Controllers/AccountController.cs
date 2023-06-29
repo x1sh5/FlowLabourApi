@@ -132,7 +132,7 @@ namespace FlowLabourApi.Controllers
             //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
             List<Claim>? claims = new List<Claim>();
             claims.Add(new Claim("UserName", login.UserName));
-            claims.Add(new Claim("Role", role.Role.Privilege));
+            claims.Add(new Claim("RoleType", role.Role.Privilege));
             await signInManager.SignInAsync(user, true);
 
             SecurityToken? token = GenerateToken(claims, role);
@@ -168,7 +168,7 @@ namespace FlowLabourApi.Controllers
         {
             SecurityKey? secret = _jwtOptions.SecurityKey;
             var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme,
-                JwtBearerDefaults.AuthenticationScheme, "Role");
+                JwtBearerDefaults.AuthenticationScheme, role.Role.Privilege);
             //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
 

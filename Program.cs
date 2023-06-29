@@ -58,6 +58,7 @@ namespace FlowLabourApi
 
             //IdentityDbContext
             //builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
+            builder.Services.AddIdentityCore<AuthUser>().AddRoles<Role>().AddDefaultTokenProviders();
 
             // Learn more about configuring Swagger/OpenAPI
             // at https://aka.ms/aspnetcore/swashbuckle
@@ -97,22 +98,9 @@ namespace FlowLabourApi
             builder.Services.AddScoped<Role>();
             builder.Services.AddScoped<UserToken>();
             builder.Services.AddScoped<SigninLog>();
+            builder.Services.AddScoped<SignInManager<AuthUser>>();
             builder.Services.AddHttpContextAccessor();
             // Identity services
-            builder.Services.TryAddScoped<IUserValidator<AuthUser>, UserValidator<AuthUser>>();
-            builder.Services.TryAddScoped<IPasswordValidator<AuthUser>, PasswordValidator<AuthUser>>();
-            builder.Services.TryAddScoped<IPasswordHasher<AuthUser>, PasswordHasher<AuthUser>>();
-            builder.Services.TryAddScoped<ILookupNormalizer, UpperInvariantLookupNormalizer>();
-            builder.Services.TryAddScoped<IRoleValidator<Role>, RoleValidator<Role>>();
-            // No interface for the error describer so we can add errors without rev'ing the interface
-            builder.Services.TryAddScoped<IdentityErrorDescriber>();
-            builder.Services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<AuthUser>>();
-            builder.Services.TryAddScoped<ITwoFactorSecurityStampValidator, TwoFactorSecurityStampValidator<AuthUser>>();
-            builder.Services.TryAddScoped<IUserClaimsPrincipalFactory<AuthUser>, UserClaimsPrincipalFactory<AuthUser, Role>>();
-            builder.Services.TryAddScoped<IUserConfirmation<AuthUser>, DefaultUserConfirmation<AuthUser>>();
-            builder.Services.TryAddScoped<UserManager<AuthUser>>();//
-            builder.Services.TryAddScoped<SignInManager<AuthUser>>();//
-            builder.Services.TryAddScoped<RoleManager<Role>>();//
             builder.Services.AddScoped<IUserStore<AuthUser>,FlowUserStore>();
             builder.Services.AddScoped<IRoleStore<Role>,FlowRoleStore>();
             builder.Services.AddScoped<IRoleValidator<Role>,FlowRoleValidator>();
@@ -166,8 +154,8 @@ namespace FlowLabourApi
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    //options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+                    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
                     //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
@@ -195,7 +183,7 @@ namespace FlowLabourApi
                             //RequireExpirationTime = true,
 
                             NameClaimType = JwtBearerDefaults.AuthenticationScheme,
-                            //RoleClaimType = Permission.Admin,
+                            RoleClaimType = "RoleType",
                             TokenDecryptionKey = jwtOptions.SecurityKey,
 
                             //ClockSkew = TimeSpan.Zero,
@@ -208,40 +196,50 @@ namespace FlowLabourApi
 
                         options.EventsType = typeof(AppJwtBearerEvents);
                     })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-                options =>
-                    {
-                        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                        options.LoginPath = new PathString("/api/Account/Login");
-                        //options.AccessDeniedPath = new PathString("/api/Account/Login");
-                        //options.Events.OnRedirectToLogin = context =>
-                        //    {
-                        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
-                        //        return Task.CompletedTask;
-                        //    };
-                    })
-                .AddCookie(IdentityConstants.ExternalScheme, o =>
+            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+            //options =>
+            //    {
+            //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            //        options.LoginPath = new PathString("/api/Account/Login");
+            //        //options.AccessDeniedPath = new PathString("/api/Account/Login");
+            //        //options.Events.OnRedirectToLogin = context =>
+            //        //    {
+            //        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
+            //        //        return Task.CompletedTask;
+            //        //    };
+            //    })
+            .AddCookie(IdentityConstants.ApplicationScheme, o =>
+            {
+                o.LoginPath = new PathString("/Account/Login");
+                o.Events = new CookieAuthenticationEvents
                 {
-                    o.Cookie.Name = IdentityConstants.ExternalScheme;
-                    o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                });
-                
+                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
+                };
+            });
+
 
 
 #pragma warning disable CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
             builder.Services.AddAuthorization(options =>
             {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
+                //options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                //    .RequireAuthenticatedUser()
+                //    .Build();
                 options.AddPolicy(Permission.Default,
-                    policy => policy.RequireRole(Permission.Default).Build());//单独角色
+                    policy => policy.RequireRole(Permission.Default)
+                    .RequireAuthenticatedUser()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//单独角色
                 options.AddPolicy(Permission.Admin,
-                    policy => policy.RequireRole(Permission.Admin).Build());
+                    policy => policy.RequireRole(Permission.Admin).RequireAuthenticatedUser()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));
                 options.AddPolicy(Permission.SystemOrAmin,
-                    policy => policy.RequireRole(Permission.Admin, Permission.System));//或的关系
+                    policy => policy.RequireRole(Permission.Admin, Permission.System)
+                    .RequireAuthenticatedUser()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//或的关系
                 options.AddPolicy(Permission.SystemAndAmin,
-                    policy => policy.RequireRole(Permission.Admin).RequireRole(Permission.System));//且的关系
+                    policy => policy.RequireRole(Permission.Admin).RequireRole(Permission.System)
+                    .RequireAuthenticatedUser()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//且的关系
             })
                 .TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, RolesAuthorizationRequirement>(
                     x => new RolesAuthorizationRequirement(
