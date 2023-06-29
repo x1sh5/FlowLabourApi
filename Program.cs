@@ -23,6 +23,8 @@ using System.Net;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Timers;
 
 namespace FlowLabourApi
 {
@@ -55,9 +57,7 @@ namespace FlowLabourApi
             });
 
             //IdentityDbContext
-            builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
-
-            builder.Services.AddScoped<AuthUser>().AddScoped<Role>();
+            //builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
 
             // Learn more about configuring Swagger/OpenAPI
             // at https://aka.ms/aspnetcore/swashbuckle
@@ -91,27 +91,41 @@ namespace FlowLabourApi
             });
 
             builder.Services.AddSignalR();
+
+            #region dependency injection
             builder.Services.AddScoped<AuthUser>();
-            //builder.Services.AddScoped<UserManager<AuthUser>>();
-            //builder.Services.AddScoped<RoleManager<Role>>();
-            //builder.Services.AddScoped<SignInManager<AuthUser>>();
+            builder.Services.AddScoped<Role>();
+            builder.Services.AddScoped<UserToken>();
+            builder.Services.AddScoped<SigninLog>();
+            builder.Services.AddHttpContextAccessor();
+            // Identity services
+            builder.Services.TryAddScoped<IUserValidator<AuthUser>, UserValidator<AuthUser>>();
+            builder.Services.TryAddScoped<IPasswordValidator<AuthUser>, PasswordValidator<AuthUser>>();
+            builder.Services.TryAddScoped<IPasswordHasher<AuthUser>, PasswordHasher<AuthUser>>();
+            builder.Services.TryAddScoped<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+            builder.Services.TryAddScoped<IRoleValidator<Role>, RoleValidator<Role>>();
+            // No interface for the error describer so we can add errors without rev'ing the interface
+            builder.Services.TryAddScoped<IdentityErrorDescriber>();
+            builder.Services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<AuthUser>>();
+            builder.Services.TryAddScoped<ITwoFactorSecurityStampValidator, TwoFactorSecurityStampValidator<AuthUser>>();
+            builder.Services.TryAddScoped<IUserClaimsPrincipalFactory<AuthUser>, UserClaimsPrincipalFactory<AuthUser, Role>>();
+            builder.Services.TryAddScoped<IUserConfirmation<AuthUser>, DefaultUserConfirmation<AuthUser>>();
+            builder.Services.TryAddScoped<UserManager<AuthUser>>();//
+            builder.Services.TryAddScoped<SignInManager<AuthUser>>();//
+            builder.Services.TryAddScoped<RoleManager<Role>>();//
             builder.Services.AddScoped<IUserStore<AuthUser>,FlowUserStore>();
             builder.Services.AddScoped<IRoleStore<Role>,FlowRoleStore>();
             builder.Services.AddScoped<IRoleValidator<Role>,FlowRoleValidator>();
             builder.Services.AddScoped<ILookupNormalizer,FlowLookupNormalizer>();
-            builder.Services.AddScoped<Role>();
-            builder.Services.AddScoped<UserToken>();
-            builder.Services.AddScoped<SigninLog>();
             builder.Services.AddScoped<AppJwtBearerEvents>();
-            builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
-                x=>new RolesAuthorizationRequirement(new[] { "admin" }));
+            //builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
+            //    x=>new RolesAuthorizationRequirement(new[] { Permission.Admin }));
             //builder.Services.AddSingleton<>();
-
+            //builder.Services.AddTransient< Provider>();
+            #endregion
 
             //自定义身份验证
             //AddDefaultTokenProviders
-
-            //builder.Services.AddTransient< Provider>();
 
             builder.Services.Configure<MyIdentityOptions>(options =>
             {
@@ -152,9 +166,8 @@ namespace FlowLabourApi
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    //CookieAuthenticationDefaults.AuthenticationScheme;
-                    //options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    //options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
@@ -173,16 +186,17 @@ namespace FlowLabourApi
                             ValidateAudience = true,
 
                             IssuerSigningKey = jwtOptions.SecurityKey,
+                            //SignatureValidator=jwtOptions.SignatureValidator,
                             //ValidateIssuerSigningKey = true,
 
-                            //ValidateLifetime = true,
+                            ValidateLifetime = true,
 
                             //RequireSignedTokens = true,
                             //RequireExpirationTime = true,
 
                             NameClaimType = JwtBearerDefaults.AuthenticationScheme,
-                            RoleClaimType = "default",
-                            //TokenDecryptionKey = jwtOptions.SecurityKey,
+                            //RoleClaimType = Permission.Admin,
+                            TokenDecryptionKey = jwtOptions.SecurityKey,
 
                             //ClockSkew = TimeSpan.Zero,
                         };
@@ -193,20 +207,20 @@ namespace FlowLabourApi
                         options.SecurityTokenValidators.Add(new JwtSecurityTokenHandler());
 
                         options.EventsType = typeof(AppJwtBearerEvents);
+                    })
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                options =>
+                    {
+                        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                        options.LoginPath = new PathString("/api/Account/Login");
+                        //options.AccessDeniedPath = new PathString("/api/Account/Login");
+                        //options.Events.OnRedirectToLogin = context =>
+                        //    {
+                        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
+                        //        return Task.CompletedTask;
+                        //    };
                     });
-            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-            //    options =>
-            //    {
-            //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            //        options.LoginPath = new PathString("/api/Account/Login");
-            //        //options.AccessDeniedPath = new PathString("/api/Account/Login");
-            //        //options.Events.OnRedirectToLogin = context =>
-            //        //    {
-            //        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
-            //        //        return Task.CompletedTask;
-            //        //    };
-            //    }
-            //);
+                
 
 
 #pragma warning disable CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
@@ -223,12 +237,12 @@ namespace FlowLabourApi
                     policy => policy.RequireRole(Permission.Admin, Permission.System));//或的关系
                 options.AddPolicy(Permission.SystemAndAmin,
                     policy => policy.RequireRole(Permission.Admin).RequireRole(Permission.System));//且的关系
-            });
-                //.TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, RolesAuthorizationRequirement>(
-                //    x=>new RolesAuthorizationRequirement(
-                //        typeof(Permission).GetFields(BindingFlags.Public | BindingFlags.Static)
-                //                .Select(field => field.GetValue(null).ToString())
-                //        )));
+            })
+                .TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, RolesAuthorizationRequirement>(
+                    x => new RolesAuthorizationRequirement(
+                        typeof(Permission).GetFields(BindingFlags.Public | BindingFlags.Static)
+                                .Select(field => field.GetValue(null).ToString())
+                        )));
 #pragma warning restore CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
 
             var app = builder.Build();

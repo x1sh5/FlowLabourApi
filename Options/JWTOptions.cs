@@ -33,6 +33,11 @@ namespace FlowLabourApi.Options
         public Encoding Encoding { get; set; } = DefaultEncoding;
 
         public SymmetricSecurityKey SecurityKey => new (DefaultEncoding.GetBytes(SecretKeyString));
+
+        internal SecurityToken SignatureValidator(string token, TokenValidationParameters validationParameters)
+        {
+            throw new NotImplementedException();
+        }
     }
     //public class JWTOptions
     //{
