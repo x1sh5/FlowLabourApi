@@ -33,14 +33,16 @@ namespace FlowLabourApi.Controllers
         private JwtOptions _jwtOptions;
         //private readonly IUserStore<AuthUser> _flowUserStore;
         private SignInManager<AuthUser> signInManager;
+        private readonly IAuthTokenService _authTokenService;
 
         public AccountController(XiangxpContext context, SignInManager<AuthUser> signInManager,
-            IOptionsSnapshot<JwtOptions> jwtOptions
+            IOptionsSnapshot<JwtOptions> jwtOptions,IAuthTokenService authTokenService
              /* FlowUserStore flowUserStore */)
         {
             _context = context;
             this.signInManager = signInManager;
             _jwtOptions = jwtOptions.Value;
+            _authTokenService = authTokenService;
             //_flowUserStore = flowUserStore;
         }
         /// <summary>
@@ -52,6 +54,7 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterView register)
         {
+            //Response.Headers
             // code to handle registration
             return Ok();
         }
@@ -161,6 +164,22 @@ namespace FlowLabourApi.Controllers
             // code to handle logout
             bool isAuth = User.Identity.IsAuthenticated;
             return Content($"user is {isAuth}");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] AuthTokenDto dto)
+        {
+            try
+            {
+                var token = await _authTokenService.RefreshAuthTokenAsync(dto);
+
+                return Ok(token);
+            }
+            catch (BadHttpRequestException ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
         }
 
         [NonAction]

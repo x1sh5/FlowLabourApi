@@ -56,6 +56,8 @@ namespace FlowLabourApi
                     DbConfig.ConnectStr);
             });
 
+            //builder.Services.AddDistributedMemoryCache(options => { });
+
             //IdentityDbContext
             //builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
             builder.Services.AddIdentityCore<AuthUser>().AddRoles<Role>().AddDefaultTokenProviders();
@@ -96,16 +98,17 @@ namespace FlowLabourApi
             #region dependency injection
             builder.Services.AddScoped<AuthUser>();
             builder.Services.AddScoped<Role>();
-            builder.Services.AddScoped<UserToken>();
-            builder.Services.AddScoped<SigninLog>();
-            builder.Services.AddScoped<SignInManager<AuthUser>>();
+            builder.Services.TryAddScoped<UserToken>();
+            builder.Services.TryAddScoped<SigninLog>();
+            builder.Services.TryAddScoped<SignInManager<AuthUser>>();
+            builder.Services.TryAddScoped<IAuthTokenService,AuthTokenService>();
             builder.Services.AddHttpContextAccessor();
             // Identity services
-            builder.Services.AddScoped<IUserStore<AuthUser>,FlowUserStore>();
-            builder.Services.AddScoped<IRoleStore<Role>,FlowRoleStore>();
-            builder.Services.AddScoped<IRoleValidator<Role>,FlowRoleValidator>();
-            builder.Services.AddScoped<ILookupNormalizer,FlowLookupNormalizer>();
-            builder.Services.AddScoped<AppJwtBearerEvents>();
+            builder.Services.TryAddScoped<IUserStore<AuthUser>,FlowUserStore>();
+            builder.Services.TryAddScoped<IRoleStore<Role>,FlowRoleStore>();
+            builder.Services.TryAddScoped<IRoleValidator<Role>,FlowRoleValidator>();
+            builder.Services.TryAddScoped<ILookupNormalizer,FlowLookupNormalizer>();
+            builder.Services.TryAddScoped<AppJwtBearerEvents>();
             //builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
             //    x=>new RolesAuthorizationRequirement(new[] { Permission.Admin }));
             //builder.Services.AddSingleton<>();
@@ -175,7 +178,7 @@ namespace FlowLabourApi
 
                             IssuerSigningKey = jwtOptions.SecurityKey,
                             //SignatureValidator=jwtOptions.SignatureValidator,
-                            //ValidateIssuerSigningKey = true,
+                            ValidateIssuerSigningKey = true,
 
                             ValidateLifetime = true,
 
