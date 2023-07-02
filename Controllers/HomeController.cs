@@ -4,6 +4,9 @@ using FlowLabourApi.Models;
 
 namespace FlowLabourApi.Controllers
 {
+    /// <summary>
+    /// 聊天界面
+    /// </summary>
     [Controller]
     [Route("[controller]")]
     [ApiExplorerSettings(IgnoreApi=true)]
