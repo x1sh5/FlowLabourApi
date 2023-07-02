@@ -56,6 +56,27 @@ namespace FlowLabourApi
                     DbConfig.ConnectStr);
             });
 
+            #region dependency injection
+            builder.Services.AddScoped<AuthUser>();
+            builder.Services.AddScoped<Role>();
+            builder.Services.TryAddScoped<UserToken>();
+            builder.Services.TryAddScoped<SigninLog>();
+            builder.Services.TryAddScoped<SignInManager<AuthUser>>();
+            builder.Services.TryAddScoped<IAuthTokenService,AuthTokenService>();
+            builder.Services.AddHttpContextAccessor();
+            // Identity services
+            builder.Services.TryAddScoped<IUserStore<AuthUser>,FlowUserStore>();
+            builder.Services.TryAddScoped<IRoleStore<Role>,FlowRoleStore>();
+            builder.Services.TryAddScoped<IRoleValidator<Role>,FlowRoleValidator>();
+            builder.Services.TryAddScoped<ILookupNormalizer,FlowLookupNormalizer>();
+            builder.Services.TryAddScoped<AppJwtBearerEvents>();
+            //builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
+            //    x=>new RolesAuthorizationRequirement(new[] { Permission.Admin }));
+            //builder.Services.AddSingleton<>();
+            //builder.Services.AddTransient< Provider>();
+            #endregion
+
+
             //builder.Services.AddDistributedMemoryCache(options => { });
 
             //IdentityDbContext
@@ -94,26 +115,6 @@ namespace FlowLabourApi
             });
 
             builder.Services.AddSignalR();
-
-            #region dependency injection
-            builder.Services.AddScoped<AuthUser>();
-            builder.Services.AddScoped<Role>();
-            builder.Services.TryAddScoped<UserToken>();
-            builder.Services.TryAddScoped<SigninLog>();
-            builder.Services.TryAddScoped<SignInManager<AuthUser>>();
-            builder.Services.TryAddScoped<IAuthTokenService,AuthTokenService>();
-            builder.Services.AddHttpContextAccessor();
-            // Identity services
-            builder.Services.TryAddScoped<IUserStore<AuthUser>,FlowUserStore>();
-            builder.Services.TryAddScoped<IRoleStore<Role>,FlowRoleStore>();
-            builder.Services.TryAddScoped<IRoleValidator<Role>,FlowRoleValidator>();
-            builder.Services.TryAddScoped<ILookupNormalizer,FlowLookupNormalizer>();
-            builder.Services.TryAddScoped<AppJwtBearerEvents>();
-            //builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
-            //    x=>new RolesAuthorizationRequirement(new[] { Permission.Admin }));
-            //builder.Services.AddSingleton<>();
-            //builder.Services.AddTransient< Provider>();
-            #endregion
 
             //自定义身份验证
             //AddDefaultTokenProviders

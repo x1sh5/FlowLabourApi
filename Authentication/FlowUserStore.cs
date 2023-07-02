@@ -89,7 +89,7 @@ namespace FlowLabourApi.Authentication
             Console.Out.WriteLine("FlowUserStore.FindByLoginViewAsync run");
             var user =await _context.AuthUsers.FirstOrDefaultAsync(
                 e => e.UserName == login.UserName &&
-                e.Passwordhash == HashUtil.GetHash(login.Password),
+                e.Passwordhash == HashUtil.Sha256(login.Password),
                 cancellationToken
                );
             if (user == null) throw new ArgumentNullException(nameof(user));

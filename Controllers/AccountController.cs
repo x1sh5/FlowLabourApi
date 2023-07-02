@@ -12,10 +12,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using NuGet.Common;
 using NuGet.Protocol.Plugins;
+using Org.BouncyCastle.Utilities.Encoders;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -72,35 +74,6 @@ namespace FlowLabourApi.Controllers
             return Unauthorized("请登录后再试！");
         }
 
-        ///// <summary>
-        ///// 登录提示
-        ///// </summary>
-        ///// <param name="login"></param>
-        ///// <returns></returns>
-        //[HttpPost("login")]
-        ////[HttpPost("Login")]
-        //[AllowAnonymous]
-        //public IActionResult Login([FromBody] LoginView login)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //    if (login == null)
-        //    {
-        //        return BadRequest("Invalid client request");
-        //    }
-        //    var user = _context.AuthUsers.FirstOrDefault(
-        //        e => e.UserName == login.UserName &&
-        //        e.Passwordhash == HashUtil.GetHash(login.Password)
-        //    );
-        //    if (user == null)
-        //    {
-        //        return Unauthorized();
-        //    }
-        //    var tokenString = Token.GenerateJSONWebToken(login.UserName);
-        //    return Ok(new { token = tokenString });
-        //}
 
         /// <summary>
         /// 登录
@@ -123,25 +96,32 @@ namespace FlowLabourApi.Controllers
             //var user = await _flowUserStore.FindByLoginViewAsync(login,CancellationToken.None);
             var user = _context.AuthUsers.FirstOrDefault(
                 e => e.UserName == login.UserName &&
-                e.Passwordhash == HashUtil.GetHash(login.Password)
+                e.Passwordhash == HashUtil.Sha256(login.Password)
                );
             if (user == null)
             {
                 return Unauthorized();
             }
-            UserRole? role = _context.Userroles.Include(o=>o.Role).FirstOrDefault(e => e.UserId == user.Id);
-            //.FirstOrDefault(e => e.UserId== user.Id);
+            UserRole? userRole = _context.UserRoles.Include(o=>o.Role).FirstOrDefault(e => e.UserId == user.Id);
+            if(userRole == null)
+            {
+                return Unauthorized("用户身份未通过验证。");
+            }
+            userRole.User = user;
 
             //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-            List<Claim>? claims = new List<Claim>();
-            claims.Add(new Claim("UserName", login.UserName));
-            claims.Add(new Claim("RoleType", role.Role.Privilege));
+
             await signInManager.SignInAsync(user, true);
 
-            SecurityToken? token = GenerateToken(claims, role);
+            var UA = Request.Headers.UserAgent[0];
+
+            var ua = HashUtil.Md5(UA??"unkownAgent");
+
+            //SecurityToken? token = GenerateToken(userRole);
+            var token = await _authTokenService.CreateAuthTokenAsync(userRole, ua);
 
             // code to handle login
-            return Ok(new { V = new JwtSecurityTokenHandler().WriteToken(token) });
+            return Ok(token);
         }
 
         [HttpGet("special")]
@@ -181,30 +161,6 @@ namespace FlowLabourApi.Controllers
                 return BadRequest(new { Error = ex.Message });
             }
         }
-
-        [NonAction]
-        private SecurityToken? GenerateToken(IEnumerable<Claim> claims,UserRole role)
-        {
-            SecurityKey? secret = _jwtOptions.SecurityKey;
-            var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme,
-                JwtBearerDefaults.AuthenticationScheme, role.Role.Privilege);
-            //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-
-
-            JwtSecurityTokenHandler? tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken? token = tokenHandler.CreateToken(new SecurityTokenDescriptor()
-            {
-                Subject = identity,
-                Issuer = _jwtOptions.Issuer,
-                Audience = _jwtOptions.Audience,
-                Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiresMinutes),
-                SigningCredentials = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256)
-            });
-            //tokenHandler.WriteToken(token);
-
-            return token;
-        }
-
 
     }
 }

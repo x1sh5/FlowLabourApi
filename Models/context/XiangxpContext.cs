@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FlowLabourApi.Config;
 using Microsoft.EntityFrameworkCore;
+using MySql.EntityFrameworkCore.Extensions;
 
 namespace FlowLabourApi.Models.context;
 
@@ -34,11 +35,11 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Groupmessage> Groupmessages { get; set; }
 
-    public virtual DbSet<Grouprole> Grouproles { get; set; }
+    public virtual DbSet<Grouprole> GroupRoles { get; set; }
 
     public virtual DbSet<Grouptype> Grouptypes { get; set; }
 
-    public virtual DbSet<Groupuser> Groupusers { get; set; }
+    public virtual DbSet<Groupuser> GroupUsers { get; set; }
 
     public virtual DbSet<IdentityInfo> Identityinfos { get; set; }
 
@@ -56,9 +57,9 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<UserIdentity> UserIdentities { get; set; }
 
-    public virtual DbSet<UserRole> Userroles { get; set; }
+    public virtual DbSet<UserRole> UserRoles { get; set; }
 
-    public virtual DbSet<UserToken> Usertokens { get; set; }
+    public virtual DbSet<UserToken> UserTokens { get; set; }
 
     //public virtual DbSet<VideoInfo> VideoInfos { get; set; }
 
@@ -459,13 +460,17 @@ public partial class XiangxpContext : DbContext
 
         modelBuilder.Entity<Message>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("message");
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.ToTable("message");
 
             entity.HasIndex(e => e.From, "fk_message_from_authuser_id_idx");
 
             entity.HasIndex(e => e.To, "fk_message_to_authuser_id_idx");
+
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
 
             entity.Property(e => e.Date)
                 .HasColumnType("datetime")
@@ -473,10 +478,10 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.From)
                 .HasColumnType("int(11)")
                 .HasColumnName("from");
-            entity.Property(e => e.Message1)
+            entity.Property(e => e.Content)
                 .HasMaxLength(45)
                 .HasColumnName("message");
-            entity.Property(e => e.Messagetype)
+            entity.Property(e => e.ContentType)
                 .HasMaxLength(45)
                 .HasColumnName("messagetype");
             entity.Property(e => e.To)
@@ -642,22 +647,29 @@ public partial class XiangxpContext : DbContext
 
         modelBuilder.Entity<UserToken>(entity =>
         {
-            entity.HasNoKey().ToTable("usertoken");
+            entity.HasKey(e => new { e.LoginProvider, e.UserId });
+            entity.ToTable("usertoken");
             entity.Property(e => e.UserId)
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
             entity.Property(e => e.Value)
                 .HasMaxLength(64)
                 .HasColumnName("value");
-            entity.Property(entity => entity.ExpireAt)
+            entity.Property(entity => entity.Expires)
                 .HasColumnType("datetime")
-                .HasColumnName("expireat");
+                .HasColumnName("expires");
             entity.Property(entity =>entity.Name)
                 .HasMaxLength(45)
                 .HasColumnName("name");
             entity.Property(entity => entity.LoginProvider)
-                .HasMaxLength(45)
+                .HasMaxLength(64)
                 .HasColumnName("loginprovider");
+            entity.Property(entity => entity.Modify)
+                .HasColumnType("datetime")
+                .HasColumnName("modify");
+            entity.Property(entity => entity.RefreshToken)
+                .HasMaxLength(64)
+                .HasColumnName("refreshtoken");
 
             entity.HasOne(entity => entity.User)
                   .WithMany()

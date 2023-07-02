@@ -1,7 +1,11 @@
-﻿using FlowLabourApi.Models;
+﻿using FlowLabourApi.Config;
+using FlowLabourApi.Models;
+using FlowLabourApi.Models.context;
 using FlowLabourApi.Options;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,92 +22,106 @@ namespace FlowLabourApi.Authentication
 
         private readonly JwtBearerOptions _jwtBearerOptions;
         private readonly JwtOptions _jwtOptions;
-        private readonly SigningCredentials _signingCredentials;
-        private readonly IDistributedCache _distributedCache;
+        //private readonly SigningCredentials _signingCredentials;
+        private readonly XiangxpContext _dbContext;
         private readonly ILogger<AuthTokenService> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        //private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AuthTokenService(
            IOptionsSnapshot<JwtBearerOptions> jwtBearerOptions,
-           IOptionsSnapshot<JwtOptions> jwtOptions,
-           SigningCredentials signingCredentials,
-           IDistributedCache distributedCache,
-           ILogger<AuthTokenService> logger,
-           IHttpContextAccessor httpContextAccessor)
+           //IOptionsSnapshot<JwtOptions> jwtOptions,
+           XiangxpContext dbContext,
+           ILogger<AuthTokenService> logger)
         {
             _jwtBearerOptions = jwtBearerOptions.Get(JwtBearerDefaults.AuthenticationScheme);
-            _jwtOptions = jwtOptions.Value;
-            _signingCredentials = signingCredentials;
-            _distributedCache = distributedCache;
+            _jwtOptions = new JwtOptions();
+            _dbContext = dbContext;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
+            //_httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur)
+        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur,string loginProvider)
         {
             var result = new AuthTokenDto();
 
-            var (refreshTokenId, refreshToken) = await CreateRefreshTokenAsync(user.Id);
+            string? refreshToken = await CreateRefreshTokenAsync(ur.UserId,loginProvider);
             result.RefreshToken = refreshToken;
-            result.AccessToken = CreateJwtToken(user, refreshTokenId);
+            result.AccessToken = CreateAccessToken(ur, loginProvider);
 
             // 将Jwt放入Cookie，这样H5就无需在Header中Jwt传递了（主要是省事）
-            _httpContextAccessor.HttpContext.Response.Cookies.Append(HeaderNames.Authorization, result.AccessToken, new CookieOptions
-            {
-                // 本地环境，忽略域
-                //Domain = "",
-                HttpOnly = true,
-                IsEssential = true,
-                MaxAge = TimeSpan.FromDays(_jwtOptions.RefreshTokenExpiresDays),
-                Path = "/",
-                SameSite = SameSiteMode.Lax
-            });
+            //_httpContextAccessor.HttpContext.Response.Cookies.Append(HeaderNames.Authorization, result.AccessToken, new CookieOptions
+            //{
+            //    // 本地环境，忽略域
+            //    //Domain = "",
+            //    HttpOnly = true,
+            //    IsEssential = true,
+            //    MaxAge = TimeSpan.FromDays(_jwtOptions.RefreshTokenExpiresDays),
+            //    Path = "/",
+            //    SameSite = SameSiteMode.Lax
+            //});
 
             return result;
         }
 
-        private async Task<(string refreshTokenId, string refreshToken)> CreateRefreshTokenAsync(string userId)
+        private async Task<string> CreateRefreshTokenAsync(int userId,string useragent_bs64)
         {
-            var tokenId = Guid.NewGuid().ToString("N");
+            //var tokenId = Guid.NewGuid().ToString("N");
 
             var rnBytes = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(rnBytes);
             var token = Convert.ToBase64String(rnBytes);
 
-            var options = new DistributedCacheEntryOptions();
-            options.SetAbsoluteExpiration(TimeSpan.FromDays(_jwtOptions.RefreshTokenExpiresDays));
-
-            await _distributedCache.SetStringAsync(GetRefreshTokenKey(userId, tokenId), token, options);
-
-            return (tokenId, token);
-        }
-
-        private string CreateJwtToken(UserRole ur, string refreshTokenId)
-        {
-            if (user is null) throw new ArgumentNullException(nameof(user));
-            if (string.IsNullOrEmpty(refreshTokenId)) throw new ArgumentNullException(nameof(refreshTokenId));
-
-            var tokenDescriptor = new SecurityTokenDescriptor
+            var userToken = await _dbContext.UserTokens.FirstOrDefaultAsync(t => t.LoginProvider == useragent_bs64 && t.UserId == userId);
+            if (userToken != null)
             {
-                Subject = new ClaimsIdentity(new List<Claim>
-                {
-                    new Claim(JwtClaimTypes.Id, user.Id),
-                    new Claim(JwtClaimTypes.Name, user.UserName),
-                    new Claim(RefreshTokenIdClaimType, refreshTokenId)
-                }),
-                Issuer = _jwtOptions.Issuer,
-                Audience = _jwtOptions.Audience,
-                Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenExpiresMinutes),
-                SigningCredentials = _signingCredentials,
-            };
+                userToken.RefreshToken = token;
+                userToken.Modify = DateTime.UtcNow;
+                userToken.Expires = DateTime.UtcNow + _jwtOptions.RefreshTokenExpires;
+                _dbContext.SaveChanges();
+                return token;
+            }
 
-            var handler = _jwtBearerOptions.SecurityTokenValidators.OfType<JwtSecurityTokenHandler>().FirstOrDefault()
-                ?? new JwtSecurityTokenHandler();
-            var securityToken = handler.CreateJwtSecurityToken(tokenDescriptor);
-            var token = handler.WriteToken(securityToken);
+            await _dbContext.UserTokens.AddAsync(new UserToken
+            {
+                LoginProvider = useragent_bs64,
+                UserId = userId,
+                RefreshToken = token,
+                Modify = DateTime.UtcNow,
+                Expires = DateTime.UtcNow + _jwtOptions.RefreshTokenExpires,
+            });
+            _dbContext.SaveChanges();
 
             return token;
+        }
+
+        private string? CreateAccessToken(UserRole userRole,string loginProvider)
+        {
+            List<Claim>? claims = new List<Claim>();
+            claims.Add(new Claim(JwtClaimTypes.IdClaim, userRole.User.Id.ToString()));
+            claims.Add(new Claim(JwtClaimTypes.NameClaim, userRole.User.UserName));
+            claims.Add(new Claim(JwtClaimTypes.RoleClaim, userRole.Role.Privilege));
+            claims.Add(new Claim(JwtClaimTypes.LoginProviderClaim, loginProvider));
+            SecurityKey? secret = _jwtOptions.SecurityKey;
+            var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme,
+                JwtBearerDefaults.AuthenticationScheme, userRole.Role.Privilege);
+            //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+
+            JwtSecurityTokenHandler? tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken? token = tokenHandler.CreateToken(new SecurityTokenDescriptor()
+            {
+                Subject = identity,
+                Issuer = _jwtOptions.Issuer,
+                Audience = _jwtOptions.Audience,
+                Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiresMinutes),
+                SigningCredentials = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256)
+            });
+            var handler = new JwtSecurityTokenHandler();
+            var accessToken = handler.WriteToken(token);
+            //tokenHandler.WriteToken(token);
+
+            return accessToken;
         }
 
         public async Task<AuthTokenDto> RefreshAuthTokenAsync(AuthTokenDto token)
@@ -125,33 +143,33 @@ namespace FlowLabourApi.Authentication
             }
 
             var identity = principal.Identities.First();
-            var userId = identity.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Id).Value;
-            var refreshTokenId = identity.Claims.FirstOrDefault(c => c.Type == RefreshTokenIdClaimType).Value;
-            var refreshTokenKey = GetRefreshTokenKey(userId, refreshTokenId);
-            var refreshToken = await _distributedCache.GetStringAsync(refreshTokenKey);
+            //var name = identity.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NameClaim).Value;
+            var userId = identity.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
+            var loginProvider = identity.Claims
+                .FirstOrDefault(c => c.Type == JwtClaimTypes.LoginProviderClaim)?.Value;
+            //var refreshTokenKey = GetRefreshTokenKey(name, loginProvider);
+            var refreshToken = await _dbContext.UserTokens
+                .Where(t => t.UserId == int.Parse(userId) && t.LoginProvider == loginProvider)
+                .Select(t => t.RefreshToken).FirstOrDefaultAsync();
             if (refreshToken != token.RefreshToken)
             {
                 throw new BadHttpRequestException("Invalid refresh token");
             }
 
-            await _distributedCache.RemoveAsync(refreshTokenKey);
+            var userRole = await _dbContext.UserRoles
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
+                .FirstOrDefaultAsync(ur => ur.UserId == int.Parse(userId));
 
-            // 这里应该是从数据库中根据 userId 获取用户信息
-            var user = new UserDto()
-            {
-                Id = userId,
-                UserName = principal.Identity.Name
-            };
-
-            return await CreateAuthTokenAsync(user);
+            return await CreateAuthTokenAsync(userRole, loginProvider);
         }
 
-        private string GetRefreshTokenKey(string userId, string refreshTokenId)
+        private string GetRefreshTokenKey(string name, string refreshTokenId)
         {
-            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
             if (string.IsNullOrEmpty(refreshTokenId)) throw new ArgumentNullException(nameof(refreshTokenId));
 
-            return $"{userId}:{refreshTokenId}";
+            return $"{name}:{refreshTokenId}";
         }
     }
 }

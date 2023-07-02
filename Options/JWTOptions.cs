@@ -34,6 +34,8 @@ namespace FlowLabourApi.Options
 
         public SymmetricSecurityKey SecurityKey => new (DefaultEncoding.GetBytes(SecretKeyString));
 
+        public TimeSpan RefreshTokenExpires { get; set; }
+
         internal SecurityToken SignatureValidator(string token, TokenValidationParameters validationParameters)
         {
             throw new NotImplementedException();

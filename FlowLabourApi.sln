@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlowLabourApi", "FlowLabourApi.csproj", "{18D97158-7CD2-4E0E-89E0-1429AF6BA61F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlowLabourTest", "..\FlowLabourApiTests\FlowLabourTest.csproj", "{13FCC5CA-7BFC-44E6-92DD-3ECE620DEEBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlowLabourApiTest", "..\FlowLabourApiTest\FlowLabourApiTest.csproj", "{57FAAC7E-0976-4E64-87D8-506E1A1B6096}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{18D97158-7CD2-4E0E-89E0-1429AF6BA61F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18D97158-7CD2-4E0E-89E0-1429AF6BA61F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18D97158-7CD2-4E0E-89E0-1429AF6BA61F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{13FCC5CA-7BFC-44E6-92DD-3ECE620DEEBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{13FCC5CA-7BFC-44E6-92DD-3ECE620DEEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{13FCC5CA-7BFC-44E6-92DD-3ECE620DEEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{13FCC5CA-7BFC-44E6-92DD-3ECE620DEEBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57FAAC7E-0976-4E64-87D8-506E1A1B6096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57FAAC7E-0976-4E64-87D8-506E1A1B6096}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57FAAC7E-0976-4E64-87D8-506E1A1B6096}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57FAAC7E-0976-4E64-87D8-506E1A1B6096}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
