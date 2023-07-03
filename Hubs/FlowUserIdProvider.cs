@@ -11,7 +11,8 @@ namespace FlowLabourApi.Hubs
             var user = connection.User.Claims.FirstOrDefault(x=>x.Type==JwtClaimTypes.IdClaim);
             if(user==null)
             {
-                throw new System.Exception("User not found");
+                
+                return "anony-"+Guid.NewGuid().ToString("N");
             }
             return user.Value;
         }

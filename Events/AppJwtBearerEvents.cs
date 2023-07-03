@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.IO;
 
 
 namespace FlowLabourApi.Events;
@@ -88,6 +89,17 @@ public class AppJwtBearerEvents : JwtBearerEvents
         Console.WriteLine("-------------- MessageReceived Begin --------------");
 
         base.MessageReceived(context);
+        //if(context.Request.Path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase))
+        //{
+        //    var accessToken = context.Request.Query["access_token"];
+        //    if (!string.IsNullOrEmpty(accessToken))
+        //    {
+        //        // Read the token out of the query string
+        //        context.Token = accessToken;
+        //    }
+        //    //context.Success();
+        //    return Task.CompletedTask;
+        //}
         if (context.Result != null)
         {
             return Task.CompletedTask;
@@ -97,18 +109,19 @@ public class AppJwtBearerEvents : JwtBearerEvents
 
         #region 以下是自定义Token获取方式示例（实际上也是默认方式）
 
-        string authorization = context.Request.Headers[HeaderNames.Authorization];
+        //string authorization = context.Request.Headers[HeaderNames.Authorization];
+        string authorization = context.Request.Cookies["access_token"];
         if (string.IsNullOrEmpty(authorization))
         {
             context.NoResult();
             return Task.CompletedTask;
         }
 
-        if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-        {
-            context.Token = authorization["Bearer ".Length..].Trim();
-        }
-
+        //if (authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        //{
+        //    context.Token = authorization["Bearer ".Length..].Trim();
+        //}
+        context.Token = authorization;
         if (string.IsNullOrEmpty(context.Token))
         {
             context.NoResult();

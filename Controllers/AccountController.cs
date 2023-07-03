@@ -4,23 +4,12 @@ using FlowLabourApi.Models.context;
 using FlowLabourApi.Options;
 using FlowLabourApi.Utils;
 using FlowLabourApi.ViewModels;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
-using NuGet.Protocol.Plugins;
-using Org.BouncyCastle.Utilities.Encoders;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 
 namespace FlowLabourApi.Controllers
 {
@@ -121,6 +110,8 @@ namespace FlowLabourApi.Controllers
             var token = await _authTokenService.CreateAuthTokenAsync(userRole, ua);
 
             // code to handle login
+            Response.Headers["set-cookie"] = $"access_token={token.AccessToken};path=/;httponly;expires={DateTime.UtcNow.AddHours(8)};"
+                +$"refresh_token={token.RefreshToken};path=/;httponly;expires={DateTime.UtcNow.AddDays(7)};";
             return Ok(token);
         }
 

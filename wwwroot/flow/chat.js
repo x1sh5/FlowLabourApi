@@ -1,7 +1,7 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
     // <snippet_Connection>
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chathub")
+        .withUrl("/chathub", { accessTokenFactory: () => this.loginToken })
         .configureLogging(signalR.LogLevel.Information)
         .build();
     // </snippet_Connection>

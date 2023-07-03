@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
@@ -70,6 +71,8 @@ namespace FlowLabourApi
             builder.Services.TryAddScoped<IRoleValidator<Role>,FlowRoleValidator>();
             builder.Services.TryAddScoped<ILookupNormalizer,FlowLookupNormalizer>();
             builder.Services.TryAddScoped<AppJwtBearerEvents>();
+            //signalR
+            builder.Services.TryAddSingleton<IUserIdProvider, FlowUserIdProvider>();
             //builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
             //    x=>new RolesAuthorizationRequirement(new[] { Permission.Admin }));
             //builder.Services.AddSingleton<>();
@@ -166,6 +169,7 @@ namespace FlowLabourApi
                     options =>
                     {
                         //builder.Configuration.Bind("JwtSettings", options);
+                        //options.Authority = "https://localhost:7221";
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256, SecurityAlgorithms.RsaSha256 },
@@ -285,6 +289,7 @@ namespace FlowLabourApi
             app.MapControllers();
 
             app.UseCors();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -300,7 +305,6 @@ namespace FlowLabourApi
             //});
 
             app.MapHub<ChatHub>("/chatHub");
-
             app.Run();
         }
     }
