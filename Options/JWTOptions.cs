@@ -8,7 +8,7 @@ namespace FlowLabourApi.Options
     {
         public const string Name = "Jwt";
         public readonly static Encoding DefaultEncoding = Encoding.UTF8;
-        public readonly static double DefaultExpiresMinutes = 30d;
+        public readonly static TimeSpan DefaultExpires = TimeSpan.FromHours(12);
 
         /// <summary>
         /// 
@@ -28,13 +28,13 @@ namespace FlowLabourApi.Options
         /// <summary>
         /// 
         /// </summary>
-        public double ExpiresMinutes { get; set; } = DefaultExpiresMinutes;
+        public TimeSpan AccessTokenExpires { get; set; } = DefaultExpires;
 
         public Encoding Encoding { get; set; } = DefaultEncoding;
 
         public SymmetricSecurityKey SecurityKey => new (DefaultEncoding.GetBytes(SecretKeyString));
 
-        public TimeSpan RefreshTokenExpires { get; set; }
+        public TimeSpan RefreshTokenExpires { get; set; } = TimeSpan.FromDays(7);
 
         internal SecurityToken SignatureValidator(string token, TokenValidationParameters validationParameters)
         {

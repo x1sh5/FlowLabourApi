@@ -23,10 +23,11 @@ public partial class Assignmentuser
     /// <summary>
     /// 任务信息
     /// </summary>
-    public virtual Assignment Assignment { get; set; } = null!;
+    public virtual Assignment? Assignment { get; set; }
+    //public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 
     /// <summary>
     /// 用户信息
     /// </summary>
-    public virtual AuthUser User { get; set; } = null!;
+    public virtual AuthUser? User { get; set; }
 }

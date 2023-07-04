@@ -6,6 +6,8 @@ using FlowLabourApi.ViewModels;
 using System.Net;
 using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using FlowLabourApi.Config;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -13,10 +15,12 @@ using Microsoft.AspNetCore.Authorization;
 public class AssignmentController : ControllerBase
 {
     private readonly XiangxpContext _context;
+    private readonly UserManager<AuthUser> _userManager;
 
-    public AssignmentController(XiangxpContext context)
+    public AssignmentController(XiangxpContext context, UserManager<AuthUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     /// <summary>
@@ -58,10 +62,10 @@ public class AssignmentController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Assignment>> PostAssignment(AssignmentView assignmentView)
     {
-        //var s
+        var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+        var user = await _userManager.FindByIdAsync(id);
         Assignment assignment = new Assignment
         {
-            Id = assignmentView.Id,
             Title = assignmentView.Title,
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
@@ -72,12 +76,18 @@ public class AssignmentController : ControllerBase
             Verify = assignmentView.Verify,
             Reward = assignmentView.Reward,
             Rewardtype = assignmentView.Rewardtype,
-            Publish = _context.AuthUsers.Find(assignmentView.Publishid),
         };
-        _context.Assignments.Add(assignment);
+        var e = _context.Assignments.Add(assignment);
+         _context.SaveChanges();
+        _context.Assignmentusers.Add(new Assignmentuser
+        {
+            Assignmentid = e.Entity.Id,
+            Userid = user.Id,
+        });
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAssignment), new { id = assignment.Id }, assignment);
+
+        return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id }, e.Entity);
     }
 
     /// <summary>
@@ -87,7 +97,7 @@ public class AssignmentController : ControllerBase
     /// <param name="assignmentView"></param>
     /// <returns></returns>
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAssignment(int id, AssignmentView assignmentView)
+    public async Task<IActionResult> PutAssignment(int id, Assignment assignmentView)
     {
 
         if (id != assignmentView.Id)
@@ -107,7 +117,6 @@ public class AssignmentController : ControllerBase
             Verify = assignmentView.Verify,
             Reward = assignmentView.Reward,
             Rewardtype = assignmentView.Rewardtype,
-            Publish = _context.AuthUsers.Find(assignmentView.Id),
         };
         _context.Entry(assignment).State = EntityState.Modified;
 

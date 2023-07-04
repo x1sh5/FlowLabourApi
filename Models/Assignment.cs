@@ -33,12 +33,6 @@ public partial class Assignment
     public int Typeid { get; set; }
 
     /// <summary>
-    /// 发布人id，对应auth_user表中的id
-    /// </summary>
-    /// <example>1</example>
-    public int Publishid { get; set; }
-
-    /// <summary>
     /// 0:代接，1：已结待完成，2：已完成。
     /// </summary>
     /// <example>1</example>
@@ -91,5 +85,5 @@ public partial class Assignment
     /// <summary>
     /// 发布人信息
     /// </summary>
-    public virtual AuthUser Publish { get; set; } = null!;
+    public virtual AuthUser? Publish { get; set; }
 }

@@ -52,7 +52,7 @@ public partial class AuthUser
     /// 加入日期
     /// </summary>
     /// <example>2023-06-26 11:00:37</example>
-    public DateTime DateJoined { get; set; }
+    public DateTime DateJoined { get; set; } = DateTime.Now;
 
     /// <summary>
     /// 
@@ -72,7 +72,7 @@ public partial class AuthUser
     /// <summary>
     /// 失败次数
     /// </summary>
-    public int AccessFailedCount { set; get; }
+    public int AccessFailedCount { set; get; } = 0;
 
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 

@@ -45,9 +45,103 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterView register)
         {
+            bool validate = false;
+            EmailCheck(register.Email, out validate);
+            if (!validate)
+            {
+                return BadRequest(new { status = false, message = "邮件无效！" });
+            }
+            NameCheck(register.UserName, out validate);
+            if (!validate)
+            {
+                return BadRequest(new { status = false, message = "用户名已存在！" });
+            }
+            PhoneCheck(register.PhoneNo, out validate);
+            if (!validate)
+            {
+                return BadRequest(new { status = false, message = "电话号码已被注册！" });
+            }
+
+            var user = new AuthUser
+            {
+                UserName = register.UserName,
+                Passwordhash = HashUtil.Sha256(register.Password),
+                Email = register.Email,
+                PhoneNo = register.PhoneNo
+            };
+            var e = _context.AuthUsers.Add(user);
+            _context.SaveChanges();
+            _context.UserRoles.Add(new UserRole { RoleId = 1, UserId = e.Entity.Id });
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// 用户名检查
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        [HttpGet("namecheck")]
+        [AllowAnonymous]
+        public IActionResult NameCheck(string username, out bool validate)
+        {
+            var user = _context.AuthUsers.FirstOrDefault(e=>e.UserName==username);
+            if(user != null)
+            {
+                validate = false;
+                return Ok(new { status = false, message = "用户名已存在" });
+            }
             //Response.Headers
             // code to handle registration
-            return Ok();
+            validate = true;
+            return Ok(new { status = true, message = "用户名通过" });
+        }
+
+        /// <summary>
+        /// 电话检查
+        /// </summary>
+        /// <param name="PhoneNo"></param>
+        /// <returns></returns>
+        [HttpGet("phonecheck")]
+        [AllowAnonymous]
+        public IActionResult PhoneCheck(string PhoneNo, out bool validate)
+        {
+            var user = _context.AuthUsers.FirstOrDefault(e => e.PhoneNo == PhoneNo);
+            if (user != null)
+            {
+                validate = false;
+                return Ok(new { status = false, message = "该电话号码以绑定其他账号" });
+            }
+
+            validate = true;
+            return Ok(new { status = true, message = "可用" });
+        }
+
+        /// <summary>
+        /// 邮件检查
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpGet("emailcheck")]
+        [AllowAnonymous]
+        public IActionResult EmailCheck(string email, out bool validate)
+        {
+            var isok = IdentityNoUtil.ValidateEmailFormat(email);
+            if (!isok)
+            {
+                validate = false;
+                return Ok(new { status = false, message = "邮件格式无效" });
+            }
+            var user = _context.AuthUsers.FirstOrDefault(e => e.Email == email);
+            if (user != null)
+            {
+                validate = false;
+                return Ok(new { status = false, message = "该邮件以绑定其他账号" });
+            }
+
+            validate = true;
+            return Ok(new { status = true, message = "可用" });
         }
 
         /// <summary>

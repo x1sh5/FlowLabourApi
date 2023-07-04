@@ -22,19 +22,9 @@
         public DateTime Finishtime { get; set; }
 
         /// <summary>
-        /// id
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
         /// 单位：分钟
         /// </summary>
         public int? Presumedtime { get; set; }
-
-        /// <summary>
-        /// 发布人id，对应auth_user表中的id
-        /// </summary>
-        public int Publishid { get; set; }
 
         /// <summary>
         /// 发布日期

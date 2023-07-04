@@ -76,8 +76,8 @@ namespace FlowLabourApi.Authentication
             if (userToken != null)
             {
                 userToken.RefreshToken = token;
-                userToken.Modify = DateTime.UtcNow;
-                userToken.Expires = DateTime.UtcNow + _jwtOptions.RefreshTokenExpires;
+                userToken.Modify = DateTime.Now;
+                userToken.Expires = DateTime.Now + _jwtOptions.RefreshTokenExpires;
                 _dbContext.SaveChanges();
                 return token;
             }
@@ -87,8 +87,8 @@ namespace FlowLabourApi.Authentication
                 LoginProvider = useragent_bs64,
                 UserId = userId,
                 RefreshToken = token,
-                Modify = DateTime.UtcNow,
-                Expires = DateTime.UtcNow + _jwtOptions.RefreshTokenExpires,
+                Modify = DateTime.Now,
+                Expires = DateTime.Now + _jwtOptions.RefreshTokenExpires,
             });
             _dbContext.SaveChanges();
 
@@ -114,7 +114,7 @@ namespace FlowLabourApi.Authentication
                 Subject = identity,
                 Issuer = _jwtOptions.Issuer,
                 Audience = _jwtOptions.Audience,
-                Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiresMinutes),
+                Expires = DateTime.Now + _jwtOptions.AccessTokenExpires,
                 SigningCredentials = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256)
             });
             var handler = new JwtSecurityTokenHandler();

@@ -76,6 +76,10 @@ public partial class XiangxpContext : DbContext
 
             entity.HasIndex(e => e.UserId, "fk_adminlog_userid_authuser_id_idx");
 
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .ValueGeneratedOnAdd()
+                .HasColumnName("id");
             entity.Property(e => e.ActionType)
                 .HasComment("炒作类型")
                 .HasColumnType("tinyint(4)")
@@ -103,10 +107,9 @@ public partial class XiangxpContext : DbContext
 
             entity.ToTable("assignment", tb => tb.HasComment("任务详细表"));
 
-            entity.HasIndex(e => e.Publishid, "fk_assignment_publishid_authuser_id_idx");
-
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.Branchid)
                 .HasComment("branch表的id外键")
@@ -124,10 +127,6 @@ public partial class XiangxpContext : DbContext
                 .HasComment("单位：分钟")
                 .HasColumnType("int(11)")
                 .HasColumnName("presumedtime");
-            entity.Property(e => e.Publishid)
-                .HasComment("auth_user的id外键")
-                .HasColumnType("int(11)")
-                .HasColumnName("publishid");
             entity.Property(e => e.Publishtime)
                 .HasColumnType("datetime")
                 .HasColumnName("publishtime");
@@ -153,11 +152,9 @@ public partial class XiangxpContext : DbContext
                 .HasComment("0:未审核通过，1：审核通过。")
                 .HasColumnType("tinyint(4)")
                 .HasColumnName("verify");
-
-            entity.HasOne(d => d.Publish).WithMany(p => p.Assignments)
-                .HasForeignKey(d => d.Publishid)
-                .OnDelete(DeleteBehavior.ClientNoAction)
-                .HasConstraintName("fk_assignment_authuser");
+            entity.HasOne(d => d.Publish)
+                .WithMany(e=>e.Assignments)
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Assignmenttype>(entity =>
@@ -181,9 +178,8 @@ public partial class XiangxpContext : DbContext
 
         modelBuilder.Entity<Assignmentuser>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
+            entity.HasKey(e => new { e.Assignmentid, e.Userid });
+            entity.ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
 
             entity.HasIndex(e => e.Assignmentid, "fk_agmuser_asgid_agm_id_idx");
 
@@ -196,13 +192,14 @@ public partial class XiangxpContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
 
-            entity.HasOne(d => d.Assignment).WithMany()
-                .HasForeignKey(d => d.Assignmentid)
+            entity.HasOne((Assignmentuser d) => d.Assignment)
+                .WithOne()
+                .HasForeignKey<Assignmentuser>(d => d.Assignmentid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_agmuser_asgid_agm_id");
+                .HasConstraintName("fk_agmuser_asgid_user_id");
 
-            entity.HasOne(d => d.User).WithMany()
-                .HasForeignKey(d => d.Userid)
+            entity.HasOne(d => d.User).WithOne()
+                .HasForeignKey<Assignmentuser>(d => d.Userid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_agmuser_userid_user_id");
         });
@@ -217,6 +214,7 @@ public partial class XiangxpContext : DbContext
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.DateJoined)
                 .HasMaxLength(6)
@@ -254,8 +252,10 @@ public partial class XiangxpContext : DbContext
                   .HasColumnName("accessfailedcount")
                   .HasColumnType("int(11)");
 
-            entity.HasMany(d=>d.Assignments).WithOne(p=>p.Publish)
-                .HasForeignKey(d=>d.Publishid);
+            entity.HasMany(e=>e.Assignments)
+                .WithOne(e=>e.Publish)
+                .HasForeignKey(e=>e.Id)
+                .OnDelete(DeleteBehavior.ClientNoAction);
         });
 
         modelBuilder.Entity<AuthUserGroup>(entity =>
@@ -439,6 +439,7 @@ public partial class XiangxpContext : DbContext
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
+                .ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.Age)
                 .HasColumnType("tinyint(4)")

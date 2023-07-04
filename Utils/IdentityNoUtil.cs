@@ -63,5 +63,38 @@ namespace FlowLabourApi.Utils
             }
             return DateTime.MinValue;
         }
+
+        public static bool ValidateEmailFormat(string email)
+        {
+            // Check if the input is empty or null
+            if (string.IsNullOrEmpty(email))
+            {
+                return false;
+            }
+
+            // Check if the input contains only one '@'
+            int atSymbolCount = email.Count(x => x == '@');
+            if (atSymbolCount != 1)
+            {
+                return false;
+            }
+
+            // Check if the input doesn't start or end with '@'
+            if (email.StartsWith("@") || email.EndsWith("@"))
+            {
+                return false;
+            }
+
+            // Check if the input doesn't contain invalid characters
+            Regex regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+            Match match = regex.Match(email);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }
