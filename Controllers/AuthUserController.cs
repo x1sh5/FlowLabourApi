@@ -1,13 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
-using FlowLabourApi.ViewModels;
 using FlowLabourApi.Utils;
+using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Controllers
 {
@@ -45,7 +42,7 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult<AuthUser>> GetAuthUser(int id)
         {
             var authUser = await _context.AuthUsers.FindAsync(id);
-            
+
 
             if (authUser == null)
             {

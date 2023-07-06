@@ -1,6 +1,4 @@
 ﻿using FlowLabourApi.Utils;
-using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace FlowLabourApi.ViewModels
 {
@@ -20,13 +18,14 @@ namespace FlowLabourApi.ViewModels
         /// <summary>
         /// 年龄
         /// </summary>
-        public sbyte? Age {
+        public sbyte? Age
+        {
             private set
             {
                 _age = value;
             }
             get { return _age; }
-        } 
+        }
 
         /// <summary>
         /// 是否验证
@@ -46,20 +45,22 @@ namespace FlowLabourApi.ViewModels
         /// <summary>
         /// 身份证号码
         /// </summary>
-        public string IdentityNo { 
-            get 
-            { 
+        public string IdentityNo
+        {
+            get
+            {
                 return _identityNo;
             }
-            set { 
+            set
+            {
                 _identityNo = value;
                 _isValidate = IdentityNoUtil.ValidateIdentityNo(value);
-                if(_isValidate)
+                if (_isValidate)
                 {
                     DateTime dateTime = IdentityNoUtil.GetBirthDateFromID(value);
                     Age = (sbyte?)(DateTime.Now.Year - dateTime.Year);
                 }
-            } 
+            }
         }
 
         /// <summary>

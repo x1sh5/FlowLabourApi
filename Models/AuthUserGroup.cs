@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace FlowLabourApi.Models;
+﻿namespace FlowLabourApi.Models;
 
 /// <summary>
 /// 用户分组表，对应数据库中的表auth_user_groups

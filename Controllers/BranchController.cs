@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using Microsoft.AspNetCore.Authorization;

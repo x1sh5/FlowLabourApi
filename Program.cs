@@ -11,21 +11,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MySql.EntityFrameworkCore.Extensions;
 using Swashbuckle.AspNetCore.Filters;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Reflection;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
-using System.Timers;
 
 namespace FlowLabourApi
 {
@@ -46,10 +40,11 @@ namespace FlowLabourApi
             });
 
             builder.Services.AddControllersWithViews()
-                .AddJsonOptions(o => {//解决json循环引用
-                o.JsonSerializerOptions
-                  .ReferenceHandler = ReferenceHandler.Preserve;
-            });
+                .AddJsonOptions(o =>
+                {//解决json循环引用
+                    o.JsonSerializerOptions
+                      .ReferenceHandler = ReferenceHandler.Preserve;
+                });
 
             builder.Services.AddDbContext<XiangxpContext>((DbContextOptionsBuilder options) =>
             {
@@ -63,13 +58,13 @@ namespace FlowLabourApi
             builder.Services.TryAddScoped<UserToken>();
             builder.Services.TryAddScoped<SigninLog>();
             builder.Services.TryAddScoped<SignInManager<AuthUser>>();
-            builder.Services.TryAddScoped<IAuthTokenService,AuthTokenService>();
+            builder.Services.TryAddScoped<IAuthTokenService, AuthTokenService>();
             builder.Services.AddHttpContextAccessor();
             // Identity services
-            builder.Services.TryAddScoped<IUserStore<AuthUser>,FlowUserStore>();
-            builder.Services.TryAddScoped<IRoleStore<Role>,FlowRoleStore>();
-            builder.Services.TryAddScoped<IRoleValidator<Role>,FlowRoleValidator>();
-            builder.Services.TryAddScoped<ILookupNormalizer,FlowLookupNormalizer>();
+            builder.Services.TryAddScoped<IUserStore<AuthUser>, FlowUserStore>();
+            builder.Services.TryAddScoped<IRoleStore<Role>, FlowRoleStore>();
+            builder.Services.TryAddScoped<IRoleValidator<Role>, FlowRoleValidator>();
+            builder.Services.TryAddScoped<ILookupNormalizer, FlowLookupNormalizer>();
             builder.Services.TryAddScoped<AppJwtBearerEvents>();
             //signalR
             builder.Services.TryAddSingleton<IUserIdProvider, FlowUserIdProvider>();
@@ -261,8 +256,8 @@ namespace FlowLabourApi
             // Configure the HTTP request pipeline.
             //if (app.Environment.IsDevelopment())
             //{
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI();
             //}
 
             // <snippet_UseWebSockets>
@@ -279,7 +274,7 @@ namespace FlowLabourApi
             //app.UseHttpsRedirection(); //nginx配置失败原因
             app.UseStaticFiles();
 
-            
+
 
             //app.UseRouting();
 

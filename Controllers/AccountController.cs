@@ -27,7 +27,7 @@ namespace FlowLabourApi.Controllers
         private readonly IAuthTokenService _authTokenService;
 
         public AccountController(XiangxpContext context, SignInManager<AuthUser> signInManager,
-            IOptionsSnapshot<JwtOptions> jwtOptions,IAuthTokenService authTokenService
+            IOptionsSnapshot<JwtOptions> jwtOptions, IAuthTokenService authTokenService
              /* FlowUserStore flowUserStore */)
         {
             _context = context;
@@ -86,8 +86,8 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public IActionResult NameCheck(string username, out bool validate)
         {
-            var user = _context.AuthUsers.FirstOrDefault(e=>e.UserName==username);
-            if(user != null)
+            var user = _context.AuthUsers.FirstOrDefault(e => e.UserName == username);
+            if (user != null)
             {
                 validate = false;
                 return Ok(new { status = false, message = "用户名已存在" });
@@ -172,7 +172,7 @@ namespace FlowLabourApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if(login == null)
+            if (login == null)
             {
                 return BadRequest("Invalid client request");
             }
@@ -185,8 +185,8 @@ namespace FlowLabourApi.Controllers
             {
                 return Unauthorized();
             }
-            UserRole? userRole = _context.UserRoles.Include(o=>o.Role).FirstOrDefault(e => e.UserId == user.Id);
-            if(userRole == null)
+            UserRole? userRole = _context.UserRoles.Include(o => o.Role).FirstOrDefault(e => e.UserId == user.Id);
+            if (userRole == null)
             {
                 return Unauthorized("用户身份未通过验证。");
             }
@@ -198,14 +198,14 @@ namespace FlowLabourApi.Controllers
 
             var UA = Request.Headers.UserAgent[0];
 
-            var ua = HashUtil.Md5(UA??"unkownAgent");
+            var ua = HashUtil.Md5(UA ?? "unkownAgent");
 
             //SecurityToken? token = GenerateToken(userRole);
             var token = await _authTokenService.CreateAuthTokenAsync(userRole, ua);
 
             // code to handle login
             Response.Headers["set-cookie"] = $"access_token={token.AccessToken};path=/;httponly;expires={DateTime.UtcNow.AddHours(8)};"
-                +$"refresh_token={token.RefreshToken};path=/;httponly;expires={DateTime.UtcNow.AddDays(7)};";
+                + $"refresh_token={token.RefreshToken};path=/;httponly;expires={DateTime.UtcNow.AddDays(7)};";
             return Ok(token);
         }
 
@@ -214,7 +214,7 @@ namespace FlowLabourApi.Controllers
         public IActionResult Edit(int id)
         {
             var u = User;
-            ClaimsIdentity? claims = User.Identities.FirstOrDefault(x=>x.Claims.Contains(new Claim("Role", "default")));
+            ClaimsIdentity? claims = User.Identities.FirstOrDefault(x => x.Claims.Contains(new Claim("Role", "default")));
             return Ok(claims);
         }
 

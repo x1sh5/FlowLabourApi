@@ -1,6 +1,4 @@
-﻿using FlowLabourApi.Models;
-
-namespace FlowLabourApi.ViewModels
+﻿namespace FlowLabourApi.ViewModels
 {
     /// <summary>
     /// 管理日志前端视图

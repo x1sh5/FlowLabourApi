@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace FlowLabourApi.Models;
+﻿namespace FlowLabourApi.Models;
 
 /// <summary>
 /// 任务详细表，对应数据库中的表assignment
@@ -83,15 +80,12 @@ public partial class Assignment
     public sbyte Verify { get; set; }
 
     /// <summary>
-    /// 用户名
+    /// 发布人id
     /// </summary>
-    public string UserName =>Publish?.UserName ?? "未知";
+    public int UserId { get; set; }
 
     /// <summary>
     /// 发布人信息
     /// </summary> 
-    public virtual AuthUser? Publish { get; set; }
-
-    public virtual AssignmentUser? Assignmentuser { get; set; }
-
+    public virtual AuthUser? AuthUser { get; set; }
 }

@@ -21,7 +21,7 @@ namespace FlowLabourApi.Handlers
 
         public async Task<IEnumerable<Message>> GetMessages(int senderId)
         {
-            var messages = await _xiangxpContext.Messages.Where(x=>x.From==senderId).ToListAsync();
+            var messages = await _xiangxpContext.Messages.Where(x => x.From == senderId).ToListAsync();
             return messages;
         }
 

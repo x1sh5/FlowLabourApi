@@ -2,7 +2,7 @@
 
 namespace FlowLabourApi.Authentication
 {
-    public class MyCookieAuthenticationOptions: CookieAuthenticationOptions
+    public class MyCookieAuthenticationOptions : CookieAuthenticationOptions
     {
 
     }

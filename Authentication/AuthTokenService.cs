@@ -4,12 +4,9 @@ using FlowLabourApi.Models.context;
 using FlowLabourApi.Options;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -40,11 +37,11 @@ namespace FlowLabourApi.Authentication
             //_httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur,string loginProvider)
+        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur, string loginProvider)
         {
             var result = new AuthTokenDto();
 
-            string? refreshToken = await CreateRefreshTokenAsync(ur.UserId,loginProvider);
+            string? refreshToken = await CreateRefreshTokenAsync(ur.UserId, loginProvider);
             result.RefreshToken = refreshToken;
             result.AccessToken = CreateAccessToken(ur, loginProvider);
 
@@ -63,7 +60,7 @@ namespace FlowLabourApi.Authentication
             return result;
         }
 
-        private async Task<string> CreateRefreshTokenAsync(int userId,string useragent_bs64)
+        private async Task<string> CreateRefreshTokenAsync(int userId, string useragent_bs64)
         {
             //var tokenId = Guid.NewGuid().ToString("N");
 
@@ -95,7 +92,7 @@ namespace FlowLabourApi.Authentication
             return token;
         }
 
-        private string? CreateAccessToken(UserRole userRole,string loginProvider)
+        private string? CreateAccessToken(UserRole userRole, string loginProvider)
         {
             List<Claim>? claims = new List<Claim>();
             claims.Add(new Claim(JwtClaimTypes.IdClaim, userRole.User.Id.ToString()));

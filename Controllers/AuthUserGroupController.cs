@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Controllers
 {

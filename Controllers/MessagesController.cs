@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FlowLabourApi.Controllers
 {
@@ -29,7 +27,7 @@ namespace FlowLabourApi.Controllers
         {
             var messages = _context.Messages.Where(m => m.From == senderId).ToList();
 
-            if (messages.Count!=0)
+            if (messages.Count != 0)
             {
                 return NotFound();
             }

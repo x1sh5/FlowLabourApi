@@ -58,7 +58,7 @@ namespace FlowLabourApi.Models.Services
 
         public async Task<AuthUser> GetByNameAsync(string Name)
         {
-            var e = await _context.AuthUsers.FirstOrDefaultAsync(et=>et.UserName==Name);
+            var e = await _context.AuthUsers.FirstOrDefaultAsync(et => et.UserName == Name);
             return e;
         }
 

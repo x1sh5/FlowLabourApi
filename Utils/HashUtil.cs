@@ -2,7 +2,7 @@
 {
     public class HashUtil
     {
-        public static string Sha256(string input) 
+        public static string Sha256(string input)
         {
             using (System.Security.Cryptography.SHA256 sha256Hash = System.Security.Cryptography.SHA256.Create())
             {

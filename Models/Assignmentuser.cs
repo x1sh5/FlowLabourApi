@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace FlowLabourApi.Models;
+﻿namespace FlowLabourApi.Models;
 
 /// <summary>
 /// 用户任务接取情况，对应数据库中的表assignmentuser

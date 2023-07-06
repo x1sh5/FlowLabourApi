@@ -38,7 +38,7 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Assignmenttype>>> GetAssignmentTypes()
         {
-            return await _context.Assignmenttypes.Where(e=>e.Level==1).ToListAsync();
+            return await _context.Assignmenttypes.Where(e => e.Level == 1).ToListAsync();
         }
     }
 }

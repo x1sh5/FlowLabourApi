@@ -36,7 +36,7 @@ namespace FlowLabourApi.Authentication
 
         public Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
         {
-            if(role == null)
+            if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
@@ -48,11 +48,11 @@ namespace FlowLabourApi.Authentication
                     return IdentityResult.Success;
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Task.FromResult(IdentityResult.Failed(new IdentityError { Description = ex.Message }));
             }
-            
+
 
         }
 
@@ -66,14 +66,14 @@ namespace FlowLabourApi.Authentication
                 return null;
             }
             var role = await _context.Roles.FindAsync(roleId);
-            if(role == null)throw new ArgumentNullException("角色不存在");
+            if (role == null) throw new ArgumentNullException("角色不存在");
             return role;
         }
 
         public async Task<Role> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             var role = await _context.Roles.FirstOrDefaultAsync(r => r.Privilege == normalizedRoleName);
-            if(role == null)throw new ArgumentNullException("角色不存在");
+            if (role == null) throw new ArgumentNullException("角色不存在");
             return role;
         }
 
@@ -90,7 +90,7 @@ namespace FlowLabourApi.Authentication
                 throw new ArgumentNullException(nameof(role));
             }
             var role1 = await _context.Roles.FirstOrDefaultAsync(r => r.Roleid == role.Roleid);
-            if(role1 == null)throw new ArgumentNullException("角色不存在");
+            if (role1 == null) throw new ArgumentNullException("角色不存在");
             return role1.Roleid.ToString();
         }
 
@@ -121,7 +121,7 @@ namespace FlowLabourApi.Authentication
         /// <exception cref="ArgumentNullException"></exception>
         public async Task SetRoleNameAsync(Role role, string roleName, CancellationToken cancellationToken)
         {
-            if(role == null)
+            if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
@@ -131,7 +131,7 @@ namespace FlowLabourApi.Authentication
 
         public Task<IdentityResult> UpdateAsync(Role role, CancellationToken cancellationToken)
         {
-            if(role == null)
+            if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
             }
@@ -143,7 +143,7 @@ namespace FlowLabourApi.Authentication
                     return IdentityResult.Success;
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Task.FromResult(IdentityResult.Failed(new IdentityError { Description = ex.Message }));
             }

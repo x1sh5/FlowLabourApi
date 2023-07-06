@@ -1,5 +1,4 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace FlowLabourApi.Options
@@ -32,7 +31,7 @@ namespace FlowLabourApi.Options
 
         public Encoding Encoding { get; set; } = DefaultEncoding;
 
-        public SymmetricSecurityKey SecurityKey => new (DefaultEncoding.GetBytes(SecretKeyString));
+        public SymmetricSecurityKey SecurityKey => new(DefaultEncoding.GetBytes(SecretKeyString));
 
         public TimeSpan RefreshTokenExpires { get; set; } = TimeSpan.FromDays(7);
 

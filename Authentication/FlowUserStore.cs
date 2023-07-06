@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Authentication
 {
-    public class FlowUserStore : IUserStore<AuthUser>,IDisposable
+    public class FlowUserStore : IUserStore<AuthUser>, IDisposable
     {
         private bool disposedValue;
         private readonly XiangxpContext _context;
         private readonly ILogger<FlowUserStore> _logger;
 
-        public FlowUserStore(XiangxpContext context, ILogger<FlowUserStore> logger, bool disposedValue=false)
+        public FlowUserStore(XiangxpContext context, ILogger<FlowUserStore> logger, bool disposedValue = false)
         {
             this.disposedValue = disposedValue;
             _context = context;
@@ -80,14 +80,14 @@ namespace FlowLabourApi.Authentication
         {
             Console.Out.WriteLine("FlowUserStore.FindByIdAsync run");
             var user = await _context.AuthUsers.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-            if(user == null) throw new ArgumentNullException(nameof(user));
+            if (user == null) throw new ArgumentNullException(nameof(user));
             return user;
         }
 
         public async Task<AuthUser> FindByLoginViewAsync(LoginView login, CancellationToken cancellationToken)
         {
             Console.Out.WriteLine("FlowUserStore.FindByLoginViewAsync run");
-            var user =await _context.AuthUsers.FirstOrDefaultAsync(
+            var user = await _context.AuthUsers.FirstOrDefaultAsync(
                 e => e.UserName == login.UserName &&
                 e.Passwordhash == HashUtil.Sha256(login.Password),
                 cancellationToken
@@ -106,7 +106,7 @@ namespace FlowLabourApi.Authentication
 
         public Task<string> GetNormalizedUserNameAsync(AuthUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException(); 
+            throw new NotImplementedException();
         }
 
         public async Task<string> GetUserIdAsync(AuthUser user, CancellationToken cancellationToken)
@@ -182,9 +182,9 @@ namespace FlowLabourApi.Authentication
             Console.Out.WriteLine("FlowUserStore.FindByIdAsync run");
             int? id;
             id = int.TryParse(userId, out int result) ? result : null;
-            if(id==null)throw new ArgumentNullException(nameof(userId));
+            if (id == null) throw new ArgumentNullException(nameof(userId));
             var user = await _context.AuthUsers.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
-            if(user == null)
+            if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }

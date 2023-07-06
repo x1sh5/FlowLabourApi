@@ -1,13 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.state;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using FlowLabourApi.Models.state;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Controllers
 {
@@ -16,7 +13,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy =Permission.Admin)]
+    [Authorize(Policy = Permission.Admin)]
     public class AdminLogController : ControllerBase
     {
         private readonly XiangxpContext _context;

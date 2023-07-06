@@ -1,6 +1,4 @@
-﻿using FlowLabourApi.Models;
-
-namespace FlowLabourApi.ViewModels
+﻿namespace FlowLabourApi.ViewModels
 {
     /// <summary>
     /// 任务详细的前端视图
@@ -74,6 +72,9 @@ namespace FlowLabourApi.ViewModels
         /// </summary>
         public sbyte Verify { get; set; }
 
-        public ICollection<string> Images = new List<string>();
+        /// <summary>
+        /// 用户图片
+        /// </summary>
+        public virtual ICollection<string> Images{ get; set; } = new List<string>();
     }
 }

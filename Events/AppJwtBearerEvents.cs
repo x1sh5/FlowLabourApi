@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
-using System;
-using System.IO;
 
 
 namespace FlowLabourApi.Events;
@@ -163,7 +160,7 @@ public class AppJwtBearerEvents : JwtBearerEvents
 
         //SymmetricSecurityKey
 
-        if (token.SigningKey is SymmetricSecurityKey  ssk)
+        if (token.SigningKey is SymmetricSecurityKey ssk)
         {
             Console.WriteLine($"Token SigningKey: {_jwtOptions.Encoding.GetString(ssk.ComputeJwkThumbprint())}");
         }

@@ -3,8 +3,6 @@ using FlowLabourApi.Models.context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace FlowLabourApi.Controllers
 {

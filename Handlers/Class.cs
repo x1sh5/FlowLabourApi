@@ -1,8 +1,5 @@
-﻿using FlowLabourApi.Models;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.IdentityModel.Logging;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 

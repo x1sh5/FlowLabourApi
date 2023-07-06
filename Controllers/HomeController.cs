@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FlowLabourApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using FlowLabourApi.Models;
 
 namespace FlowLabourApi.Controllers
 {
@@ -9,7 +9,7 @@ namespace FlowLabourApi.Controllers
     /// </summary>
     [Controller]
     [Route("[controller]")]
-    [ApiExplorerSettings(IgnoreApi=true)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

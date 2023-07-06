@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace FlowLabourApi.Models;
+﻿namespace FlowLabourApi.Models;
 
 public partial class VideoInfo
 {

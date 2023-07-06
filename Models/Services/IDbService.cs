@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace FlowLabourApi.Models.Services
+﻿namespace FlowLabourApi.Models.Services
 {
     public interface IDbService<T> where T : class
     {

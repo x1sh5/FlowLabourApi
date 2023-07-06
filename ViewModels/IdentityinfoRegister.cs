@@ -1,5 +1,4 @@
 ﻿using FlowLabourApi.Utils;
-using System.Text.RegularExpressions;
 
 namespace FlowLabourApi.ViewModels
 {
@@ -34,7 +33,7 @@ namespace FlowLabourApi.ViewModels
             set
             {
                 _isValidate = IdentityNoUtil.ValidateIdentityNo(value);
-                if(_isValidate)
+                if (_isValidate)
                 {
                     _identityNo = value;
                     _isValidate = true;

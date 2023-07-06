@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace FlowLabourApi.Models;
+﻿namespace FlowLabourApi.Models;
 
 /// <summary>
 /// 管理员登录记录,对应数据库中的表admin_log

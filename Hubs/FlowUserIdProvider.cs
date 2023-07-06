@@ -1,5 +1,4 @@
 ﻿using FlowLabourApi.Config;
-using FlowLabourApi.Models.state;
 using Microsoft.AspNetCore.SignalR;
 
 namespace FlowLabourApi.Hubs
@@ -8,11 +7,11 @@ namespace FlowLabourApi.Hubs
     {
         public string? GetUserId(HubConnectionContext connection)
         {
-            var user = connection.User.Claims.FirstOrDefault(x=>x.Type==JwtClaimTypes.IdClaim);
-            if(user==null)
+            var user = connection.User.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.IdClaim);
+            if (user == null)
             {
-                
-                return "anony-"+Guid.NewGuid().ToString("N");
+
+                return "anony-" + Guid.NewGuid().ToString("N");
             }
             return user.Value;
         }

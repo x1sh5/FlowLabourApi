@@ -1,13 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
-using System.Net;
-using Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using FlowLabourApi.Config;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -32,28 +30,27 @@ public class AssignmentController : ControllerBase
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
     public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments()
     {
-        List<Assignment> assignments; 
-        assignments = await _context.Assignments
-            .Include(a => a.Assignmentuser) // 关联AssignmentUser表
-        .ThenInclude(au => au.User) // 关联User表ToListAsync();
-        .ToListAsync();
-        List<AssignmentView> assignmentViews;
-        assignmentViews = assignments.Select(e => new AssignmentView
+        List<Assignment> assignments;
+        assignments = await _context.Assignments.Include(a => a.AuthUser).ToListAsync();
+        List<AssignmentView> assignmentViews = new List<AssignmentView>();
+        foreach (var e in assignments)
         {
-            Id = e.Id,
-            Title = e.Title,
-            Description = e.Description,
-            Branchid = e.Branchid,
-            Typeid = e.Typeid,
-            Presumedtime = e.Presumedtime,
-            Publishtime = e.Publishtime,
-            Status = e.Status,
-            Verify = e.Verify,
-            Reward = e.Reward,
-            Rewardtype = e.Rewardtype,
-            Username = e.Publish?.UserName,
-            Images = _context.Images.Where(et=>et.Id==e.Id).Select(e => e.Url).ToList(),
-        }).ToList();
+            AssignmentView assignmentView = new AssignmentView();
+            assignmentView.Id = e.Id;
+            assignmentView.Title = e.Title;
+            assignmentView.Description = e.Description;
+            assignmentView.Branchid = e.Branchid;
+            assignmentView.Typeid = e.Typeid;
+            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Publishtime = e.Publishtime;
+            assignmentView.Status = e.Status;
+            assignmentView.Verify = e.Verify;
+            assignmentView.Reward = e.Reward;
+            assignmentView.Rewardtype = e.Rewardtype;
+            assignmentView.Username = e.AuthUser?.UserName;
+            //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
+            assignmentViews.Add(assignmentView);
+        }
         return assignmentViews;
     }
 
@@ -69,10 +66,10 @@ public class AssignmentController : ControllerBase
         List<Assignment> assignments;
         if (typeid != null)
         {
-            assignments =  await _context.Assignments.Include(o => o.Publish)
+            assignments = await _context.Assignments.Include(o => o.AuthUser)
                 .Where(e => e.Typeid == typeid).ToListAsync();
         }
-        assignments = await _context.Assignments.Include(o => o.Publish).ToListAsync();
+        assignments = await _context.Assignments.Include(o => o.AuthUser).ToListAsync();
 
         List<AssignmentView> assignmentViews;
         assignmentViews = assignments.Select(e => new AssignmentView
@@ -88,7 +85,7 @@ public class AssignmentController : ControllerBase
             Verify = e.Verify,
             Reward = e.Reward,
             Rewardtype = e.Rewardtype,
-            Username = e.Publish?.UserName,
+            Username = e.AuthUser?.UserName,
         }).ToList();
         return assignmentViews;
     }
@@ -102,11 +99,11 @@ public class AssignmentController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<AssignmentView>> GetAssignment(int id)
     {
-        //var assignment = await _context.Assignments.Include(a => a.Publish).FirstOrDefaultAsync(x=>x.Id==id);
+        //var assignment = await _context.Assignments.Include(a => a.AuthUser).FirstOrDefaultAsync(x=>x.Id==id);
 
         Assignment? e;
         e = await _context.Assignments
-            .Include(o => o.Publish).FirstOrDefaultAsync(x => x.Id == id);
+            .Include(o => o.AuthUser).FirstOrDefaultAsync(x => x.Id == id);
 
         if (e == null)
         {
@@ -126,7 +123,7 @@ public class AssignmentController : ControllerBase
             Verify = e.Verify,
             Reward = e.Reward,
             Rewardtype = e.Rewardtype,
-            Username = e.Publish?.UserName,
+            Username = e.AuthUser?.UserName,
         };
 
         return assignmentView;
@@ -154,16 +151,10 @@ public class AssignmentController : ControllerBase
             Verify = assignmentView.Verify,
             Reward = assignmentView.Reward,
             Rewardtype = assignmentView.Rewardtype,
+            UserId = user.Id,
         };
         var e = _context.Assignments.Add(assignment);
-         _context.SaveChanges();
-        _context.Assignmentusers.Add(new AssignmentUser
-        {
-            Assignmentid = e.Entity.Id,
-            Userid = user.Id,
-        });
-        await _context.SaveChangesAsync();
-
+        _context.SaveChanges();
 
         return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id }, e.Entity);
     }

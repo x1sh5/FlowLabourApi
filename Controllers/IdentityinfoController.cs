@@ -1,12 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Controllers
 {
@@ -45,7 +42,7 @@ namespace FlowLabourApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IdentityInfo>> GetIdentityinfo(int id)
         {
-            var identityinfo = await _context.Identityinfos.FirstOrDefaultAsync(i=>i.Id==id);
+            var identityinfo = await _context.Identityinfos.FirstOrDefaultAsync(i => i.Id == id);
 
             if (identityinfo == null)
             {
@@ -108,7 +105,8 @@ namespace FlowLabourApi.Controllers
         [HttpPost]
         public async Task<ActionResult<IdentityInfo>> PostIdentityinfo(IdentityinfoRegister identityinfoRegister)
         {
-            if(!identityinfoRegister.IsValidate) {
+            if (!identityinfoRegister.IsValidate)
+            {
                 return BadRequest("不合法的身份信息。");
             }
             IdentityInfo identityinfo = new IdentityInfo()

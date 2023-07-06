@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using FlowLabourApi.Config;
+﻿using FlowLabourApi.Config;
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions;
 
 namespace FlowLabourApi.Models.context;
 
@@ -23,7 +20,7 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Assignmenttype> Assignmenttypes { get; set; }
 
-    public virtual DbSet<AssignmentUser> Assignmentusers { get; set; }
+    //public virtual DbSet<AssignmentUser> Assignmentusers { get; set; }
 
     public virtual DbSet<AuthUser> AuthUsers { get; set; }
 
@@ -154,13 +151,15 @@ public partial class XiangxpContext : DbContext
                 .HasComment("0:未审核通过，1：审核通过。")
                 .HasColumnType("tinyint(4)")
                 .HasColumnName("verify");
-            entity.HasOne(d => d.Publish)
-                .WithMany(e=>e.Assignments)
-                .OnDelete(DeleteBehavior.NoAction);
+            entity.Property(e => e.UserId)
+                .HasColumnType("int(11)")
+                .HasColumnName("userid");
+            entity.HasOne(d => d.AuthUser)
+                .WithMany(e => e.Assignments)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasForeignKey(entity => entity.UserId)
+                .HasConstraintName("fk_assigment_userid_user_id");
 
-            entity.HasOne(d => d.Assignmentuser)
-                .WithOne(e => e.Assignment)
-                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Assignmenttype>(entity =>
@@ -185,34 +184,36 @@ public partial class XiangxpContext : DbContext
                 .HasColumnName("level");
         });
 
-        modelBuilder.Entity<AssignmentUser>(entity =>
-        {
-            entity.HasKey(e => new { e.Assignmentid, e.Userid });
-            entity.ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
+        #region AssignmentUser
+        //modelBuilder.Entity<AssignmentUser>(entity =>
+        //{
+        //    entity.HasKey(e => new { e.Assignmentid, e.Userid });
+        //    entity.ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
 
-            entity.HasIndex(e => e.Assignmentid, "fk_agmuser_asgid_agm_id_idx");
+        //    entity.HasIndex(e => e.Assignmentid, "fk_agmuser_asgid_agm_id_idx");
 
-            entity.HasIndex(e => e.Userid, "fk_agmuser_asgid_user_id_idx");
-            entity.HasIndex(entity => entity.Assignmentid, "assignmentid_UNIQUE").IsUnique();
+        //    entity.HasIndex(e => e.Userid, "fk_agmuser_asgid_user_id_idx");
+        //    entity.HasIndex(entity => entity.Assignmentid, "assignmentid_UNIQUE").IsUnique();
 
-            entity.Property(e => e.Assignmentid)
-                .HasColumnType("int(11)")
-                .HasColumnName("assignmentid");
-            entity.Property(e => e.Userid)
-                .HasColumnType("int(11)")
-                .HasColumnName("userid");
+        //    entity.Property(e => e.Assignmentid)
+        //        .HasColumnType("int(11)")
+        //        .HasColumnName("assignmentid");
+        //    entity.Property(e => e.Userid)
+        //        .HasColumnType("int(11)")
+        //        .HasColumnName("userid");
 
-            entity.HasOne((AssignmentUser d) => d.Assignment)
-                .WithOne()
-                .HasForeignKey<AssignmentUser>(d => d.Assignmentid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_agmuser_asgid_user_id");
+        //    entity.HasOne((AssignmentUser d) => d.Assignment)
+        //        .WithOne()
+        //        .HasForeignKey<AssignmentUser>(d => d.Assignmentid)
+        //        .OnDelete(DeleteBehavior.ClientSetNull)
+        //        .HasConstraintName("fk_agmuser_asgid_user_id");
 
-            entity.HasOne(d => d.User).WithOne()
-                .HasForeignKey<AssignmentUser>(d => d.Userid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_agmuser_userid_user_id");
-        });
+        //    entity.HasOne(d => d.User).WithOne()
+        //        .HasForeignKey<AssignmentUser>(d => d.Userid)
+        //        .OnDelete(DeleteBehavior.ClientSetNull)
+        //        .HasConstraintName("fk_agmuser_userid_user_id");
+        //});
+        #endregion
 
         modelBuilder.Entity<AuthUser>(entity =>
         {
@@ -262,10 +263,10 @@ public partial class XiangxpContext : DbContext
                   .HasColumnName("accessfailedcount")
                   .HasColumnType("int(11)");
 
-            entity.HasMany(e=>e.Assignments)
-                .WithOne(e=>e.Publish)
-                .HasForeignKey(e=>e.Id)
-                .OnDelete(DeleteBehavior.ClientNoAction);
+            //entity.HasMany(e=>e.Assignments)
+            //    .WithOne(e=>e.AuthUser)
+            //    .HasForeignKey(e=>e.Id)
+            //    .OnDelete(DeleteBehavior.ClientNoAction);
         });
 
         modelBuilder.Entity<AuthUserGroup>(entity =>
@@ -543,7 +544,7 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.AssignmentId)
                 .HasColumnType("int(11)")
                 .HasColumnName("assignmentid");
-            entity.HasOne(d=>d.Assignment)
+            entity.HasOne(d => d.Assignment)
                 .WithMany()
                 .HasForeignKey(d => d.RelatedId)
                 .IsRequired();
@@ -612,7 +613,7 @@ public partial class XiangxpContext : DbContext
                   .IsRequired()
                   .HasColumnName("providerkey");
 
-            entity.HasOne(d=>d.AuthUser).WithMany()
+            entity.HasOne(d => d.AuthUser).WithMany()
                 .HasForeignKey(d => d.Userid)
                 .IsRequired();
         });
@@ -667,12 +668,12 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.RoleId)
                 .HasColumnType("int(11)")
                 .HasColumnName("roleid");
-            entity.HasOne(d=>d.User).WithOne()
-                .HasForeignKey<UserRole>(d=>d.UserId)
+            entity.HasOne(d => d.User).WithOne()
+                .HasForeignKey<UserRole>(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_userrole_userid_authuser_id");
-            entity.HasOne(d=>d.Role).WithOne()
-                .HasForeignKey<UserRole>(Role=>Role.RoleId)
+            entity.HasOne(d => d.Role).WithOne()
+                .HasForeignKey<UserRole>(Role => Role.RoleId)
                 .OnDelete(DeleteBehavior.ClientNoAction)
                 .HasConstraintName("fk_userrole_roleid_role_id");
         });
@@ -690,7 +691,7 @@ public partial class XiangxpContext : DbContext
             entity.Property(entity => entity.Expires)
                 .HasColumnType("datetime")
                 .HasColumnName("expires");
-            entity.Property(entity =>entity.Name)
+            entity.Property(entity => entity.Name)
                 .HasMaxLength(45)
                 .HasColumnName("name");
             entity.Property(entity => entity.LoginProvider)

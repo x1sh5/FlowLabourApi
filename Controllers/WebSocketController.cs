@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
-using Microsoft.AspNetCore.Mvc;
 
 namespace WebSocketsSample.Controllers;
 
@@ -14,11 +13,11 @@ public class WebSocketController : ControllerBase
     [HttpGet("/ws")]
     public async Task Get()
     {
-        
+
         if (HttpContext.WebSockets.IsWebSocketRequest)
         {
             using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-            if(!_WebSockets.Contains(webSocket))
+            if (!_WebSockets.Contains(webSocket))
             {
                 _WebSockets.Add(webSocket);
                 var message = System.Text.Encoding.Default.GetBytes("xxx连接成功");
@@ -46,9 +45,9 @@ public class WebSocketController : ControllerBase
 
         while (!receiveResult.CloseStatus.HasValue)
         {
-            foreach(var c in _WebSockets)
+            foreach (var c in _WebSockets)
             {
-                if (c != webSocket &&(c.State==WebSocketState.Open|| c.State == WebSocketState.CloseReceived))
+                if (c != webSocket && (c.State == WebSocketState.Open || c.State == WebSocketState.CloseReceived))
                 {
                     await c.SendAsync(
                         new ArraySegment<byte>(buffer, 0, receiveResult.Count),

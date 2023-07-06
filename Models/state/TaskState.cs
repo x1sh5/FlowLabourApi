@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    public enum TaskState:int
+    public enum TaskState : int
     {
         NotPick = 0,
         Picked = 1,
