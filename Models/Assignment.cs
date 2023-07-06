@@ -83,7 +83,15 @@ public partial class Assignment
     public sbyte Verify { get; set; }
 
     /// <summary>
-    /// 发布人信息
+    /// 用户名
     /// </summary>
+    public string UserName =>Publish?.UserName ?? "未知";
+
+    /// <summary>
+    /// 发布人信息
+    /// </summary> 
     public virtual AuthUser? Publish { get; set; }
+
+    public virtual AssignmentUser? Assignmentuser { get; set; }
+
 }

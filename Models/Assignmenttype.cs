@@ -25,4 +25,10 @@ public partial class Assignmenttype
     /// </summary>
     /// <example>技术</example>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// 任务级别，数字越大级别越高。越大的数字需要越高的权限才能看到。
+    /// </summary>
+    /// <example>1</example>
+    public int? Level { get; set; }
 }

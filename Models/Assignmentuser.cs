@@ -6,7 +6,7 @@ namespace FlowLabourApi.Models;
 /// <summary>
 /// 用户任务接取情况，对应数据库中的表assignmentuser
 /// </summary>
-public partial class Assignmentuser
+public partial class AssignmentUser
 {
     /// <summary>
     /// 任务id,对应assignmen表中的id

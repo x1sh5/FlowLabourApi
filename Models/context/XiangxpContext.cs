@@ -23,7 +23,7 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Assignmenttype> Assignmenttypes { get; set; }
 
-    public virtual DbSet<Assignmentuser> Assignmentusers { get; set; }
+    public virtual DbSet<AssignmentUser> Assignmentusers { get; set; }
 
     public virtual DbSet<AuthUser> AuthUsers { get; set; }
 
@@ -42,6 +42,8 @@ public partial class XiangxpContext : DbContext
     public virtual DbSet<Groupuser> GroupUsers { get; set; }
 
     public virtual DbSet<IdentityInfo> Identityinfos { get; set; }
+
+    public virtual DbSet<Image> Images { get; set; }
 
     public virtual DbSet<Message> Messages { get; set; }
 
@@ -155,6 +157,10 @@ public partial class XiangxpContext : DbContext
             entity.HasOne(d => d.Publish)
                 .WithMany(e=>e.Assignments)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(d => d.Assignmentuser)
+                .WithOne(e => e.Assignment)
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<Assignmenttype>(entity =>
@@ -174,9 +180,12 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(45)
                 .HasColumnName("name");
+            entity.Property(e => e.Level)
+                .HasColumnType("int(11)")
+                .HasColumnName("level");
         });
 
-        modelBuilder.Entity<Assignmentuser>(entity =>
+        modelBuilder.Entity<AssignmentUser>(entity =>
         {
             entity.HasKey(e => new { e.Assignmentid, e.Userid });
             entity.ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
@@ -184,6 +193,7 @@ public partial class XiangxpContext : DbContext
             entity.HasIndex(e => e.Assignmentid, "fk_agmuser_asgid_agm_id_idx");
 
             entity.HasIndex(e => e.Userid, "fk_agmuser_asgid_user_id_idx");
+            entity.HasIndex(entity => entity.Assignmentid, "assignmentid_UNIQUE").IsUnique();
 
             entity.Property(e => e.Assignmentid)
                 .HasColumnType("int(11)")
@@ -192,14 +202,14 @@ public partial class XiangxpContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
 
-            entity.HasOne((Assignmentuser d) => d.Assignment)
+            entity.HasOne((AssignmentUser d) => d.Assignment)
                 .WithOne()
-                .HasForeignKey<Assignmentuser>(d => d.Assignmentid)
+                .HasForeignKey<AssignmentUser>(d => d.Assignmentid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_agmuser_asgid_user_id");
 
             entity.HasOne(d => d.User).WithOne()
-                .HasForeignKey<Assignmentuser>(d => d.Userid)
+                .HasForeignKey<AssignmentUser>(d => d.Userid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_agmuser_userid_user_id");
         });
@@ -457,6 +467,27 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Realname)
                 .HasMaxLength(45)
                 .HasColumnName("realname");
+        });
+
+        modelBuilder.Entity<Image>(entity =>
+        {
+            entity.ToTable("images");
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity.Property(e => e.Url)
+                .HasMaxLength(128)
+                .HasColumnName("url");
+            entity.Property(e => e.AssignmentId)
+                .HasColumnType("int(11)")
+                .HasColumnName("asgnid");
+            entity.Property(e => e.Md5)
+                .HasMaxLength(64)
+                .HasColumnName("md5");
+
         });
 
         modelBuilder.Entity<Message>(entity =>

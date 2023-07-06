@@ -30,10 +30,69 @@ public class AssignmentController : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
-    public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignments()
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments()
     {
-        return await _context.Assignments.ToListAsync();
+        List<Assignment> assignments; 
+        assignments = await _context.Assignments
+            .Include(a => a.Assignmentuser) // 关联AssignmentUser表
+        .ThenInclude(au => au.User) // 关联User表ToListAsync();
+        .ToListAsync();
+        List<AssignmentView> assignmentViews;
+        assignmentViews = assignments.Select(e => new AssignmentView
+        {
+            Id = e.Id,
+            Title = e.Title,
+            Description = e.Description,
+            Branchid = e.Branchid,
+            Typeid = e.Typeid,
+            Presumedtime = e.Presumedtime,
+            Publishtime = e.Publishtime,
+            Status = e.Status,
+            Verify = e.Verify,
+            Reward = e.Reward,
+            Rewardtype = e.Rewardtype,
+            Username = e.Publish?.UserName,
+            Images = _context.Images.Where(et=>et.Id==e.Id).Select(e => e.Url).ToList(),
+        }).ToList();
+        return assignmentViews;
     }
+
+    /// <summary>
+    /// 获取所有类型为typeid的任务
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("type/{typeid?}")]
+    [AllowAnonymous]
+    //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments(int? typeid)
+    {
+        List<Assignment> assignments;
+        if (typeid != null)
+        {
+            assignments =  await _context.Assignments.Include(o => o.Publish)
+                .Where(e => e.Typeid == typeid).ToListAsync();
+        }
+        assignments = await _context.Assignments.Include(o => o.Publish).ToListAsync();
+
+        List<AssignmentView> assignmentViews;
+        assignmentViews = assignments.Select(e => new AssignmentView
+        {
+            Id = e.Id,
+            Title = e.Title,
+            Description = e.Description,
+            Branchid = e.Branchid,
+            Typeid = e.Typeid,
+            Presumedtime = e.Presumedtime,
+            Publishtime = e.Publishtime,
+            Status = e.Status,
+            Verify = e.Verify,
+            Reward = e.Reward,
+            Rewardtype = e.Rewardtype,
+            Username = e.Publish?.UserName,
+        }).ToList();
+        return assignmentViews;
+    }
+
 
     /// <summary>
     /// 根据ID获取任务
@@ -41,17 +100,36 @@ public class AssignmentController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public async Task<ActionResult<Assignment>> GetAssignment(int id)
+    public async Task<ActionResult<AssignmentView>> GetAssignment(int id)
     {
         //var assignment = await _context.Assignments.Include(a => a.Publish).FirstOrDefaultAsync(x=>x.Id==id);
-        var assignment = await _context.Assignments.FindAsync(id);
 
-        if (assignment == null)
+        Assignment? e;
+        e = await _context.Assignments
+            .Include(o => o.Publish).FirstOrDefaultAsync(x => x.Id == id);
+
+        if (e == null)
         {
             return NotFound();
         }
 
-        return assignment;
+        AssignmentView assignmentView = new AssignmentView
+        {
+            Id = e.Id,
+            Title = e.Title,
+            Description = e.Description,
+            Branchid = e.Branchid,
+            Typeid = e.Typeid,
+            Presumedtime = e.Presumedtime,
+            Publishtime = e.Publishtime,
+            Status = e.Status,
+            Verify = e.Verify,
+            Reward = e.Reward,
+            Rewardtype = e.Rewardtype,
+            Username = e.Publish?.UserName,
+        };
+
+        return assignmentView;
     }
 
     /// <summary>
@@ -79,7 +157,7 @@ public class AssignmentController : ControllerBase
         };
         var e = _context.Assignments.Add(assignment);
          _context.SaveChanges();
-        _context.Assignmentusers.Add(new Assignmentuser
+        _context.Assignmentusers.Add(new AssignmentUser
         {
             Assignmentid = e.Entity.Id,
             Userid = user.Id,

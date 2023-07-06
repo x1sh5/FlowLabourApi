@@ -1,19 +1,31 @@
-﻿namespace FlowLabourApi.ViewModels
+﻿using FlowLabourApi.Models;
+
+namespace FlowLabourApi.ViewModels
 {
     /// <summary>
     /// 任务详细的前端视图
     /// </summary>
     public class AssignmentView
     {
-
+        /// <summary>
+        /// id
+        /// </summary>
+        /// <example>用户名</example>
+        public int Id { get; set; }
+        /// <summary>
+        /// 用户名，对应auth_user表的username
+        /// </summary>
+        public string? Username { get; set; }
         /// <summary>
         /// 所属部门，对应branch表的id
         /// </summary>
+        /// <example>1</example>
         public int Branchid { get; set; }
 
         /// <summary>
         /// 详细描述
         /// </summary>
+        /// <example>任务的详细描述</example>
         public string? Description { get; set; }
 
         /// <summary>
@@ -24,6 +36,7 @@
         /// <summary>
         /// 单位：分钟
         /// </summary>
+        /// <example>30</example>
         public int? Presumedtime { get; set; }
 
         /// <summary>
@@ -60,5 +73,7 @@
         /// 0:未审核通过，1：审核通过。
         /// </summary>
         public sbyte Verify { get; set; }
+
+        public ICollection<string> Images = new List<string>();
     }
 }
