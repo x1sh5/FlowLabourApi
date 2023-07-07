@@ -9,11 +9,10 @@ public partial class XiangxpContext : DbContext
     {
     }
 
-    public XiangxpContext(DbContextOptions options)
-        : base(options)
-    {
+    public XiangxpContext(DbContextOptions options): base(options)
+    { 
     }
-
+    public static bool IsConfigured { set; get; } = false;
     public virtual DbSet<AdminLog> AdminLogs { get; set; }
 
     public virtual DbSet<Assignment> Assignments { get; set; }
@@ -63,8 +62,20 @@ public partial class XiangxpContext : DbContext
     //public virtual DbSet<VideoInfo> VideoInfos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySQL(DbConfig.ConnectStr);
+    {
+        #warning To protect potentially sensitive information in your connection string, 
+        //you should move it out of source code. You can avoid scaffolding the
+        //connection string by using the Name= syntax to read it from configuration -
+        //see https://go.microsoft.com/fwlink/?linkid=2131148. For more
+        //guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        if (!IsConfigured)
+        {
+            optionsBuilder.UseMySQL(DbConfig.ConnectStr);
+            IsConfigured = true;
+        }
+
+    }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

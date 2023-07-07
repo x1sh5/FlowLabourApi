@@ -27,7 +27,8 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Branch>>> GetBranchs()
         {
-            return await _context.Branches.ToListAsync();
+            var reslut =  await _context.Branches.AsNoTracking().ToListAsync();
+            return reslut;
         }
 
         /// <summary>
@@ -38,7 +39,9 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Assignmenttype>>> GetAssignmentTypes()
         {
-            return await _context.Assignmenttypes.Where(e => e.Level == 1).ToListAsync();
+            var reslut = await _context.Assignmenttypes
+                .Where(e => e.Level == 1).AsNoTracking().ToListAsync();
+            return reslut;
         }
     }
 }

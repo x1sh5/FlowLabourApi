@@ -46,15 +46,17 @@ namespace FlowLabourApi
                       .ReferenceHandler = ReferenceHandler.Preserve;
                 });
 
-            builder.Services.AddDbContext<XiangxpContext>((DbContextOptionsBuilder options) =>
-            {
-                options.UseMySQL(
-                    DbConfig.ConnectStr);
-            });
+            builder.Services.AddDbContext<XiangxpContext>(
+                (DbContextOptionsBuilder options) =>
+                    {
+                        options.UseMySQL(
+                            DbConfig.ConnectStr);
+                    }
+            );
 
             #region dependency injection
-            builder.Services.AddScoped<AuthUser>();
-            builder.Services.AddScoped<Role>();
+            builder.Services.TryAddScoped<AuthUser>();
+            builder.Services.TryAddScoped<Role>();
             builder.Services.TryAddScoped<UserToken>();
             builder.Services.TryAddScoped<SigninLog>();
             builder.Services.TryAddScoped<SignInManager<AuthUser>>();
