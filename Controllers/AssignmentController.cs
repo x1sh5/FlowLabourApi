@@ -130,6 +130,39 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
+    /// 根据用户获取对应的任务
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("user")]
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentByUser()
+    {
+        var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+        var user = await _userManager.FindByIdAsync(id);
+        List<Assignment> assignments;
+        assignments = await _context.Assignments.Include(a => a.AuthUser).Where(a => a.UserId == user.Id).ToListAsync();
+        List<AssignmentView> assignmentViews = new List<AssignmentView>();
+        foreach (var e in assignments)
+        {
+            AssignmentView assignmentView = new AssignmentView();
+            assignmentView.Id = e.Id;
+            assignmentView.Title = e.Title;
+            assignmentView.Description = e.Description;
+            assignmentView.Branchid = e.Branchid;
+            assignmentView.Typeid = e.Typeid;
+            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Publishtime = e.Publishtime;
+            assignmentView.Status = e.Status;
+            assignmentView.Verify = e.Verify;
+            assignmentView.Reward = e.Reward;
+            assignmentView.Rewardtype = e.Rewardtype;
+            assignmentView.Username = e.AuthUser?.UserName;
+            //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
+            assignmentViews.Add(assignmentView);
+        }
+        return assignmentViews;
+    }
+
+    /// <summary>
     /// 新建任务
     /// </summary>
     /// <param name="assignmentView"></param>
