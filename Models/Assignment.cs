@@ -88,4 +88,9 @@ public partial class Assignment
     /// 发布人信息
     /// </summary> 
     public virtual AuthUser? AuthUser { get; set; }
+
+    /// <summary>
+    /// 任务领取信息
+    /// </summary>
+    public virtual AssignmentUser? AssignmentUser { get; set; }
 }

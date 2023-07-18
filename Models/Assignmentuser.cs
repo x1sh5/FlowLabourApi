@@ -15,12 +15,12 @@ public partial class AssignmentUser
     /// 用户id，对应auth_user表中的id。
     /// </summary>
     /// <example>1</example>
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
     /// <summary>
     /// 任务信息
     /// </summary>
-    public virtual Assignment? Assignment { get; set; }
+    public Assignment? Assignment { get; set; }
     //public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 
     /// <summary>

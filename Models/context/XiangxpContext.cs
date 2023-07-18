@@ -19,7 +19,7 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Assignmenttype> Assignmenttypes { get; set; }
 
-    //public virtual DbSet<AssignmentUser> Assignmentusers { get; set; }
+    public virtual DbSet<AssignmentUser> Assignmentusers { get; set; }
 
     public virtual DbSet<AuthUser> AuthUsers { get; set; }
 
@@ -195,36 +195,31 @@ public partial class XiangxpContext : DbContext
                 .HasColumnName("level");
         });
 
-        #region AssignmentUser
-        //modelBuilder.Entity<AssignmentUser>(entity =>
-        //{
-        //    entity.HasKey(e => new { e.Assignmentid, e.Userid });
-        //    entity.ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
+        modelBuilder.Entity<AssignmentUser>(entity =>
+        {
+            entity.HasKey(e => new { e.Assignmentid, e.UserId });
+            entity.HasAlternateKey(e => e.Assignmentid);
+            //entity.HasNoKey();
+            entity.ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
 
-        //    entity.HasIndex(e => e.Assignmentid, "fk_agmuser_asgid_agm_id_idx");
+            entity.HasIndex(e => e.Assignmentid, "fk_agmuser_asgid_agm_id_idx");
 
-        //    entity.HasIndex(e => e.Userid, "fk_agmuser_asgid_user_id_idx");
-        //    entity.HasIndex(entity => entity.Assignmentid, "assignmentid_UNIQUE").IsUnique();
+            entity.HasIndex(e => e.UserId, "fk_agmuser_asgid_user_id_idx");
+            entity.HasIndex(entity => entity.Assignmentid, "assignmentid_UNIQUE").IsUnique();
 
-        //    entity.Property(e => e.Assignmentid)
-        //        .HasColumnType("int(11)")
-        //        .HasColumnName("assignmentid");
-        //    entity.Property(e => e.Userid)
-        //        .HasColumnType("int(11)")
-        //        .HasColumnName("userid");
+            entity.Property(e => e.Assignmentid)
+                .HasColumnType("int(11)")
+                .HasColumnName("assignmentid");
+            entity.Property(e => e.UserId)
+                .HasColumnType("int(11)")
+                .HasColumnName("userid");
 
-        //    entity.HasOne((AssignmentUser d) => d.Assignment)
-        //        .WithOne()
-        //        .HasForeignKey<AssignmentUser>(d => d.Assignmentid)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("fk_agmuser_asgid_user_id");
+            entity.HasOne(e => e.Assignment)
+                .WithOne(e => e.AssignmentUser);
 
-        //    entity.HasOne(d => d.User).WithOne()
-        //        .HasForeignKey<AssignmentUser>(d => d.Userid)
-        //        .OnDelete(DeleteBehavior.ClientSetNull)
-        //        .HasConstraintName("fk_agmuser_userid_user_id");
-        //});
-        #endregion
+            entity.HasOne(e => e.User)
+                .WithOne(e=>e.AssignmentUser);
+        });
 
         modelBuilder.Entity<AuthUser>(entity =>
         {

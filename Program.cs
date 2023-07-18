@@ -188,7 +188,7 @@ namespace FlowLabourApi
                             //RequireExpirationTime = true,
 
                             NameClaimType = JwtBearerDefaults.AuthenticationScheme,
-                            RoleClaimType = "RoleType",
+                            RoleClaimType = JwtClaimTypes.RoleClaim,
                             TokenDecryptionKey = jwtOptions.SecurityKey,
 
                             //ClockSkew = TimeSpan.Zero,

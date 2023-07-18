@@ -71,6 +71,14 @@ public partial class AuthUser
     /// </summary>
     public int AccessFailedCount { set; get; } = 0;
 
+    /// <summary>
+    /// 发布的任务
+    /// </summary>
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+
+    /// <summary>
+    /// 领取的任务信息
+    /// </summary>
+    public virtual AssignmentUser? AssignmentUser { get; set; }
 
 }
