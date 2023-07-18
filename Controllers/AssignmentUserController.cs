@@ -35,7 +35,7 @@ namespace FlowLabourApi.Controllers
                 .ToListAsync();
             foreach(var e in x)
             {
-                var a = _xiangxpContext.Assignments.Find(e.Assignmentid);
+                var a = _xiangxpContext.Assignments.Find(e.AssignmentId);
                 if(a != null)
                 {
                     assignments.Add(a);

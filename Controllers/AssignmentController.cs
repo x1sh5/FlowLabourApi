@@ -188,6 +188,12 @@ public class AssignmentController : ControllerBase
         };
         var e = _context.Assignments.Add(assignment);
         _context.SaveChanges();
+        _context.Assignmentusers.Add(new AssignmentUser
+        {
+            AssignmentId = e.Entity.Id,
+            UserId = user.Id,
+        });
+        _context.SaveChanges();
 
         return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id }, e.Entity);
     }

@@ -65,6 +65,7 @@
         /// <summary>
         /// tasktype的id外键
         /// </summary>
+        /// <example>1</example>
         public int Typeid { get; set; }
 
         /// <summary>

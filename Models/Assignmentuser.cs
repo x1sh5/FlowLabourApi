@@ -9,7 +9,7 @@ public partial class AssignmentUser
     /// 任务id,对应assignmen表中的id
     /// </summary>
     /// <example>1</example>
-    public int Assignmentid { get; set; }
+    public int AssignmentId { get; set; }
 
     /// <summary>
     /// 用户id，对应auth_user表中的id。

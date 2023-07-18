@@ -197,17 +197,17 @@ public partial class XiangxpContext : DbContext
 
         modelBuilder.Entity<AssignmentUser>(entity =>
         {
-            entity.HasKey(e => new { e.Assignmentid, e.UserId });
-            entity.HasAlternateKey(e => e.Assignmentid);
+            entity.HasKey(e => new { e.AssignmentId, e.UserId });
+            //entity.HasAlternateKey(e => e.AssignmentId);
             //entity.HasNoKey();
             entity.ToTable("assignmentuser", tb => tb.HasComment("任务接取情况"));
 
-            entity.HasIndex(e => e.Assignmentid, "fk_agmuser_asgid_agm_id_idx");
+            entity.HasIndex(e => e.AssignmentId, "fk_agmuser_asgid_agm_id_idx");
 
             entity.HasIndex(e => e.UserId, "fk_agmuser_asgid_user_id_idx");
-            entity.HasIndex(entity => entity.Assignmentid, "assignmentid_UNIQUE").IsUnique();
+            entity.HasIndex(entity => entity.AssignmentId, "assignmentid_UNIQUE").IsUnique();
 
-            entity.Property(e => e.Assignmentid)
+            entity.Property(e => e.AssignmentId)
                 .HasColumnType("int(11)")
                 .HasColumnName("assignmentid");
             entity.Property(e => e.UserId)
