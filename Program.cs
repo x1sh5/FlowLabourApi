@@ -255,15 +255,19 @@ namespace FlowLabourApi
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
-            //{
             app.UseSwagger();
             app.UseSwaggerUI();
-            //}
 
-            // <snippet_UseWebSockets>
-            var webSocketOptions = new WebSocketOptions
+            //Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+        // <snippet_UseWebSockets>
+        var webSocketOptions = new WebSocketOptions
             {
                 KeepAliveInterval = TimeSpan.FromMinutes(40)
             };
@@ -273,7 +277,7 @@ namespace FlowLabourApi
             #region 新加
             app.UseDefaultFiles();
 
-            //app.UseHttpsRedirection(); //nginx配置失败原因
+            app.UseHttpsRedirection(); //nginx配置失败原因
             app.UseStaticFiles();
 
 
@@ -287,9 +291,10 @@ namespace FlowLabourApi
 
             app.UseCors(builder =>
             {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
+                //builder
+                    //.AllowAnyOrigin()
+                    //.AllowAnyMethod();
+                    //.AllowAnyHeader();
             });
 
             app.UseAuthentication();
