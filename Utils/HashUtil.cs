@@ -1,4 +1,6 @@
-﻿namespace FlowLabourApi.Utils
+﻿using System.Security.Cryptography;
+
+namespace FlowLabourApi.Utils
 {
     public class HashUtil
     {
@@ -31,6 +33,29 @@
                 //string hash = BitConverter.ToString(bytes).Replace("-", string.Empty);
                 return builder.ToString();
                 //return hash;
+            }
+        }
+
+        public static string CalculateMD5(Stream stream)
+        {
+            using (var md5 = MD5.Create())
+            {
+                
+                byte[] hash = md5.ComputeHash(stream);
+                return BitConverter.ToString(hash).Replace("-", "").ToLower();
+                
+            }
+        }
+
+        public static string CalculateMD5(string filePath)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filePath))
+                {
+                    byte[] hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLower();
+                }
             }
         }
     }

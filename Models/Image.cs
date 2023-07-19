@@ -23,7 +23,7 @@
         /// <summary>
         /// 任务id
         /// </summary>
-        public int AssignmentId { get; set; }
+        public int? AssignmentId { get; set; }
 
         /// <summary>
         /// 

@@ -24,7 +24,7 @@ public partial class Message
     /// <summary>
     /// 消息类型
     /// </summary>
-    public string? ContentType { get; set; }
+    public string? ContentType { get; set; } = "string";
 
     /// <summary>
     /// 发信日期
@@ -34,10 +34,10 @@ public partial class Message
     /// <summary>
     /// 
     /// </summary>
-    public virtual AuthUser FromNavigation { get; set; } = null!;
+    public virtual AuthUser? FromNavigation { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    public virtual AuthUser ToNavigation { get; set; } = null!;
+    public virtual AuthUser? ToNavigation { get; set; }
 }

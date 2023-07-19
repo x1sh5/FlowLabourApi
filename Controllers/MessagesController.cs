@@ -1,12 +1,15 @@
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlowLabourApi.Controllers
 {
     [Route("/api/messages")]
     [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)]
+    [Authorize]
+    //[ApiExplorerSettings(IgnoreApi = true)]
     public class MessagesController : ControllerBase
     {
         private readonly XiangxpContext _context;
@@ -36,12 +39,19 @@ namespace FlowLabourApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Message> CreateMessage(Message message)
+        public ActionResult<Message> CreateMessage(MessageView message)
         {
-            _context.Messages.Add(message);
+            var e =  _context.Messages.Add(new Message()
+            {
+                From = message.From,
+                To = message.To,
+                Content = message.Content,
+                Date = message.Date,
+                ContentType = message.ContentType
+            });
             _context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetMessage), new { id = message.From }, message);
+            return CreatedAtAction(nameof(GetMessage), /* new { id = message.From }, */ e.Entity);
         }
 
         [HttpPut("{id}")]

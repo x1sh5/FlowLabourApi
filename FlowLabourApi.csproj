@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="Events\" />
+    <Folder Include="wwwroot\flow\static\" />
   </ItemGroup>
 
 </Project>

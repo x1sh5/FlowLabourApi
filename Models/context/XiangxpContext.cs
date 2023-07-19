@@ -481,6 +481,8 @@ public partial class XiangxpContext : DbContext
             entity.ToTable("images");
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
+            entity.HasIndex(e => e.Md5, "md5_UNIQUE").IsUnique();
+
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("id")
