@@ -289,13 +289,18 @@ namespace FlowLabourApi
 
             app.MapControllers();
 
-            app.UseCors(builder =>
+            //±¾µØ²âÊÔ¿çÓò
+            if(app.Environment.IsDevelopment())
             {
-                //builder
-                    //.AllowAnyOrigin()
-                    //.AllowAnyMethod();
-                    //.AllowAnyHeader();
-            });
+                app.UseCors(builder =>
+                {
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            }
+
 
             app.UseAuthentication();
             app.UseAuthorization();
