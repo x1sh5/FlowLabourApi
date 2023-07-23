@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -158,9 +159,7 @@ namespace FlowLabourApi
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    //options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
                     options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-                    //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                     options =>
@@ -215,6 +214,7 @@ namespace FlowLabourApi
             //    })
             .AddCookie(IdentityConstants.ApplicationScheme, o =>
             {
+                o.ExpireTimeSpan = TimeSpan.FromDays(30);
                 o.LoginPath = new PathString("/Account/Login");
                 o.Events = new CookieAuthenticationEvents
                 {
@@ -257,14 +257,14 @@ namespace FlowLabourApi
 
             app.UseSwagger();
             app.UseSwaggerUI();
-
+            app.UseHsts();
             //Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            //if (!app.Environment.IsDevelopment())
+            //{
+            //    app.UseExceptionHandler("/Home/Error");
+            //    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            //    app.UseHsts();
+            //}
 
         // <snippet_UseWebSockets>
         var webSocketOptions = new WebSocketOptions
@@ -289,18 +289,15 @@ namespace FlowLabourApi
 
             app.MapControllers();
 
-            //±¾µØ²âÊÔ¿çÓò
-            if(app.Environment.IsDevelopment())
+            //¿çÓò
+            app.UseCors(builder =>
             {
-                app.UseCors(builder =>
-                {
-                    builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-                });
-            }
-
+                builder
+                //.AllowCredentials()
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -317,6 +314,11 @@ namespace FlowLabourApi
             //});
 
             app.MapHub<ChatHub>("/chatHub");
+            //app.Use((context,next)=>
+            //{
+            //    context.Response.Headers.AccessControlExposeHeaders.Append("Set-Cookie");
+            //    return next.Invoke();
+            //});
             app.Run();
         }
     }

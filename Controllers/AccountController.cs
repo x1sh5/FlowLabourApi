@@ -4,11 +4,16 @@ using FlowLabourApi.Models.context;
 using FlowLabourApi.Options;
 using FlowLabourApi.Utils;
 using FlowLabourApi.ViewModels;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System.Security.Claims;
 
 namespace FlowLabourApi.Controllers
@@ -23,15 +28,17 @@ namespace FlowLabourApi.Controllers
         private readonly XiangxpContext _context;
         private JwtOptions _jwtOptions;
         //private readonly IUserStore<AuthUser> _flowUserStore;
-        private SignInManager<AuthUser> signInManager;
+        //private SignInManager<AuthUser> signInManager;
         private readonly IAuthTokenService _authTokenService;
 
-        public AccountController(XiangxpContext context, SignInManager<AuthUser> signInManager,
-            IOptionsSnapshot<JwtOptions> jwtOptions, IAuthTokenService authTokenService
+        public AccountController(XiangxpContext context,
+            //SignInManager<AuthUser> signInManager,
+            IOptionsSnapshot<JwtOptions> jwtOptions,
+            IAuthTokenService authTokenService
              /* FlowUserStore flowUserStore */)
         {
             _context = context;
-            this.signInManager = signInManager;
+            //this.signInManager = signInManager;
             _jwtOptions = jwtOptions.Value;
             _authTokenService = authTokenService;
             //_flowUserStore = flowUserStore;
@@ -192,9 +199,9 @@ namespace FlowLabourApi.Controllers
             }
             userRole.User = user;
 
-            //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+            //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, User);
 
-            await signInManager.SignInAsync(user, true);
+            //await signInManager.SignInAsync(user, true);
 
             var UA = Request.Headers.UserAgent[0];
 
@@ -203,9 +210,19 @@ namespace FlowLabourApi.Controllers
             //SecurityToken? token = GenerateToken(userRole);
             var token = await _authTokenService.CreateAuthTokenAsync(userRole, ua);
 
-            // code to handle login
-            Response.Headers["set-cookie"] = $"access_token={token.AccessToken};path=/;httponly;expires={DateTime.UtcNow.AddHours(8)};"
-                + $"refresh_token={token.RefreshToken};path=/;httponly;expires={DateTime.UtcNow.AddDays(7)};";
+            CookieOptions cookieOptions = new CookieOptions
+            {
+                //HttpOnly = true,
+                Expires = DateTime.Now.AddHours(18),
+                Path = "/"
+            };
+            Response.Cookies.Append("access_token", token.AccessToken, cookieOptions);
+            Response.Cookies.Append("refresh_token", token.RefreshToken, cookieOptions);
+
+            string accessTokenstr = cookiestr("access_token", token.AccessToken, cookieOptions);
+            string refreshTokenstr = cookiestr("refresh_token", token.RefreshToken, cookieOptions);
+            token.AccessToken = accessTokenstr;
+            token.RefreshToken = refreshTokenstr;
             return Ok(token);
         }
 
@@ -245,6 +262,24 @@ namespace FlowLabourApi.Controllers
             {
                 return BadRequest(new { Error = ex.Message });
             }
+        }
+
+        [NonAction]
+        public string cookiestr(string key,string value, CookieOptions options)
+        {
+            bool _enableCookieNameEncoding = AppContext.TryGetSwitch("Microsoft.AspNetCore.Http.EnableCookieNameEncoding", out var isEnabled) && isEnabled;
+            string value2 = new SetCookieHeaderValue(_enableCookieNameEncoding ? Uri.EscapeDataString(key) : key, Uri.EscapeDataString(value))
+            {
+                Domain = options.Domain,
+                Path = options.Path,
+                Expires = options.Expires,
+                MaxAge = options.MaxAge,
+                Secure = options.Secure,
+                SameSite = (Microsoft.Net.Http.Headers.SameSiteMode)options.SameSite,
+                HttpOnly = options.HttpOnly
+            }.ToString();
+
+            return value2;
         }
 
     }

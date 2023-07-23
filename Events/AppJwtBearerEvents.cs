@@ -107,7 +107,11 @@ public class AppJwtBearerEvents : JwtBearerEvents
         #region 以下是自定义Token获取方式示例（实际上也是默认方式）
 
         //string authorization = context.Request.Headers[HeaderNames.Authorization];
-        string authorization = context.Request.Cookies["access_token"];
+        string? authorization = context.Request.Cookies["access_token"];
+        if (string.IsNullOrEmpty(authorization))
+        {
+            authorization = context.Request.Headers.Authorization;
+        }
         if (string.IsNullOrEmpty(authorization))
         {
             context.NoResult();
@@ -118,7 +122,16 @@ public class AppJwtBearerEvents : JwtBearerEvents
         //{
         //    context.Token = authorization["Bearer ".Length..].Trim();
         //}
-        context.Token = authorization;
+        string targetKey = "accessToken";
+
+        var accessToken = authorization.Split(';')
+                          .Select(pair => pair.Split('='))
+                          .FirstOrDefault(keyValue => keyValue.Length == 2 && keyValue[0].Trim() == targetKey);
+        if(accessToken != null)
+        {
+            context.Token = accessToken[1].Trim();
+        }
+
         if (string.IsNullOrEmpty(context.Token))
         {
             context.NoResult();
