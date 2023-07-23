@@ -1,6 +1,9 @@
-﻿using FlowLabourApi.Options;
+﻿using FlowLabourApi.Config;
+using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -107,10 +110,11 @@ public class AppJwtBearerEvents : JwtBearerEvents
         #region 以下是自定义Token获取方式示例（实际上也是默认方式）
 
         //string authorization = context.Request.Headers[HeaderNames.Authorization];
-        string? authorization = context.Request.Cookies["access_token"];
+        StringValues authorization;
+        authorization = context.Request.Cookies[CookieTypes.accessToken];
         if (string.IsNullOrEmpty(authorization))
         {
-            authorization = context.Request.Headers.Authorization;
+            context.Request.Query.TryGetValue(CookieTypes.accessToken,out authorization);
         }
         if (string.IsNullOrEmpty(authorization))
         {
@@ -122,9 +126,10 @@ public class AppJwtBearerEvents : JwtBearerEvents
         //{
         //    context.Token = authorization["Bearer ".Length..].Trim();
         //}
-        string targetKey = "accessToken";
+        string targetKey = CookieTypes.accessToken;
+        string authstr = authorization.ToString();
 
-        var accessToken = authorization.Split(';')
+        var accessToken = authstr.Split(';')
                           .Select(pair => pair.Split('='))
                           .FirstOrDefault(keyValue => keyValue.Length == 2 && keyValue[0].Trim() == targetKey);
         if(accessToken != null)

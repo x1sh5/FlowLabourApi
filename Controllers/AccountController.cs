@@ -1,4 +1,5 @@
 using FlowLabourApi.Authentication;
+using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Options;
@@ -208,7 +209,7 @@ namespace FlowLabourApi.Controllers
             var ua = HashUtil.Md5(UA ?? "unkownAgent");
 
             //SecurityToken? token = GenerateToken(userRole);
-            var token = await _authTokenService.CreateAuthTokenAsync(userRole, ua);
+            AuthTokenDto? token = await _authTokenService.CreateAuthTokenAsync(userRole, ua);
 
             CookieOptions cookieOptions = new CookieOptions
             {
@@ -216,11 +217,11 @@ namespace FlowLabourApi.Controllers
                 Expires = DateTime.Now.AddHours(18),
                 Path = "/"
             };
-            Response.Cookies.Append("access_token", token.AccessToken, cookieOptions);
-            Response.Cookies.Append("refresh_token", token.RefreshToken, cookieOptions);
+            Response.Cookies.Append(CookieTypes.accessToken, token.AccessToken, cookieOptions);
+            Response.Cookies.Append(CookieTypes.refreshToken, token.RefreshToken, cookieOptions);
 
-            string accessTokenstr = cookiestr("access_token", token.AccessToken, cookieOptions);
-            string refreshTokenstr = cookiestr("refresh_token", token.RefreshToken, cookieOptions);
+            string accessTokenstr = cookiestr(CookieTypes.accessToken, token.AccessToken, cookieOptions);
+            string refreshTokenstr = cookiestr(CookieTypes.refreshToken, token.RefreshToken, cookieOptions);
             token.AccessToken = accessTokenstr;
             token.RefreshToken = refreshTokenstr;
             return Ok(token);
