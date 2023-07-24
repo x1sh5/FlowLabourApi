@@ -199,19 +199,7 @@ namespace FlowLabourApi
                         options.SecurityTokenValidators.Add(new JwtSecurityTokenHandler());
 
                         options.EventsType = typeof(AppJwtBearerEvents);
-                    })
-            //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-            //options =>
-            //    {
-            //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            //        options.LoginPath = new PathString("/api/Account/Login");
-            //        //options.AccessDeniedPath = new PathString("/api/Account/Login");
-            //        //options.Events.OnRedirectToLogin = context =>
-            //        //    {
-            //        //        context.Response.Redirect("https://localhost:7221/api/Account/Login");
-            //        //        return Task.CompletedTask;
-            //        //    };
-            //    })
+            })
             .AddCookie(IdentityConstants.ApplicationScheme, o =>
             {
                 o.ExpireTimeSpan = TimeSpan.FromDays(30);
@@ -221,7 +209,6 @@ namespace FlowLabourApi
                     OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
                 };
             });
-
 
 
 #pragma warning disable CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
@@ -294,7 +281,7 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-                .AllowAnyOrigin()
+                .AllowAnyOrigin()  //服务器环境下注释该行
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });

@@ -39,33 +39,6 @@ namespace FlowLabourApi.Events;
 //        return Task.CompletedTask;
 //    }
 
-//    public override Task TokenValidated(TokenValidatedContext context)
-//    {
-//        return Task.CompletedTask;
-//    }
-
-//    public override Task AuthenticationFailed(AuthenticationFailedContext context)
-//    {
-//        Console.WriteLine($"Exception: {context.Exception}");
-
-//        return Task.CompletedTask;
-//    }
-
-//    public override Task Challenge(JwtBearerChallengeContext context)
-//    {
-//        Console.WriteLine($"Authenticate Failure: {context.AuthenticateFailure}");
-//        Console.WriteLine($"Error: {context.Error}");
-//        Console.WriteLine($"Error Description: {context.ErrorDescription}");
-//        Console.WriteLine($"Error Uri: {context.ErrorUri}");
-
-//        return Task.CompletedTask;
-//    }
-
-//    public override Task Forbidden(ForbiddenContext context)
-//    {
-//        return Task.CompletedTask;
-//    }
-//}
 
 public class AppJwtBearerEvents : JwtBearerEvents
 {
@@ -87,8 +60,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
     public override Task MessageReceived(MessageReceivedContext context)
     {
         Console.WriteLine("-------------- MessageReceived Begin --------------");
-
-        base.MessageReceived(context);
         //if(context.Request.Path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase))
         //{
         //    var accessToken = context.Request.Query["access_token"];
@@ -111,13 +82,23 @@ public class AppJwtBearerEvents : JwtBearerEvents
 
         //string authorization = context.Request.Headers[HeaderNames.Authorization];
         StringValues authorization;
+        bool hasCookie = true;
+        bool hasAuth = true;
+        bool hasQuery = true;
         authorization = context.Request.Cookies[CookieTypes.accessToken];
         if (string.IsNullOrEmpty(authorization))
         {
+            hasCookie = false;
             context.Request.Query.TryGetValue(CookieTypes.accessToken,out authorization);
         }
         if (string.IsNullOrEmpty(authorization))
         {
+            hasQuery = false;
+            authorization = context.Request.Headers.Authorization;
+        }
+        if (string.IsNullOrEmpty(authorization))
+        {
+            hasAuth = false;
             context.NoResult();
             return Task.CompletedTask;
         }
@@ -126,15 +107,22 @@ public class AppJwtBearerEvents : JwtBearerEvents
         //{
         //    context.Token = authorization["Bearer ".Length..].Trim();
         //}
-        string targetKey = CookieTypes.accessToken;
-        string authstr = authorization.ToString();
-
-        var accessToken = authstr.Split(';')
-                          .Select(pair => pair.Split('='))
-                          .FirstOrDefault(keyValue => keyValue.Length == 2 && keyValue[0].Trim() == targetKey);
-        if(accessToken != null)
+        if(hasCookie || hasQuery)
         {
-            context.Token = accessToken[1].Trim();
+            context.Token = authorization;
+        }
+        else
+        {
+            string targetKey = CookieTypes.accessToken;
+            string authstr = authorization.ToString();
+
+            var accessToken = authstr.Split(';')
+                              .Select(pair => pair.Split('='))
+                              .FirstOrDefault(keyValue => keyValue.Length == 2 && keyValue[0].Trim() == targetKey);
+            if (accessToken != null)
+            {
+                context.Token = accessToken[1].Trim();
+            }
         }
 
         if (string.IsNullOrEmpty(context.Token))
@@ -144,9 +132,8 @@ public class AppJwtBearerEvents : JwtBearerEvents
         }
 
         #endregion
-
+        base.MessageReceived(context);
         Console.WriteLine("-------------- MessageReceived End --------------");
-
         return Task.CompletedTask;
     }
 
@@ -237,7 +224,7 @@ public class AppJwtBearerEvents : JwtBearerEvents
         Console.WriteLine($"Error Uri: {context.ErrorUri}");
 
         Console.WriteLine("-------------- Challenge End --------------");
-
+        //context.Response.Headers.Location = "/login";
         return Task.CompletedTask;
     }
 
