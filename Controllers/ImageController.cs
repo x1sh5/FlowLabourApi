@@ -23,6 +23,11 @@ namespace FlowLabourApi.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// 根据文件md5获取图片
+        /// </summary>
+        /// <param name="names">文件md5</param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ResponeMessage<Image>>>> GetImage(IEnumerable<string> names)
         {
@@ -39,6 +44,11 @@ namespace FlowLabourApi.Controllers
             return responeMessages;
         }
 
+        /// <summary>
+        /// 上传图片
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
         [HttpPost("upload")]
         public async Task<ActionResult<IEnumerable<Image>>> Upload(IEnumerable<IFormFile> files)
         {

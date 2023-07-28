@@ -2,9 +2,17 @@
 using System.Text.RegularExpressions;
 
 namespace FlowLabourApi.Utils
-{
-    public class IdentityNoUtil
+{   
+    /// <summary>
+    /// 身份信息验证工具类
+    /// </summary>
+    public class IdentityValidateUtil
     {
+        /// <summary>
+        /// 验证身份证号码
+        /// </summary>
+        /// <param name="idNo"></param>
+        /// <returns></returns>
         public static bool ValidateIdentityNo(string idNo)
         {
             // Check if the input is empty or null
@@ -53,6 +61,11 @@ namespace FlowLabourApi.Utils
             return false;
         }
 
+        /// <summary>
+        /// calculate the birth date from the identity number
+        /// </summary>
+        /// <param name="idNo"></param>
+        /// <returns></returns>
         public static DateTime GetBirthDateFromID(string idNo)
         {
             string birthDateStr = idNo.Substring(6, 8);
@@ -64,6 +77,11 @@ namespace FlowLabourApi.Utils
             return DateTime.MinValue;
         }
 
+        /// <summary>
+        /// 验证邮件格式
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public static bool ValidateEmailFormat(string email)
         {
             // Check if the input is empty or null

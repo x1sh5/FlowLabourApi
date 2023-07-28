@@ -135,7 +135,7 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public IActionResult EmailCheck(string email, out bool validate)
         {
-            var isok = IdentityNoUtil.ValidateEmailFormat(email);
+            var isok = IdentityValidateUtil.ValidateEmailFormat(email);
             if (!isok)
             {
                 validate = false;

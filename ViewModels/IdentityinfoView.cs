@@ -54,10 +54,10 @@ namespace FlowLabourApi.ViewModels
             set
             {
                 _identityNo = value;
-                _isValidate = IdentityNoUtil.ValidateIdentityNo(value);
+                _isValidate = IdentityValidateUtil.ValidateIdentityNo(value);
                 if (_isValidate)
                 {
-                    DateTime dateTime = IdentityNoUtil.GetBirthDateFromID(value);
+                    DateTime dateTime = IdentityValidateUtil.GetBirthDateFromID(value);
                     Age = (sbyte?)(DateTime.Now.Year - dateTime.Year);
                 }
             }

@@ -32,7 +32,7 @@ namespace FlowLabourApi.ViewModels
             }
             set
             {
-                _isValidate = IdentityNoUtil.ValidateIdentityNo(value);
+                _isValidate = IdentityValidateUtil.ValidateIdentityNo(value);
                 if (_isValidate)
                 {
                     _identityNo = value;

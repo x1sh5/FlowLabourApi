@@ -35,7 +35,7 @@ public partial class IdentityInfo
         set
         {
             _identityNo = value;
-            DateTime dateTime = IdentityNoUtil.GetBirthDateFromID(value);
+            DateTime dateTime = IdentityValidateUtil.GetBirthDateFromID(value);
             _age = (sbyte?)(DateTime.Now.Year - dateTime.Year);
         }
     }
