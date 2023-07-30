@@ -115,7 +115,10 @@ namespace FlowLabourApi
                 });
             });
 
-            builder.Services.AddSignalR();
+            builder.Services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
 
             //自定义身份验证
             //AddDefaultTokenProviders
