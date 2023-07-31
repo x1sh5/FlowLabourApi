@@ -2,7 +2,7 @@
     // <snippet_Connection>
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chathub", { accessTokenFactory: () => this.loginToken })
-        .configureLogging(signalR.LogLevel.Information)
+        .configureLogging(signalR.LogLevel.Trace)
         .build();
     // </snippet_Connection>
 
