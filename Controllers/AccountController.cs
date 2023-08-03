@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
@@ -44,6 +45,18 @@ namespace FlowLabourApi.Controllers
             _authTokenService = authTokenService;
             //_flowUserStore = flowUserStore;
         }
+
+        /// <summary>
+        /// 是否登录验证
+        /// </summary>
+        /// <returns></returns>
+        [HttpHead("loginTest")]
+        [Authorize]
+        public void LoginTest()
+        {
+            Response.StatusCode = 200;
+        }
+
         /// <summary>
         /// 注册
         /// </summary>
@@ -89,10 +102,11 @@ namespace FlowLabourApi.Controllers
         /// 用户名检查
         /// </summary>
         /// <param name="username"></param>
+        /// <param name="validate"></param>
         /// <returns></returns>
         [HttpGet("namecheck")]
         [AllowAnonymous]
-        public IActionResult NameCheck(string username, out bool validate)
+        public IActionResult NameCheck(string username, [BindNever]out bool validate)
         {
             var user = _context.AuthUsers.FirstOrDefault(e => e.UserName == username);
             if (user != null)
