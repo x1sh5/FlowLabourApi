@@ -48,6 +48,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Reward = e.Reward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
+            assignmentView.UserId = e.UserId;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -69,7 +70,10 @@ public class AssignmentController : ControllerBase
             assignments = await _context.Assignments.Include(o => o.AuthUser)
                 .Where(e => e.Typeid == typeid).ToListAsync();
         }
-        assignments = await _context.Assignments.Include(o => o.AuthUser).ToListAsync();
+        else
+        {
+            assignments = await _context.Assignments.Include(o => o.AuthUser).ToListAsync();
+        } 
 
         List<AssignmentView> assignmentViews;
         assignmentViews = assignments.Select(e => new AssignmentView
@@ -86,6 +90,7 @@ public class AssignmentController : ControllerBase
             Reward = e.Reward,
             Rewardtype = e.Rewardtype,
             Username = e.AuthUser?.UserName,
+            UserId = e.UserId,
         }).ToList();
         return assignmentViews;
     }
@@ -156,6 +161,39 @@ public class AssignmentController : ControllerBase
             assignmentView.Reward = e.Reward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
+            //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
+            assignmentViews.Add(assignmentView);
+        }
+        return assignmentViews;
+    }
+
+    /// <summary>
+    /// °´±êÌâËÑË÷
+    /// </summary>
+    /// <param name="title"></param>
+    /// <returns></returns>
+    [HttpGet("search/{title}")]
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> SearchByTitile(string title)
+    {
+        var assignments = await _context.Assignments.Include(a => a.AuthUser)
+            .Where(a => a.Title!.Contains(title)).ToListAsync();
+        List<AssignmentView> assignmentViews = new List<AssignmentView>();
+        foreach (var e in assignments)
+        {
+            AssignmentView assignmentView = new AssignmentView();
+            assignmentView.Id = e.Id;
+            assignmentView.Title = e.Title;
+            assignmentView.Description = e.Description;
+            assignmentView.Branchid = e.Branchid;
+            assignmentView.Typeid = e.Typeid;
+            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Publishtime = e.Publishtime;
+            assignmentView.Status = e.Status;
+            assignmentView.Verify = e.Verify;
+            assignmentView.Reward = e.Reward;
+            assignmentView.Rewardtype = e.Rewardtype;
+            assignmentView.Username = e.AuthUser?.UserName;
+            assignmentView.UserId = e.UserId;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }

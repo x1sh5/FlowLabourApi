@@ -10,9 +10,16 @@
         /// </summary>
         /// <example>用户名</example>
         public int Id { get; set; }
+
+        /// <summary>
+        /// 用户id
+        /// </summary>
+        public int UserId { get; set; }
+
         /// <summary>
         /// 用户名，对应auth_user表的username
         /// </summary>
+
         public string? Username { get; set; }
         /// <summary>
         /// 所属部门，对应branch表的id

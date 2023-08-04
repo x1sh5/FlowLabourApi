@@ -236,11 +236,25 @@ namespace FlowLabourApi.Controllers
 
             string accessTokenstr = cookiestr(CookieTypes.accessToken, token.AccessToken, cookieOptions);
             string refreshTokenstr = cookiestr(CookieTypes.refreshToken, token.RefreshToken, cookieOptions);
-            token.AccessToken = accessTokenstr;
-            token.RefreshToken = refreshTokenstr;
-            return Ok(token);
+
+            UserView userView = new UserView
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNo = user.PhoneNo,
+                AccessToken = accessTokenstr,
+                RefreshToken = refreshTokenstr
+            };
+
+            return Ok(userView);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("special")]
         [Authorize()]
         public IActionResult Edit(int id)
@@ -298,4 +312,6 @@ namespace FlowLabourApi.Controllers
         }
 
     }
+
+    internal record NewRecord(AuthTokenDto Token, UserView Info);
 }
