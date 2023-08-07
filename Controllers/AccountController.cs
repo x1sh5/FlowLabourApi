@@ -2,6 +2,7 @@ using FlowLabourApi.Authentication;
 using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.state;
 using FlowLabourApi.Options;
 using FlowLabourApi.Utils;
 using FlowLabourApi.ViewModels;
@@ -16,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel;
 using System.Security.Claims;
 
 namespace FlowLabourApi.Controllers
@@ -66,19 +69,19 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterView register)
         {
-            bool validate = false;
-            EmailCheck(register.Email, out validate);
-            if (!validate)
+            var emailOk =  EmailCheck(register.Email);
+            var isOk = (ResponeMessage<CheckMSg>)emailOk.Value;
+            if (!isOk.Data.Status)
             {
                 return BadRequest(new { status = false, message = "邮件无效！" });
             }
-            NameCheck(register.UserName, out validate);
-            if (!validate)
+            var nameOk =  NameCheck(register.UserName);
+            if (!((ResponeMessage<CheckMSg>)nameOk.Value).Data.Status)
             {
                 return BadRequest(new { status = false, message = "用户名已存在！" });
             }
-            PhoneCheck(register.PhoneNo, out validate);
-            if (!validate)
+            var phoneOk = PhoneCheck(register.PhoneNo);
+            if (!((ResponeMessage<CheckMSg>)phoneOk.Value).Data.Status)
             {
                 return BadRequest(new { status = false, message = "电话号码已被注册！" });
             }
@@ -95,7 +98,7 @@ namespace FlowLabourApi.Controllers
             _context.UserRoles.Add(new UserRole { RoleId = 1, UserId = e.Entity.Id });
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new ResponeMessage<string> { Code=200,Message="注册成功"});
         }
 
         /// <summary>
@@ -106,18 +109,19 @@ namespace FlowLabourApi.Controllers
         /// <returns></returns>
         [HttpGet("namecheck")]
         [AllowAnonymous]
-        public IActionResult NameCheck(string username, [BindNever]out bool validate)
+        public ObjectResult NameCheck(string username)
         {
             var user = _context.AuthUsers.FirstOrDefault(e => e.UserName == username);
+            var rsm = new ResponeMessage<CheckMSg> { Code = 200, Message = "" };
             if (user != null)
             {
-                validate = false;
-                return Ok(new { status = false, message = "用户名已存在" });
+                rsm.Data = new CheckMSg(false, "用户名已存在");
+                return Ok(rsm);
             }
             //Response.Headers
             // code to handle registration
-            validate = true;
-            return Ok(new { status = true, message = "用户名通过" });
+            rsm.Data = new CheckMSg(true, "用户名通过");
+            return Ok(rsm);
         }
 
         /// <summary>
@@ -127,17 +131,25 @@ namespace FlowLabourApi.Controllers
         /// <returns></returns>
         [HttpGet("phonecheck")]
         [AllowAnonymous]
-        public IActionResult PhoneCheck(string PhoneNo, out bool validate)
+
+        public ObjectResult PhoneCheck(string phoneNo)
         {
-            var user = _context.AuthUsers.FirstOrDefault(e => e.PhoneNo == PhoneNo);
-            if (user != null)
+            var rsm = new ResponeMessage<CheckMSg> { Code = 200, Message = "" };
+            if (!IdentityValidateUtil.ValidatePhoneFormat(phoneNo))
             {
-                validate = false;
-                return Ok(new { status = false, message = "该电话号码以绑定其他账号" });
+                rsm.Data = new CheckMSg(false, "电话号码无效！");
+                return BadRequest(rsm);
             }
 
-            validate = true;
-            return Ok(new { status = true, message = "可用" });
+            var user = _context.AuthUsers.FirstOrDefault(e => e.PhoneNo == phoneNo);
+            if (user != null)
+            {
+                rsm.Data = new CheckMSg(false, "该电话号码以绑定其他账号");
+                return Ok(rsm);
+            }
+
+            rsm.Data = new CheckMSg(true, "可用");
+            return Ok(rsm);
         }
 
         /// <summary>
@@ -147,23 +159,24 @@ namespace FlowLabourApi.Controllers
         /// <returns></returns>
         [HttpGet("emailcheck")]
         [AllowAnonymous]
-        public IActionResult EmailCheck(string email, out bool validate)
+        public ObjectResult EmailCheck(string email)
         {
             var isok = IdentityValidateUtil.ValidateEmailFormat(email);
+            var rsm = new ResponeMessage<CheckMSg> { Code = 200,Message="" };
             if (!isok)
             {
-                validate = false;
-                return Ok(new { status = false, message = "邮件格式无效" });
+                rsm.Data = new CheckMSg(false, "邮件格式无效");
+                return Ok(rsm);
             }
             var user = _context.AuthUsers.FirstOrDefault(e => e.Email == email);
             if (user != null)
             {
-                validate = false;
-                return Ok(new { status = false, message = "该邮件以绑定其他账号" });
+                rsm.Data = new CheckMSg(false, "该邮件以绑定其他账号");
+                return Ok(rsm);
             }
 
-            validate = true;
-            return Ok(new { status = true, message = "可用" });
+            rsm.Data = new CheckMSg(true, "可用");
+            return Ok(rsm);
         }
 
         /// <summary>
@@ -255,7 +268,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("special")]
+        [HttpGet("special/{id}")]
         [Authorize()]
         public IActionResult Edit(int id)
         {
@@ -313,5 +326,5 @@ namespace FlowLabourApi.Controllers
 
     }
 
-    internal record NewRecord(AuthTokenDto Token, UserView Info);
+    internal record CheckMSg(bool Status, string msg);
 }

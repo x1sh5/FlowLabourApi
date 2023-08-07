@@ -104,7 +104,7 @@ namespace FlowLabourApi.Utils
             }
 
             // Check if the input doesn't contain invalid characters
-            Regex regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+            Regex regex = new Regex(@"^[a-zA-Z0-9._%#&'*$+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
             Match match = regex.Match(email);
             if (!match.Success)
             {
@@ -114,5 +114,27 @@ namespace FlowLabourApi.Utils
             return true;
         }
 
+        /// <summary>
+        /// 验证电话号码格式
+        /// </summary>
+        /// <param name="phoneNo"></param>
+        /// <returns></returns>
+        public static bool ValidatePhoneFormat(string phoneNo)
+        {
+            if(phoneNo.Length != 11)
+            {
+                return false;
+            }
+            if (!phoneNo.StartsWith("1"))
+            {
+                return false;
+            }
+            Match match = Regex.Match(phoneNo, @"^[1][0-9]{10}$");
+            if (!match.Success)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
