@@ -217,7 +217,7 @@ public class AssignmentController : ControllerBase
             Branchid = assignmentView.Branchid,
             Typeid = assignmentView.Typeid,
             Presumedtime = assignmentView.Presumedtime,
-            Publishtime = assignmentView.Publishtime,
+            Publishtime = DateTime.Now,
             Status = assignmentView.Status,
             Verify = assignmentView.Verify,
             Reward = assignmentView.Reward,

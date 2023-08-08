@@ -36,7 +36,7 @@
         /// <summary>
         /// 预计完成日期
         /// </summary>
-        public DateTime Finishtime { get; set; }
+        public DateTime? Finishtime { get; set; }
 
         /// <summary>
         /// 单位：分钟
