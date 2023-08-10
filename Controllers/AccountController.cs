@@ -17,8 +17,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using NuGet.Common;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace FlowLabourApi.Controllers
@@ -290,10 +292,19 @@ namespace FlowLabourApi.Controllers
             return Content($"user is {isAuth}");
         }
 
+        /// <summary>
+        /// Ë¢ÐÂtoken
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] AuthTokenDto dto)
+        [HttpGet("refresh-token")]
+        public async Task<IActionResult> RefreshToken([Required]string accessToken, 
+            [Required]string refreshToken)
         {
+            AuthTokenDto dto = new AuthTokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
             try
             {
                 var token = await _authTokenService.RefreshAuthTokenAsync(dto);

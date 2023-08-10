@@ -148,7 +148,7 @@ namespace FlowLabourApi.Authentication
             var refreshToken = await _dbContext.UserTokens
                 .Where(t => t.UserId == int.Parse(userId) && t.LoginProvider == loginProvider)
                 .Select(t => t.RefreshToken).FirstOrDefaultAsync();
-            if (refreshToken != token.RefreshToken)
+            if (refreshToken==null || Uri.EscapeDataString(refreshToken) != token.RefreshToken)
             {
                 throw new BadHttpRequestException("Invalid refresh token");
             }

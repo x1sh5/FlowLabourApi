@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -161,8 +162,8 @@ namespace FlowLabourApi
                 options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+                    //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    //options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
                 })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                     options =>
@@ -202,16 +203,16 @@ namespace FlowLabourApi
                         options.SecurityTokenValidators.Add(new JwtSecurityTokenHandler());
 
                         options.EventsType = typeof(AppJwtBearerEvents);
-            })
-            .AddCookie(IdentityConstants.ApplicationScheme, o =>
-            {
-                o.ExpireTimeSpan = TimeSpan.FromDays(30);
-                o.LoginPath = new PathString("/Account/Login");
-                o.Events = new CookieAuthenticationEvents
-                {
-                    OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
-                };
-            });
+                    });
+            //.AddCookie(IdentityConstants.ApplicationScheme, o =>
+            //{
+            //    o.ExpireTimeSpan = TimeSpan.FromDays(30);
+            //    o.LoginPath = new PathString("/Account/Login");
+            //    o.Events = new CookieAuthenticationEvents
+            //    {
+            //        OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
+            //    };
+            //});
 
 
 #pragma warning disable CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
@@ -292,16 +293,20 @@ namespace FlowLabourApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //app.UseStatusCodePages(async contextAccessor =>
-            //{
-            //    var response = contextAccessor.HttpContext.Response;
+            app.UseStatusCodePages(async contextAccessor =>
+            {
+                var response = contextAccessor.HttpContext.Response;
 
-            //    if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
-            //        response.StatusCode == (int)HttpStatusCode.Forbidden)
-            //    {
-            //        response.Redirect("/api/Account/Login");
-            //    }
-            //});
+                if (response.StatusCode == (int)HttpStatusCode.Redirect)
+                {
+                    if(response.Headers.Location == "/Account/Login")
+                    {
+                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        response.Headers.Remove("location");
+                    }
+                    
+                }
+            });
 
             app.MapHub<ChatHub>("/chatHub");
             //app.Use((context,next)=>
