@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -24,14 +26,18 @@ public class AssignmentController : ControllerBase
     /// <summary>
     /// 获取所有任务
     /// </summary>
+    /// <param name="count"></param>
+    /// <param name="offset"></param>
+    /// <example>GET api/assignment?count=10&offset=0</example>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments()
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments([Required]uint count,
+        [Required]int offset)
     {
         List<Assignment> assignments;
-        assignments = await _context.Assignments.Include(a => a.AuthUser).ToListAsync();
+        assignments = await _context.Assignments.Include(a => a.AuthUser).Where(o=>o.Id>offset).Take((int)count).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
         foreach (var e in assignments)
         {
@@ -303,6 +309,19 @@ public class AssignmentController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// 获取任务总数
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    [HttpGet("total")]
+    [AllowAnonymous]
+    public IActionResult Total()
+    {
+        int total = _context.Assignments.Count();
+        return Ok(total);
     }
 
     private bool AssignmentExists(int id)
