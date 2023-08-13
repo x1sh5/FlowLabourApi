@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    public enum TaskState : int
+    public enum TaskState : sbyte
     {
         NotPick = 0,
         Picked = 1,

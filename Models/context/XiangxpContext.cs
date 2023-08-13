@@ -37,6 +37,8 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<Groupuser> GroupUsers { get; set; }
 
+    public virtual DbSet<History> Historys { get; set; }
+
     public virtual DbSet<IdentityInfo> Identityinfos { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
@@ -444,6 +446,32 @@ public partial class XiangxpContext : DbContext
                 .HasForeignKey(d => d.Userid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_groupuser_userid_authuser_id");
+        });
+
+        modelBuilder.Entity<History>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("history", tb => tb.HasComment("浏览历史"));
+
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity.Property(e => e.AssigmentId)
+                .HasColumnType("int(11)")
+                .HasColumnName("asgid");
+            entity.Property(e => e.Time)
+                .HasColumnType("datetime")
+                .HasColumnName("date");
+            entity.Property(e => e.UserId)
+                .HasColumnType("int(11)")
+                .HasColumnName("userid");
+
+            entity.HasOne(d => d.Assignment).WithOne()
+                .HasForeignKey((Assignment d) => d.Id)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("fk_history_asgid_asgment_id");
         });
 
         modelBuilder.Entity<IdentityInfo>(entity =>

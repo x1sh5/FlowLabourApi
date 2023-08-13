@@ -37,7 +37,7 @@ namespace FlowLabourApi.Controllers
             {
                 responeMessages.Add(new ResponeMessage<Image>()
                 {
-                    Code = 200,
+                    ORCode = 200,
                     Data = img
                 });
             }
@@ -103,7 +103,7 @@ namespace FlowLabourApi.Controllers
                 {
                     return new ResponeMessage<Image>()
                     {
-                        Code = 200,
+                        ORCode = 200,
                         Data = image
                     };
                 }
@@ -118,14 +118,14 @@ namespace FlowLabourApi.Controllers
             {
                 return new ResponeMessage<Image>()
                 {
-                    Code = 200,
+                    ORCode = 200,
                     Data = img
                 };
             }
 
             return new ResponeMessage<Image>()
             {
-                Code = 500,
+                ORCode = 500,
                 Message = "文件上传失败",
                 Data = null
             };

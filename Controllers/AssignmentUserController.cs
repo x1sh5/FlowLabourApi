@@ -1,6 +1,7 @@
 ﻿using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,6 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignmentUsers()
         {
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
-            //var user = await _userManager.FindByIdAsync(id);
             List<Assignment>? assignments = new List<Assignment>();
             var x = await _xiangxpContext.Assignmentusers
                 .Where(e => e.UserId == Convert.ToInt32(id))
@@ -44,6 +44,44 @@ namespace FlowLabourApi.Controllers
             }
 
             return assignments;
+        }
+        /// <summary>
+        /// get assignments by status
+        /// </summary>
+        /// <param name="statuscode"></param>
+        /// <returns></returns>
+        [HttpGet("status/{statuscode}")]
+        public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentsByStatus(int statuscode)
+        {
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var userName = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
+            List<AssignmentView>? assignments = new List<AssignmentView>();
+            var x = await _xiangxpContext.Assignmentusers
+                .Include(o=>o.Assignment)
+                .Where(e => e.UserId == Convert.ToInt32(id) && e.Assignment.Status == statuscode)
+                .ToListAsync();
+            foreach (var item in x)
+            {
+                assignments.Add(new AssignmentView
+                {
+                    Id = item.Assignment.Id,
+                    UserId = item.Assignment.UserId,
+                    Username = userName,
+                    Title = item.Assignment.Title,
+                    Branchid = item.Assignment.Branchid,
+                    Description = item.Assignment.Description,
+                    Typeid = item.Assignment.Typeid,
+                    Status = item.Assignment.Status,
+                    Finishtime = item.Assignment.Finishtime,
+                    Presumedtime = item.Assignment.Presumedtime,
+                    Publishtime = item.Assignment.Publishtime,
+                    Reward = item.Assignment.Reward,
+                    Rewardtype = item.Assignment.Rewardtype,
+                    Verify = item.Assignment.Verify,
+                });
+            }
+            return Ok(assignments);
+
         }
     }
 }

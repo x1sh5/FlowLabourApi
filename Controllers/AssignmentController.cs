@@ -1,6 +1,7 @@
 using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.state;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -37,7 +38,9 @@ public class AssignmentController : ControllerBase
         [Required]int offset)
     {
         List<Assignment> assignments;
-        assignments = await _context.Assignments.Include(a => a.AuthUser).Where(o=>o.Id>offset).Take((int)count).ToListAsync();
+        assignments = await _context.Assignments.Include(a => a.AuthUser)
+            .Where(o => o.Id > offset && o.Status ==(sbyte)TaskState.NotPick)
+            .Take((int)count).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
         foreach (var e in assignments)
         {
@@ -141,16 +144,16 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// 根据用户获取对应的任务
+    /// get assignment by ids
     /// </summary>
+    /// <param name="ids"></param>
     /// <returns></returns>
-    [HttpGet("user")]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentByUser()
+    [HttpPost("assignments")]
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments(IEnumerable<int> ids)
     {
-        var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
-        var user = await _userManager.FindByIdAsync(id);
         List<Assignment> assignments;
-        assignments = await _context.Assignments.Include(a => a.AuthUser).Where(a => a.UserId == user.Id).ToListAsync();
+        assignments = await _context.Assignments.Include(a => a.AuthUser)
+            .Where(o => ids.Contains(o.Id)).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
         foreach (var e in assignments)
         {
@@ -167,6 +170,41 @@ public class AssignmentController : ControllerBase
             assignmentView.Reward = e.Reward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
+            assignmentView.UserId = e.UserId;
+            //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
+            assignmentViews.Add(assignmentView);
+        }
+        return assignmentViews;
+    }
+  
+
+    /// <summary>
+    /// 根据用户获取对应的任务
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("user")]
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentByUser()
+    {
+        var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+        var userName = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
+        List<Assignment> assignments;
+        assignments = await _context.Assignments.Where(a => a.UserId == Convert.ToInt32(id)).ToListAsync();
+        List<AssignmentView> assignmentViews = new List<AssignmentView>();
+        foreach (var e in assignments)
+        {
+            AssignmentView assignmentView = new AssignmentView();
+            assignmentView.Id = e.Id;
+            assignmentView.Title = e.Title;
+            assignmentView.Description = e.Description;
+            assignmentView.Branchid = e.Branchid;
+            assignmentView.Typeid = e.Typeid;
+            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Publishtime = e.Publishtime;
+            assignmentView.Status = e.Status;
+            assignmentView.Verify = e.Verify;
+            assignmentView.Reward = e.Reward;
+            assignmentView.Rewardtype = e.Rewardtype;
+            assignmentView.Username = userName;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -289,6 +327,60 @@ public class AssignmentController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// 接取任务
+    /// </summary>
+    /// <param name="assignmentId"></param>
+    /// <returns></returns>
+    [HttpGet("take/{assignmentId}")]
+    public async Task<ActionResult<ResponeMessage<SimpleResp>>> Take(int assignmentId)
+    {
+        var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+        var user = await _userManager.FindByIdAsync(id);
+        var assignment = _context.Assignments.Find(assignmentId);
+
+        var resp = new ResponeMessage<SimpleResp>();
+        if (assignment != null)
+        {
+            if (assignment.Status == 0)
+            {
+                assignment.Status = 1;
+                _context.Entry(assignment).State = EntityState.Modified;
+                _context.Assignmentusers.Add(new AssignmentUser
+                {
+                    AssignmentId = assignmentId,
+                    UserId = user.Id,
+                });
+                _context.SaveChanges();
+                return new ResponeMessage<SimpleResp> { 
+                    ORCode = ORCode.AsgmTakeS,
+                    Data = new SimpleResp
+                    {
+                        Success = true,
+                    },
+                    Message = "接取成功"
+                };
+            }
+            return new ResponeMessage<SimpleResp> { 
+                ORCode = ORCode.AsgmHasPicked,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "任务已被接取,请刷新页面"
+                }
+            };
+        }
+
+        return new ResponeMessage<SimpleResp> { 
+            ORCode = ORCode.AsgmNotFound,
+            Data = new SimpleResp
+            {
+                Success = false,
+                Reason = "任务以不存在，请刷新页面"
+            }
+        };
     }
 
     /// <summary>

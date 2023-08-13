@@ -100,7 +100,7 @@ namespace FlowLabourApi.Controllers
             _context.UserRoles.Add(new UserRole { RoleId = 1, UserId = e.Entity.Id });
             _context.SaveChanges();
 
-            return Ok(new ResponeMessage<string> { Code=200,Message="注册成功"});
+            return Ok(new ResponeMessage<string> { ORCode=200,Message="注册成功"});
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace FlowLabourApi.Controllers
         public ObjectResult NameCheck(string username)
         {
             var user = _context.AuthUsers.FirstOrDefault(e => e.UserName == username);
-            var rsm = new ResponeMessage<CheckMSg> { Code = 200, Message = "" };
+            var rsm = new ResponeMessage<CheckMSg> { ORCode = 200, Message = "" };
             if (user != null)
             {
                 rsm.Data = new CheckMSg(false, "用户名已存在");
@@ -136,7 +136,7 @@ namespace FlowLabourApi.Controllers
 
         public ObjectResult PhoneCheck(string phoneNo)
         {
-            var rsm = new ResponeMessage<CheckMSg> { Code = 200, Message = "" };
+            var rsm = new ResponeMessage<CheckMSg> { ORCode = 200, Message = "" };
             if (!IdentityValidateUtil.ValidatePhoneFormat(phoneNo))
             {
                 rsm.Data = new CheckMSg(false, "电话号码无效！");
@@ -164,7 +164,7 @@ namespace FlowLabourApi.Controllers
         public ObjectResult EmailCheck(string email)
         {
             var isok = IdentityValidateUtil.ValidateEmailFormat(email);
-            var rsm = new ResponeMessage<CheckMSg> { Code = 200,Message="" };
+            var rsm = new ResponeMessage<CheckMSg> { ORCode = 200,Message="" };
             if (!isok)
             {
                 rsm.Data = new CheckMSg(false, "邮件格式无效");

@@ -7,9 +7,9 @@
     public class ResponeMessage<TValue> where TValue : class
     {
         /// <summary>
-        /// 状态码，等效与http状态码
+        /// 业务操作响应码
         /// </summary>
-        public int Code { get; set; }
+        public int ORCode { get; set; }
         /// <summary>
         /// 
         /// </summary>
