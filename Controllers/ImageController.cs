@@ -50,8 +50,9 @@ namespace FlowLabourApi.Controllers
         /// <param name="files"></param>
         /// <returns></returns>
         [HttpPost("upload")]
-        public async Task<ActionResult<IEnumerable<Image>>> Upload(IEnumerable<IFormFile> files)
+        public async Task<ActionResult<IEnumerable<Image>>> Upload()
         {
+            var files = Request.Form.Files;
             long size = files.Sum(f => f.Length);
             List<Image> images = new List<Image>();
             foreach (IFormFile formFile in files)
@@ -94,6 +95,16 @@ namespace FlowLabourApi.Controllers
         [NonAction]
         public ResponeMessage<Image> Create(Image image)
         {
+            var img = _context.Images.Where(e => e.Md5 == image.Md5).FirstOrDefault();
+            if (img != null)
+            {
+                return new ResponeMessage<Image>()
+                {
+                    ORCode = 200,
+                    Data = img
+                };
+            }
+
             EntityEntry<Image>? e = _context.Images.Add(image);
             try
             {
@@ -111,16 +122,6 @@ namespace FlowLabourApi.Controllers
             catch (DbUpdateException ex)
             {
                 Console.WriteLine("Insert operation failed. Unique constraint violation.");
-            }
-
-            var img =  _context.Images.Where(e => e.Md5 == image.Md5).FirstOrDefault();
-            if(img != null)
-            {
-                return new ResponeMessage<Image>()
-                {
-                    ORCode = 200,
-                    Data = img
-                };
             }
 
             return new ResponeMessage<Image>()
