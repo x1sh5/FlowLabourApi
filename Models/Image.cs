@@ -25,9 +25,7 @@
         /// </summary>
         public int? AssignmentId { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         //public virtual Assignment? Assignment { get; set; }
     }
 }

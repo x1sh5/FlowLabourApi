@@ -38,6 +38,12 @@ namespace FlowLabourApi.Controllers
         //private SignInManager<AuthUser> signInManager;
         private readonly IAuthTokenService _authTokenService;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="jwtOptions"></param>
+        /// <param name="authTokenService"></param>
         public AccountController(XiangxpContext context,
             //SignInManager<AuthUser> signInManager,
             IOptionsSnapshot<JwtOptions> jwtOptions,
@@ -107,7 +113,6 @@ namespace FlowLabourApi.Controllers
         /// 用户名检查
         /// </summary>
         /// <param name="username"></param>
-        /// <param name="validate"></param>
         /// <returns></returns>
         [HttpGet("namecheck")]
         [AllowAnonymous]
@@ -129,11 +134,10 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 电话检查
         /// </summary>
-        /// <param name="PhoneNo"></param>
+        /// <param name="phoneNo"></param>
         /// <returns></returns>
         [HttpGet("phonecheck")]
         [AllowAnonymous]
-
         public ObjectResult PhoneCheck(string phoneNo)
         {
             var rsm = new ResponeMessage<CheckMSg> { ORCode = 200, Message = "" };
@@ -184,7 +188,6 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 默认重定向地址
         /// </summary>
-        /// <param name="login"></param>
         /// <returns></returns>
         // 直接以/开头的路由，会当成决对路径。
         [HttpGet("/Account/Login")]

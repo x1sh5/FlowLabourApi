@@ -5,15 +5,28 @@ using System.Security.Claims;
 
 namespace FlowLabourApi.Handlers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AppJwtSecurityTokenHandler : JwtSecurityTokenHandler
     {
         private readonly IDistributedCache _distributedCache;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="distributedCache"></param>
         public AppJwtSecurityTokenHandler(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="validationParameters"></param>
+        /// <param name="validatedToken"></param>
+        /// <returns></returns>
         public override ClaimsPrincipal ValidateToken(string token, TokenValidationParameters validationParameters, out SecurityToken validatedToken)
         {
             var principal = base.ValidateToken(token, validationParameters, out validatedToken);

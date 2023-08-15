@@ -47,7 +47,6 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 上传图片
         /// </summary>
-        /// <param name="files"></param>
         /// <returns></returns>
         [HttpPost("upload")]
         public async Task<ActionResult<IEnumerable<Image>>> Upload()

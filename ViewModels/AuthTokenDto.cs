@@ -1,9 +1,18 @@
 ﻿namespace FlowLabourApi.ViewModels
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AuthTokenDto
     {
-        public string AccessToken { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string AccessToken { get; set; } = null!;
 
-        public string RefreshToken { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string RefreshToken { get; set; } = null!;
     }
 }

@@ -63,9 +63,15 @@ public class ChatHub : Hub
         //await Clients.All.SendAsync("ReceiveMessage", user, message);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public async Task SendToUser(string user, Message message)
     {
         var id = Context.User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
-        Clients.User(user).SendAsync("ReceiveMessage", user, message.Content);
+        await Clients.User(user).SendAsync("ReceiveMessage", user, message.Content);
     }
 }

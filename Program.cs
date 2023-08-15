@@ -6,7 +6,6 @@ using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Models.state;
 using FlowLabourApi.Options;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
@@ -14,7 +13,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -30,6 +28,10 @@ namespace FlowLabourApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
+            //服务器下需要下两行
+            //IHostEnvironment env = builder.Environment;
+            //builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
             builder.Services.AddCors(options =>
             {
@@ -78,11 +80,7 @@ namespace FlowLabourApi
             //builder.Services.AddTransient< Provider>();
             #endregion
 
-
-            //builder.Services.AddDistributedMemoryCache(options => { });
-
             //IdentityDbContext
-            //builder.Services.AddIdentity<AuthUser, Role>().AddDefaultTokenProviders();
             builder.Services.AddIdentityCore<AuthUser>().AddRoles<Role>().AddDefaultTokenProviders();
 
             // Learn more about configuring Swagger/OpenAPI
@@ -157,7 +155,6 @@ namespace FlowLabourApi
 
             JwtOptions? jwtOptions = new JwtOptions();
 
-
             builder.Services.AddAuthentication(
                 options =>
                 {
@@ -204,16 +201,11 @@ namespace FlowLabourApi
 
                         options.EventsType = typeof(AppJwtBearerEvents);
                     });
-            //.AddCookie(IdentityConstants.ApplicationScheme, o =>
-            //{
-            //    o.ExpireTimeSpan = TimeSpan.FromDays(30);
-            //    o.LoginPath = new PathString("/Account/Login");
-            //    o.Events = new CookieAuthenticationEvents
-            //    {
-            //        OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
-            //    };
-            //});
-
+                //.AddGoogle(googleOptions =>
+                //{
+                //    googleOptions.ClientId = "588162123232-04cs7bopvtes67f74m1p6rudh7lgaprd.apps.googleusercontent.com";
+                //    googleOptions.ClientSecret = "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";
+                //});
 
 #pragma warning disable CS8620 // 由于引用类型的可为 null 性差异，实参不能用于形参。
             builder.Services.AddAuthorization(options =>

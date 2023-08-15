@@ -81,7 +81,7 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 生成历史记录
         /// </summary>
-        /// <param name="history"></param>
+        /// <param name="historyView"></param>
         /// <returns></returns>
         // POST: api/History
         [HttpPost]

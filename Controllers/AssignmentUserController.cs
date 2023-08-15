@@ -1,6 +1,7 @@
 ﻿using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.state;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,10 @@ namespace FlowLabourApi.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// 持有的任务
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("holds")]
         public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignmentUsers()
         {
@@ -45,6 +50,33 @@ namespace FlowLabourApi.Controllers
 
             return assignments;
         }
+
+        /// <summary>
+        /// 放弃任务
+        /// </summary>
+        /// <param name="asgid"></param>
+        /// <returns></returns>
+        [HttpDelete("abandon/{id}")]
+        public async Task<ActionResult> Abandon(int asgid)
+        {
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var assignmentuser = await _xiangxpContext.Assignmentusers.FindAsync(new { asgid, id });
+            if (assignmentuser == null)
+            {
+                return NotFound();
+            }
+            var assignment = await _xiangxpContext.Assignments.FindAsync(asgid);
+            if(assignment != null)
+            {
+                assignment.Status = (sbyte)TaskState.WaitForAccept;
+            }
+
+            _xiangxpContext.Assignmentusers.Remove(assignmentuser);
+            await _xiangxpContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         /// <summary>
         /// get assignments by status
         /// </summary>

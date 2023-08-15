@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -29,17 +30,27 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <param name="count"></param>
     /// <param name="offset"></param>
+    /// <param name="typeid"></param>
     /// <example>GET api/assignment?count=10&offset=0</example>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
     public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments([Required]uint count,
-        [Required]int offset)
+        [Required]int offset, int? typeid)
     {
+        Expression<Func<Assignment, bool>> expression;
+        if (typeid != null)
+        {
+            expression = o => o.Id > offset && o.Status == (sbyte)TaskState.WaitForAccept &&o.Typeid == typeid;
+        }
+        else
+        {
+            expression = o => o.Id > offset && o.Status == (sbyte)TaskState.WaitForAccept;
+        }
         List<Assignment> assignments;
         assignments = await _context.Assignments.Include(a => a.AuthUser)
-            .Where(o => o.Id > offset && o.Status ==(sbyte)TaskState.NotPick)
+            .Where(expression)
             .Take((int)count).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
         foreach (var e in assignments)
@@ -353,6 +364,7 @@ public class AssignmentController : ControllerBase
                     AssignmentId = assignmentId,
                     UserId = user.Id,
                 });
+                assignment.Status = (sbyte)TaskState.Unfinished;
                 _context.SaveChanges();
                 return new ResponeMessage<SimpleResp> { 
                     ORCode = ORCode.AsgmTakeS,

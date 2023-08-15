@@ -43,6 +43,10 @@ namespace FlowLabourApi.Events;
 public class AppJwtBearerEvents : JwtBearerEvents
 {
     private readonly JwtOptions _jwtOptions;
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="jwtOptions"></param>
     public AppJwtBearerEvents(IOptionsSnapshot<JwtOptions> jwtOptions)
     {
         _jwtOptions = jwtOptions.Value;
@@ -83,7 +87,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
         //string authorization = context.Request.Headers[HeaderNames.Authorization];
         StringValues authorization;
         bool hasCookie = true;
-        bool hasAuth = true;
         bool hasQuery = true;
         authorization = context.Request.Cookies[CookieTypes.accessToken];
         if (string.IsNullOrEmpty(authorization))
@@ -98,7 +101,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
         }
         if (string.IsNullOrEmpty(authorization))
         {
-            hasAuth = false;
             context.NoResult();
             return Task.CompletedTask;
         }
