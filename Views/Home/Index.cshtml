@@ -2,6 +2,8 @@
 
 <!-- <div class="g-signin2" data-onsuccess="onSignIn"></div> -->
 <!-- <a href="#" onclick="signOut();">Sign out</a> -->
+<h4>需要先点击<button onclick="signIn()" style="background-color:aquamarine">登录</button>后,才能使用.</h4>
+<p>在其他浏览器中再打开此页并<span style="font-style:italic;color:palevioletred">登录</span>，就能收到消息了</p>
 <div class="form-group row">
     <label for="userInput" class="col-2 col-form-label">User</label>
     <div class="col col-sm-6">
@@ -47,5 +49,22 @@
                     }
                 </script>
         -->
+        <script>
+            function signIn(){
+                fetch('https://localhost:7221/api/Account/Login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "userName": "zhangsan",
+                    "password": "zhangsan1234"
+                    })
+                }).then(res => res.json())
+                    .then(res => {
+                        console.log(res);
+                    })
+            }
+        </script>
 
 }
