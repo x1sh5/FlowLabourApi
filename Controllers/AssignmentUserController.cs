@@ -56,7 +56,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <param name="asgid"></param>
         /// <returns></returns>
-        [HttpDelete("abandon/{id}")]
+        [HttpDelete("abandon/{asgid}")]
         public async Task<ActionResult> Abandon(int asgid)
         {
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
