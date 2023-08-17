@@ -21,7 +21,7 @@
         /// <summary>
         /// 任务
         /// </summary>
-        public virtual Assignment Assignment { get; set; } = null!;
+        public virtual Assignment? Assignment { get; set; }
         /// <summary>
         /// 用户id
         /// </summary>

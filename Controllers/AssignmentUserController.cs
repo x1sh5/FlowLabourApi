@@ -60,7 +60,7 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult> Abandon(int asgid)
         {
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
-            var assignmentuser = await _xiangxpContext.Assignmentusers.FindAsync(new { asgid, id });
+            var assignmentuser = await _xiangxpContext.Assignmentusers.FindAsync(asgid, Convert.ToInt32(id));
             if (assignmentuser == null)
             {
                 return NotFound();

@@ -93,4 +93,10 @@ public partial class Assignment
     /// 任务领取信息
     /// </summary>
     public virtual AssignmentUser? AssignmentUser { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public virtual List<History> AsgHistories { get; set; } = new List<History>();
+
 }

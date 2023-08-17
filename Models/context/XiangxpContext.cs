@@ -468,9 +468,10 @@ public partial class XiangxpContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
 
-            entity.HasOne(d => d.Assignment).WithOne()
-                .HasForeignKey((Assignment d) => d.Id)
-                .OnDelete(DeleteBehavior.Cascade)
+            entity.HasOne(d => d.Assignment)
+                .WithMany(a=>a.AsgHistories)
+                .HasForeignKey(o=>o.AssigmentId)
+                .OnDelete(DeleteBehavior.ClientCascade)
                 .HasConstraintName("fk_history_asgid_asgment_id");
         });
 

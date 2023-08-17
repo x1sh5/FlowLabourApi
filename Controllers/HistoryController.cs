@@ -81,21 +81,34 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 生成历史记录
         /// </summary>
-        /// <param name="historyView"></param>
+        /// <param name="asgid"></param>
         /// <returns></returns>
         // POST: api/History
         [HttpPost]
-        public async Task<ActionResult<History>> PostHistory(HistoryView historyView)
+        public async Task<ActionResult<History>> PostHistory(int asgid)
         {
-            var history = new History
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var e = _context.Historys
+                .Where(o=>o.Id==Convert.ToInt32(id)&&o.AssigmentId==asgid)
+                .FirstOrDefault();
+            if (e != null)
             {
-                AssigmentId = historyView.AssigmentId,
-                Time = historyView.Time
-            };
-            _context.Historys.Add(history);
+                e.Time = DateTime.Now;
+            }
+            else
+            {
+                var history = new History
+                {
+                    UserId = Convert.ToInt32(id),
+                    AssigmentId = asgid,
+                    Time = DateTime.Now
+                };
+                _context.Historys.Add(history);
+            }
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHistory", new { id = history.Id }, history);
+            return Ok();
         }
 
         /// <summary>
