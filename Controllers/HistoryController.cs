@@ -89,7 +89,7 @@ namespace FlowLabourApi.Controllers
         {
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
             var e = _context.Historys
-                .Where(o=>o.Id==Convert.ToInt32(id)&&o.AssigmentId==asgid)
+                .Where(o=>o.UserId==Convert.ToInt32(id)&&o.AssigmentId==asgid)
                 .FirstOrDefault();
             if (e != null)
             {
