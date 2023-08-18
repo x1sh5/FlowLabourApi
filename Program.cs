@@ -267,7 +267,7 @@ namespace FlowLabourApi
 
             //app.UseRouting();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             #endregion
 
             app.MapControllers();
@@ -277,7 +277,7 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-                .AllowAnyOrigin()  //服务器环境下注释该行
+                //.AllowAnyOrigin()  //服务器环境下注释该行
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });

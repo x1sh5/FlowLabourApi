@@ -85,7 +85,7 @@ namespace FlowLabourApi.Controllers
         /// <returns></returns>
         // POST: api/History
         [HttpPost]
-        public async Task<ActionResult<History>> PostHistory(int asgid)
+        public async Task<ActionResult<History>> PostHistory([FromForm]int asgid)
         {
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
             var e = _context.Historys
@@ -105,8 +105,14 @@ namespace FlowLabourApi.Controllers
                 };
                 _context.Historys.Add(history);
             }
-
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
 
             return Ok();
         }
