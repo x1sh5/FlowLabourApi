@@ -1,5 +1,7 @@
+using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.Services;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,44 +14,40 @@ namespace FlowLabourApi.Controllers
     //[ApiExplorerSettings(IgnoreApi = true)]
     public class MessagesController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        //private readonly XiangxpContext _context;
+        private readonly MessageService _messageService;
 
-        public MessagesController(XiangxpContext context)
+        public MessagesController(MessageService messageService)
         {
-            _context = context;
+            _messageService = messageService;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<Message>> GetMessages()
         {
-            return _context.Messages.ToList();
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var ms =  _messageService.GetMessages(Convert.ToInt32(id));
+            return Ok(ms);
         }
 
         [HttpGet("{id}")]
         public ActionResult<IEnumerable<Message>> GetMessage(int senderId)
         {
-            var messages = _context.Messages.Where(m => m.From == senderId).ToList();
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var ms = _messageService.GetMessages(Convert.ToInt32(id));
 
-            if (messages.Count != 0)
+            if (ms.Count() != 0)
             {
                 return NotFound();
             }
 
-            return messages;
+            return new ActionResult<IEnumerable<Message>>(ms);
         }
 
         [HttpPost]
-        public ActionResult<Message> CreateMessage(MessageView message)
+        public async Task<ActionResult<Message>> CreateMessage(MessageView message)
         {
-            var e =  _context.Messages.Add(new Message()
-            {
-                From = message.From,
-                To = message.To,
-                Content = message.Content,
-                Date = message.Date,
-                ContentType = message.ContentType
-            });
-            _context.SaveChanges();
+            var e = await _messageService.Add(message);
 
             return CreatedAtAction(nameof(GetMessage), /* new { id = message.From }, */ e.Entity);
         }
@@ -57,29 +55,28 @@ namespace FlowLabourApi.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateMessage(int senderId, Message message)
         {
+            var m = _messageService.GetMessage(senderId);
             if (senderId != message.From)
             {
                 return BadRequest();
             }
 
-            _context.Entry(message).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            _context.SaveChanges();
+            _messageService.Update(message);
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteMessage(int senderId)
+        public IActionResult DeleteMessage(int Id)
         {
-            var message = _context.Messages.FirstOrDefault(m => m.From == senderId);
+            var message = _messageService.GetMessage(Id);
 
             if (message == null)
             {
                 return NotFound();
             }
 
-            _context.Messages.Remove(message);
-            _context.SaveChanges();
+            _messageService.Delete(Id);
 
             return NoContent();
         }

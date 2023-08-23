@@ -1,6 +1,8 @@
 ﻿using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.Services;
+using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 namespace FlowLabourApi.Hubs;
@@ -15,15 +17,20 @@ namespace FlowLabourApi.Hubs;
 //}
 
 [Authorize]
-public class ChatHub : Hub
+public class ChatHub : Hub<FlowHubCallerClients>
 {
-    private readonly XiangxpContext _context;
+    private readonly MessageService _messageService;
 
-    public ChatHub(XiangxpContext context)
+    public ChatHub(MessageService messageService)
     {
-        _context = context;
+        _messageService = messageService;
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="datas"></param>
+    /// <returns></returns>
     public async Task SendMessage(IList<object> datas)
     {
         int args = datas.Count;
@@ -69,9 +76,17 @@ public class ChatHub : Hub
     /// <param name="user"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    public async Task SendToUser(string user, Message message)
+    public async Task SendToUser(string user, MessageView messageView)
     {
-        var id = Context.User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
-        await Clients.User(user).SendAsync("ReceiveMessage", user, message.Content);
+        var connectionId = Context.ConnectionId;
+        var claim = Context.User!.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim);
+        if (claim != null)
+        {
+            var id = claim.Value;
+            messageView.From = int.Parse(id);
+            await _messageService.Add(messageView);
+            await Clients.User(user).SendAsync("ReceiveMessage", user, messageView.Content);
+        }
+
     }
 }

@@ -5,7 +5,7 @@
         /// <summary>
         /// 发信人ID
         /// </summary>
-        public int From { get; set; }
+        public int? From { get; set; }
 
         /// <summary>
         /// 收信人ID

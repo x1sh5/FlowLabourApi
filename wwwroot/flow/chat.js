@@ -20,6 +20,7 @@
 
         // <snippet_Invoke>
         try {
+            //await connection.invoke("SendMessage", [user, message]);
             await connection.invoke("SendMessage", [user, message]);
         } catch (err) {
             console.error(err);

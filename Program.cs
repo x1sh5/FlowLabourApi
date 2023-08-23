@@ -4,6 +4,7 @@ using FlowLabourApi.Events;
 using FlowLabourApi.Hubs;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.Services;
 using FlowLabourApi.Models.state;
 using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +64,7 @@ namespace FlowLabourApi
             builder.Services.TryAddScoped<Role>();
             builder.Services.TryAddScoped<UserToken>();
             builder.Services.TryAddScoped<SigninLog>();
+            builder.Services.TryAddScoped<MessageService>();
             builder.Services.TryAddScoped<SignInManager<AuthUser>>();
             builder.Services.TryAddScoped<IAuthTokenService, AuthTokenService>();
             builder.Services.AddHttpContextAccessor();
@@ -277,7 +279,7 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-                //.AllowAnyOrigin()  //服务器环境下注释该行
+                .AllowAnyOrigin()  //服务器环境下注释该行
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });
