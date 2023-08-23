@@ -302,7 +302,7 @@ namespace FlowLabourApi
                 }
             });
 
-            app.MapHub<ChatHub>("/chatHub");
+            app.MapHub<ChatHub>("/chatHub");//use HubConnectionHandler<THub> actually
             //app.Use((context,next)=>
             //{
             //    context.Response.Headers.AccessControlExposeHeaders.Append("Set-Cookie");

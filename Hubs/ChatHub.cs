@@ -17,8 +17,11 @@ namespace FlowLabourApi.Hubs;
 //}
 
 [Authorize]
-public class ChatHub : Hub<FlowHubCallerClients>
+public class ChatHub : Hub
 {
+    private readonly static ConnectionMapping<string> _connections =
+            new ConnectionMapping<string>();
+
     private readonly MessageService _messageService;
 
     public ChatHub(MessageService messageService)
@@ -26,6 +29,32 @@ public class ChatHub : Hub<FlowHubCallerClients>
         _messageService = messageService;
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public override async Task OnConnectedAsync()
+    {
+        var claim = Context.User!.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim);
+        if (claim != null)
+        {
+            var id = claim.Value;
+            _connections.Add(id, Context.ConnectionId);
+            await base.OnConnectedAsync();
+        }
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var claim = Context.User!.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim);
+        if (claim != null)
+        {
+            var id = claim.Value;
+            _connections.Remove(id, Context.ConnectionId);
+            await base.OnDisconnectedAsync(exception);
+        }
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -84,8 +113,10 @@ public class ChatHub : Hub<FlowHubCallerClients>
         {
             var id = claim.Value;
             messageView.From = int.Parse(id);
+            int to = messageView.To;
+            var connectionIds = _connections.GetConnections(to.ToString());
             await _messageService.Add(messageView);
-            await Clients.User(user).SendAsync("ReceiveMessage", user, messageView.Content);
+            await Clients.Client(connectionId).SendAsync("ReceiveMessage", user, messageView.Content);
         }
 
     }
