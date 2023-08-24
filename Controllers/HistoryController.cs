@@ -45,7 +45,7 @@ namespace FlowLabourApi.Controllers
                     Title = item.Assignment.Title,
                     Branchid = item.Assignment.Branchid,
                     Description = item.Assignment.Description,
-                    Typeid = item.Assignment.Typeid,
+                    TypeId = item.Assignment.TypeId,
                     Status = item.Assignment.Status,
                     Finishtime = item.Assignment.Finishtime,
                     Presumedtime = item.Assignment.Presumedtime,

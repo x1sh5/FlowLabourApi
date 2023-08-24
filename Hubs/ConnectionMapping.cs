@@ -6,8 +6,8 @@
     /// <typeparam name="T"></typeparam>
     public class ConnectionMapping<T>
     {
-        private readonly Dictionary<T, HashSet<string>> _connections =
-            new Dictionary<T, HashSet<string>>();
+        private readonly Dictionary<T, string> _connections =
+            new Dictionary<T, string>();
 
         public int Count
         {
@@ -21,50 +21,27 @@
         {
             lock (_connections)
             {
-                HashSet<string> connections;
-                if (!_connections.TryGetValue(key, out connections))
-                {
-                    connections = new HashSet<string>();
-                    _connections.Add(key, connections);
-                }
+                _connections.Add(key, connectionId);
 
-                lock (connections)
-                {
-                    connections.Add(connectionId);
-                }
             }
         }
 
-        public IEnumerable<string> GetConnections(T key)
+        public string GetConnection(T key)
         {
-            HashSet<string> connections;
-            if (_connections.TryGetValue(key, out connections))
+            string connection;
+            if (_connections.TryGetValue(key, out connection))
             {
-                return connections;
+                return connection;
             }
 
-            return Enumerable.Empty<string>();
+            return string.Empty;
         }
 
-        public void Remove(T key, string connectionId)
+        public void Remove(T key)
         {
             lock (_connections)
             {
-                HashSet<string> connections;
-                if (!_connections.TryGetValue(key, out connections))
-                {
-                    return;
-                }
-
-                lock (connections)
-                {
-                    connections.Remove(connectionId);
-
-                    if (connections.Count == 0)
-                    {
-                        _connections.Remove(key);
-                    }
-                }
+                _connections.Remove(key);
             }
         }
     }

@@ -39,7 +39,15 @@ public class ChatHub : Hub
         if (claim != null)
         {
             var id = claim.Value;
-            _connections.Add(id, Context.ConnectionId);
+            Console.Out.WriteLine($"id: {id} connected");
+            var ct = _connections.GetConnection(id);
+            //TO-DO 
+            #warning tobe consummate. has bug when same user login in different browser
+            if (!string.IsNullOrEmpty(ct))
+            {
+                _connections.Add(id, Context.ConnectionId);
+            }
+            
             await base.OnConnectedAsync();
         }
     }
@@ -50,7 +58,7 @@ public class ChatHub : Hub
         if (claim != null)
         {
             var id = claim.Value;
-            _connections.Remove(id, Context.ConnectionId);
+            _connections.Remove(id);
             await base.OnDisconnectedAsync(exception);
         }
     }
@@ -105,18 +113,25 @@ public class ChatHub : Hub
     /// <param name="user"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    public async Task SendToUser(string user, MessageView messageView)
+    public async Task SendToUser(string user, string message)
     {
-        var connectionId = Context.ConnectionId;
+        MessageView messageView = new MessageView();
+        var FromConId = Context.ConnectionId;
         var claim = Context.User!.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim);
         if (claim != null)
         {
             var id = claim.Value;
             messageView.From = int.Parse(id);
-            int to = messageView.To;
-            var connectionIds = _connections.GetConnections(to.ToString());
+            bool canParse = int.TryParse(user, out int to);
+            if (!canParse)
+            {
+                throw new Exception("User id is not valid");
+            }
+            messageView.To = to;
+            messageView.Content = message;
+            var ToConId = _connections.GetConnection(user);
             await _messageService.Add(messageView);
-            await Clients.Client(connectionId).SendAsync("ReceiveMessage", user, messageView.Content);
+            await Clients.Client(ToConId).SendAsync("ReceiveMessage", user, messageView.Content);
         }
 
     }

@@ -156,7 +156,7 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(100)
                 .HasColumnName("title");
-            entity.Property(e => e.Typeid)
+            entity.Property(e => e.TypeId)
                 .HasComment("tasktype的id外键")
                 .HasColumnType("int(11)")
                 .HasColumnName("typeid");

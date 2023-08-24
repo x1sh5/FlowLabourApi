@@ -254,7 +254,7 @@ namespace FlowLabourApi
         // <snippet_UseWebSockets>
         var webSocketOptions = new WebSocketOptions
             {
-                KeepAliveInterval = TimeSpan.FromMinutes(40)
+                KeepAliveInterval = TimeSpan.FromMinutes(20)
             };
 
             app.UseWebSockets(webSocketOptions);

@@ -27,7 +27,7 @@ public partial class Assignment
     /// 任务类型的id，对应assignmenttype的id
     /// </summary>
     /// <example>1</example>
-    public int Typeid { get; set; }
+    public int TypeId { get; set; }
 
     /// <summary>
     /// 0:代接，1：已结待完成，2：已完成。

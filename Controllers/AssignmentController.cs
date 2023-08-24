@@ -42,7 +42,7 @@ public class AssignmentController : ControllerBase
         Expression<Func<Assignment, bool>> expression;
         if (typeid != null)
         {
-            expression = o => o.Id > offset && o.Status == (sbyte)TaskState.WaitForAccept &&o.Typeid == typeid;
+            expression = o => o.Id > offset && o.Status == (sbyte)TaskState.WaitForAccept &&o.TypeId == typeid;
         }
         else
         {
@@ -60,7 +60,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.Typeid = e.Typeid;
+            assignmentView.TypeId = e.TypeId;
             assignmentView.Presumedtime = e.Presumedtime;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
@@ -88,7 +88,7 @@ public class AssignmentController : ControllerBase
         if (typeid != null)
         {
             assignments = await _context.Assignments.Include(o => o.AuthUser)
-                .Where(e => e.Typeid == typeid).ToListAsync();
+                .Where(e => e.TypeId == typeid).ToListAsync();
         }
         else
         {
@@ -102,7 +102,7 @@ public class AssignmentController : ControllerBase
             Title = e.Title,
             Description = e.Description,
             Branchid = e.Branchid,
-            Typeid = e.Typeid,
+            TypeId = e.TypeId,
             Presumedtime = e.Presumedtime,
             Publishtime = e.Publishtime,
             Status = e.Status,
@@ -141,7 +141,7 @@ public class AssignmentController : ControllerBase
             Title = e.Title,
             Description = e.Description,
             Branchid = e.Branchid,
-            Typeid = e.Typeid,
+            TypeId = e.TypeId,
             Presumedtime = e.Presumedtime,
             Publishtime = e.Publishtime,
             Status = e.Status,
@@ -173,7 +173,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.Typeid = e.Typeid;
+            assignmentView.TypeId = e.TypeId;
             assignmentView.Presumedtime = e.Presumedtime;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
@@ -208,7 +208,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.Typeid = e.Typeid;
+            assignmentView.TypeId = e.TypeId;
             assignmentView.Presumedtime = e.Presumedtime;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
@@ -240,7 +240,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.Typeid = e.Typeid;
+            assignmentView.TypeId = e.TypeId;
             assignmentView.Presumedtime = e.Presumedtime;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
@@ -270,7 +270,7 @@ public class AssignmentController : ControllerBase
             Title = assignmentView.Title,
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
-            Typeid = assignmentView.Typeid,
+            TypeId = assignmentView.TypeId,
             Presumedtime = assignmentView.Presumedtime,
             Publishtime = DateTime.Now,
             Status = assignmentView.Status,
@@ -311,7 +311,7 @@ public class AssignmentController : ControllerBase
             Title = assignmentView.Title,
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
-            Typeid = assignmentView.Typeid,
+            TypeId = assignmentView.TypeId,
             Presumedtime = assignmentView.Presumedtime,
             Publishtime = assignmentView.Publishtime,
             Status = assignmentView.Status,

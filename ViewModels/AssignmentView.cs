@@ -73,7 +73,7 @@
         /// tasktype的id外键
         /// </summary>
         /// <example>1</example>
-        public int Typeid { get; set; }
+        public int TypeId { get; set; }
 
         /// <summary>
         /// 0:未审核通过，1：审核通过。
