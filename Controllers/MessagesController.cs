@@ -5,6 +5,7 @@ using FlowLabourApi.Models.Services;
 using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlowLabourApi.Controllers
 {
@@ -37,6 +38,29 @@ namespace FlowLabourApi.Controllers
             var ms = _messageService.GetMessages(Convert.ToInt32(id));
 
             if (ms.Count() != 0)
+            {
+                return NotFound();
+            }
+
+            return new ActionResult<IEnumerable<Message>>(ms);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reciverId"></param>
+        /// <param name="count"></param>
+        /// <param name="lastid">take items where less than lastid</param>
+        /// <returns></returns>
+        [HttpGet("receives")]
+        public ActionResult<IEnumerable<Message>> Receives([Required]int reciverId,
+            [Required]int count, int? lastid)
+        {
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var ms = _messageService
+                .GetMessages(Convert.ToInt32(id), reciverId, count, lastid);
+
+            if (ms.Count() == 0)
             {
                 return NotFound();
             }

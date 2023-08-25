@@ -3,6 +3,7 @@ using FlowLabourApi.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NuGet.Protocol.Plugins;
+using System.Linq.Expressions;
 
 namespace FlowLabourApi.Models.Services
 {
@@ -66,6 +67,31 @@ namespace FlowLabourApi.Models.Services
         public Message GetMessage(int Id)
         {
             var message = _context.Messages.FirstOrDefault(m => m.Id == Id);
+            return message;
+        }
+
+        /// <summary>
+        /// 最近接收的消息
+        /// </summary>
+        /// <param name="senderId"></param>
+        /// <param name="receiverId"></param>
+        /// <param name="count"></param>
+        /// <param name="lastid"></param>
+        /// <returns></returns>
+        public IEnumerable<Message> GetMessages(int senderId, int receiverId, int count, int? lastid)
+        {
+            Expression<Func<Message, bool>> expression;
+            if(lastid==null)
+            {
+                expression = m => m.From == senderId && m.To == receiverId;
+            }
+            else
+            {
+                expression = m => m.From == senderId && m.To == receiverId && m.Id < lastid;
+            }
+            var message = _context.Messages
+                .Where(expression)
+                .Take(count).OrderByDescending(m=>m.Date);
             return message;
         }
 
