@@ -32,6 +32,11 @@ public partial class Message
     public DateTime? Date { get; set; }
 
     /// <summary>
+    /// 是否已读,1未读，0已读
+    /// </summary>
+    public sbyte Unread { get; set; }
+
+    /// <summary>
     /// 
     /// </summary>
     public virtual AuthUser? FromNavigation { get; set; }

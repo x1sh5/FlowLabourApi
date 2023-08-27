@@ -9,7 +9,7 @@
     // <snippet_ReceiveMessage>
     connection.on("ReceiveMessage", (user, message) => {
         const li = document.createElement("li");
-        li.textContent = `${user}: ${message}`;
+        li.textContent = `${user}: ${message.content}`;
         document.getElementById("messageList").appendChild(li);
     });
     // </snippet_ReceiveMessage>

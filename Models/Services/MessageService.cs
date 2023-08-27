@@ -16,6 +16,12 @@ namespace FlowLabourApi.Models.Services
             _context = context;
         }
 
+        public AuthUser? HasUser(int userId)
+        {
+            var u = _context.AuthUsers.Find(userId);
+            return u;
+        }
+
         public async Task<EntityEntry<Message>> Add(MessageView messageView)
         {
             var m = new Message()
@@ -23,7 +29,7 @@ namespace FlowLabourApi.Models.Services
                 From = (int)messageView.From!,
                 To = messageView.To,
                 Content = messageView.Content,
-                Date = messageView.Date??DateTime.Now,
+                Date = messageView.Date,
                 ContentType = messageView.ContentType
             };
             EntityEntry<Message>? e = _context.Messages.Add(m);
@@ -91,7 +97,7 @@ namespace FlowLabourApi.Models.Services
             }
             var message = _context.Messages
                 .Where(expression)
-                .Take(count).OrderByDescending(m=>m.Date);
+                .Take(count).OrderBy(m=>m.Date);
             return message;
         }
 
@@ -103,6 +109,17 @@ namespace FlowLabourApi.Models.Services
         {
             _context.Entry(message).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<IGrouping<int,Message>>> LastUnRead(int userId)
+        {
+            var l = await _context.Messages
+                .Where(o=>o.To == userId&&o.Unread == 1)
+                .OrderByDescending(o=>o.Date)
+                .GroupBy(o=>o.From)
+                .ToListAsync();
+           
+           return l;
         }
     }
 }

@@ -45,6 +45,13 @@ public class ChatHub : Hub
             #warning tobe consummate. has bug when same user login in different browser
             if (!string.IsNullOrEmpty(ct))
             {
+                if(ct != Context.ConnectionId)
+                {
+                    _connections.Update(id, Context.ConnectionId);
+                }
+            }
+            else
+            {
                 _connections.Add(id, Context.ConnectionId);
             }
             
@@ -115,23 +122,51 @@ public class ChatHub : Hub
     /// <returns></returns>
     public async Task SendToUser(string user, string message)
     {
-        MessageView messageView = new MessageView();
         var FromConId = Context.ConnectionId;
+        var userName = Context.User!.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
         var claim = Context.User!.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim);
         if (claim != null)
         {
             var id = claim.Value;
-            messageView.From = int.Parse(id);
+            var from = int.Parse(id);
+
             bool canParse = int.TryParse(user, out int to);
             if (!canParse)
             {
                 throw new Exception("User id is not valid");
             }
-            messageView.To = to;
-            messageView.Content = message;
+
+            var hasUser = _messageService.HasUser(to);
+            if (hasUser==null)
+            {
+                throw new Exception("User id is not exists");
+            }
+
+            MessageView messageView = new MessageView()
+            {
+                To = to,
+                Content = message,
+                From = from,
+                Date = DateTime.Now
+            };
+
             var ToConId = _connections.GetConnection(user);
-            await _messageService.Add(messageView);
-            await Clients.Client(ToConId).SendAsync("ReceiveMessage", user, messageView.Content);
+            if (string.IsNullOrEmpty(ToConId))
+            {
+                messageView.Unread = 1;
+            }
+            else
+            {
+                messageView.Unread = 0;
+            }
+
+            var e = await _messageService.Add(messageView);
+            await Clients.Client(ToConId).SendAsync("ReceiveMessage", from, new{
+                Id = e.Entity.Id,
+                Content = messageView.Content,
+                Date = messageView.Date.ToString("yyyy/MM/dd HH:mm"),
+                Title = userName
+            });
         }
 
     }

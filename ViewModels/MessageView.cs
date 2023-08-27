@@ -25,6 +25,11 @@
         /// <summary>
         /// 发信日期
         /// </summary>
-        public DateTime? Date { get; set; }
+        public DateTime Date { get; set; }
+
+        /// <summary>
+        /// 是否已读,1未读，0已读
+        /// </summary>
+        public sbyte? Unread { get; set; }
     }
 }

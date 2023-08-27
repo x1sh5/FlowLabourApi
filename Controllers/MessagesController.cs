@@ -37,7 +37,7 @@ namespace FlowLabourApi.Controllers
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
             var ms = _messageService.GetMessages(Convert.ToInt32(id));
 
-            if (ms.Count() != 0)
+            if (ms.Count() == 0)
             {
                 return NotFound();
             }
@@ -48,21 +48,21 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="reciverId"></param>
+        /// <param name="receiverId"></param>
         /// <param name="count"></param>
         /// <param name="lastid">take items where less than lastid</param>
         /// <returns></returns>
         [HttpGet("receives")]
-        public ActionResult<IEnumerable<Message>> Receives([Required]int reciverId,
+        public ActionResult<IEnumerable<Message>> Receives([Required]int receiverId,
             [Required]int count, int? lastid)
         {
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
             var ms = _messageService
-                .GetMessages(Convert.ToInt32(id), reciverId, count, lastid);
+                .GetMessages(receiverId, Convert.ToInt32(id), count, lastid);
 
             if (ms.Count() == 0)
             {
-                return NotFound();
+                return NoContent();
             }
 
             return new ActionResult<IEnumerable<Message>>(ms);
@@ -104,5 +104,46 @@ namespace FlowLabourApi.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Œ¥∂¡–≈œ¢
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("unread")]
+        public async Task<ActionResult> UnRead()
+        {
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var unreads =await _messageService.LastUnRead(int.Parse(id));
+            List<UnReadMsg> messages = new List<UnReadMsg>();
+            if(unreads.Count() > 0)
+            {
+                foreach(IGrouping<int, Message> unread in unreads)
+                {
+                    messages.Add(new UnReadMsg
+                    {
+                        Count = unread.Count(),
+                        Last = unread.FirstOrDefault()
+                    });
+                }
+                return Ok(messages);
+            }
+            return NoContent();
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public record class UnReadMsg
+    {
+        /// <summary>
+        /// unread count messages
+        /// </summary>
+        public int Count { get; set; }
+
+        /// <summary>
+        /// last unread message
+        /// </summary>
+        public Message? Last { get; set; }
     }
 }

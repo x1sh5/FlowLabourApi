@@ -44,5 +44,18 @@
                 _connections.Remove(key);
             }
         }
+
+        public IEnumerable<string> GetConnections()
+        {
+            return _connections.Values;
+        }
+
+        public void Update(T key, string connectionId)
+        {
+            lock (_connections)
+            {
+                _connections[key] = connectionId;
+            }
+        }
     }
 }
