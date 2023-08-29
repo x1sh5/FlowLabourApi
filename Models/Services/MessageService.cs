@@ -82,7 +82,7 @@ namespace FlowLabourApi.Models.Services
         /// <param name="senderId"></param>
         /// <param name="receiverId"></param>
         /// <param name="count"></param>
-        /// <param name="lastid"></param>
+        /// <param name="lastid">take messages less than lastid</param>
         /// <returns></returns>
         public IEnumerable<Message> GetMessages(int senderId, int receiverId, int count, int? lastid)
         {

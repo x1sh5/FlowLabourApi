@@ -28,8 +28,10 @@
     {
         <!-- <snippet_CDN> -->
         <! -- script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js" / -->
-        <script src="~/flow/js/signalr.js"></script>
+
         <!-- </snippet_CDN> -->
+        <script src="~/flow/js/signalr.js"></script>
+        <script src="~/flow/js/site.js"></script>
         <script src="~/flow/chat.js"></script>
         <!--
                 <script src="https://apis.google.com/js/platform.js" async defer></script>
@@ -49,22 +51,5 @@
                     }
                 </script>
         -->
-        <script>
-            function signIn(){
-                fetch('https://localhost:7221/api/Account/Login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        "userName": "zhangsan",
-                    "password": "zhangsan1234"
-                    })
-                }).then(res => res.json())
-                    .then(res => {
-                        console.log(res);
-                    })
-            }
-        </script>
 
 }

@@ -6,20 +6,11 @@ using FlowLabourApi.Models.state;
 using FlowLabourApi.Options;
 using FlowLabourApi.Utils;
 using FlowLabourApi.ViewModels;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using NuGet.Common;
-using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -318,6 +309,13 @@ namespace FlowLabourApi.Controllers
             {
                 return BadRequest(new { Error = ex.Message });
             }
+        }
+
+        public async void Test()
+        {
+            var user = await _userManager.FindByNameAsync("admin");
+            var role = await _roleManager.FindByNameAsync("admin");
+            await _userManager.AddToRoleAsync(user, role.Name);
         }
 
         [NonAction]
