@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -20,7 +21,6 @@ namespace FlowLabourApi.Authentication
         private readonly JwtBearerOptions _jwtBearerOptions;
         private readonly JwtOptions _jwtOptions;
         //private readonly SigningCredentials _signingCredentials;
-        private readonly XiangxpContext _dbContext;
         private readonly ILogger<AuthTokenService> _logger;
         //private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -32,16 +32,15 @@ namespace FlowLabourApi.Authentication
         {
             _jwtBearerOptions = jwtBearerOptions.Get(JwtBearerDefaults.AuthenticationScheme);
             _jwtOptions = new JwtOptions();
-            _dbContext = dbContext;
             _logger = logger;
             //_httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur, string loginProvider)
+        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur, string loginProvider, XiangxpContext _dbContext)
         {
             var result = new AuthTokenDto();
 
-            string? refreshToken = await CreateRefreshTokenAsync(ur.UserId, loginProvider);
+            string? refreshToken = await CreateRefreshTokenAsync(ur.UserId, loginProvider,_dbContext);
             result.RefreshToken = refreshToken;
             result.AccessToken = CreateAccessToken(ur, loginProvider);
 
@@ -60,7 +59,13 @@ namespace FlowLabourApi.Authentication
             return result;
         }
 
-        private async Task<string> CreateRefreshTokenAsync(int userId, string useragent_bs64)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="useragent_bs64">UA 通过base64后得到的字符串 </param>
+        /// <returns></returns>
+        private async Task<string> CreateRefreshTokenAsync(int userId, string useragent_bs64, XiangxpContext _dbContext)
         {
             //var tokenId = Guid.NewGuid().ToString("N");
 
@@ -121,7 +126,7 @@ namespace FlowLabourApi.Authentication
             return accessToken;
         }
 
-        public async Task<AuthTokenDto> RefreshAuthTokenAsync(AuthTokenDto token)
+        public async Task<AuthTokenDto> RefreshAuthTokenAsync(AuthTokenDto token, XiangxpContext _dbContext)
         {
             var validationParameters = _jwtBearerOptions.TokenValidationParameters.Clone();
             validationParameters.ValidateLifetime = false;
@@ -139,16 +144,19 @@ namespace FlowLabourApi.Authentication
                 throw new BadHttpRequestException("Invalid access token");
             }
 
-            var identity = principal.Identities.First();
+            //decode jwt
+            ClaimsIdentity? identity = principal.Identities.First();
             //var name = identity.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.NameClaim).Value;
-            var userId = identity.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
-            var loginProvider = identity.Claims
+            string? userId = identity.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
+            string? loginProvider = identity.Claims
                 .FirstOrDefault(c => c.Type == JwtClaimTypes.LoginProviderClaim)?.Value;
+
             //var refreshTokenKey = GetRefreshTokenKey(name, loginProvider);
-            var refreshToken = await _dbContext.UserTokens
+            UserToken? refreshToken = await _dbContext.UserTokens
                 .Where(t => t.UserId == int.Parse(userId) && t.LoginProvider == loginProvider)
-                .Select(t => t.RefreshToken).FirstOrDefaultAsync();
-            if (refreshToken==null || Uri.EscapeDataString(refreshToken) != token.RefreshToken)
+                .FirstOrDefaultAsync();
+            if (refreshToken==null || Uri.EscapeDataString(refreshToken.RefreshToken) != token.RefreshToken
+                || refreshToken.IsExpired)
             {
                 throw new BadHttpRequestException("Invalid refresh token");
             }
@@ -158,7 +166,7 @@ namespace FlowLabourApi.Authentication
                 .Include(ur => ur.Role)
                 .FirstOrDefaultAsync(ur => ur.UserId == int.Parse(userId));
 
-            return await CreateAuthTokenAsync(userRole, loginProvider);
+            return await CreateAuthTokenAsync(userRole, loginProvider,_dbContext);
         }
 
         private string GetRefreshTokenKey(string name, string refreshTokenId)
@@ -168,5 +176,6 @@ namespace FlowLabourApi.Authentication
 
             return $"{name}:{refreshTokenId}";
         }
+
     }
 }

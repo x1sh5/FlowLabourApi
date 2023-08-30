@@ -18,12 +18,10 @@ namespace FlowLabourApi.Controllers
     public class AssignmentUserController : ControllerBase
     {
         private readonly XiangxpContext _xiangxpContext;
-        private readonly UserManager<AuthUser> _userManager;
 
-        public AssignmentUserController(XiangxpContext xiangxpContext, UserManager<AuthUser> userManager)
+        public AssignmentUserController(XiangxpContext xiangxpContext)
         {
             _xiangxpContext = xiangxpContext;
-            _userManager = userManager;
         }
 
         /// <summary>

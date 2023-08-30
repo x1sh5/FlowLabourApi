@@ -15,7 +15,7 @@ namespace FlowLabourApi.Models
         public string RefreshToken { get; set; }
 
         /// <summary>
-        /// 过去时间
+        /// 过期时间
         /// </summary>
         public DateTime Expires { get; internal set; }
 

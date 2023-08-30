@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Microsoft.Win32;
+using NuGet.Protocol.Plugins;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -232,7 +234,7 @@ namespace FlowLabourApi.Controllers
             var ua = HashUtil.Md5(UA ?? "unkownAgent");
 
             //SecurityToken? token = GenerateToken(userRole);
-            AuthTokenDto? token = await _authTokenService.CreateAuthTokenAsync(userRole, ua);
+            AuthTokenDto? token = await _authTokenService.CreateAuthTokenAsync(userRole, ua,_context);
 
             CookieOptions cookieOptions = new CookieOptions
             {
@@ -279,11 +281,20 @@ namespace FlowLabourApi.Controllers
         /// <returns></returns>
         [HttpPost("logout")]
         [Authorize]
-        public IActionResult Logout()
+        public async void Logout()
         {
-            // code to handle logout
-            bool isAuth = User.Identity.IsAuthenticated;
-            return Content($"user is {isAuth}");
+            var id = User.FindFirstValue(JwtClaimTypes.IdClaim);
+            var UA = Request.Headers.UserAgent[0];
+            var ua = HashUtil.Md5(UA ?? "unkownAgent");
+
+            var userToken = await _context.UserTokens
+                .FirstOrDefaultAsync(t => t.LoginProvider == ua && t.UserId == int.Parse(id));
+            if (userToken != null)
+            {
+                userToken.Expires = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            
         }
 
         /// <summary>
@@ -301,7 +312,7 @@ namespace FlowLabourApi.Controllers
             AuthTokenDto dto = new AuthTokenDto { AccessToken = accessToken, RefreshToken = refreshToken };
             try
             {
-                var token = await _authTokenService.RefreshAuthTokenAsync(dto);
+                var token = await _authTokenService.RefreshAuthTokenAsync(dto,_context);
 
                 return Ok(token);
             }
@@ -311,11 +322,22 @@ namespace FlowLabourApi.Controllers
             }
         }
 
-        public async void Test()
+        /// <summary>
+        /// 注销账号
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        [HttpPost("unregister")]
+        [Authorize]
+        public IActionResult UnRegister([FromForm]string password)
         {
-            var user = await _userManager.FindByNameAsync("admin");
-            var role = await _roleManager.FindByNameAsync("admin");
-            await _userManager.AddToRoleAsync(user, role.Name);
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var user = _context.AuthUsers.Find(int.Parse(id));
+            if(user.Passwordhash == HashUtil.Sha256(password))
+            {
+                return Ok("已成功发起注销申请，成功后会通过邮件通知。");
+            }
+            return BadRequest("密码错误");
         }
 
         [NonAction]
@@ -339,4 +361,6 @@ namespace FlowLabourApi.Controllers
     }
 
     internal record CheckMSg(bool Status, string msg);
+
+    internal record UserCheck(string password, string msg, string token);
 }

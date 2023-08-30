@@ -17,12 +17,12 @@ using System.Linq.Expressions;
 public class AssignmentController : ControllerBase
 {
     private readonly XiangxpContext _context;
-    private readonly UserManager<AuthUser> _userManager;
+    //private readonly UserManager<AuthUser> _userManager;
 
-    public AssignmentController(XiangxpContext context, UserManager<AuthUser> userManager)
+    public AssignmentController(XiangxpContext context)
     {
         _context = context;
-        _userManager = userManager;
+        //_userManager = userManager;
     }
 
     /// <summary>
@@ -42,11 +42,11 @@ public class AssignmentController : ControllerBase
         Expression<Func<Assignment, bool>> expression;
         if (typeid != null)
         {
-            expression = o => o.Id > offset && o.Status == (sbyte)TaskState.WaitForAccept &&o.TypeId == typeid;
+            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished &&o.TypeId == typeid;
         }
         else
         {
-            expression = o => o.Id > offset && o.Status == (sbyte)TaskState.WaitForAccept;
+            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished;
         }
         List<Assignment> assignments;
         assignments = await _context.Assignments.Include(a => a.AuthUser)
@@ -228,7 +228,7 @@ public class AssignmentController : ControllerBase
     /// <param name="title"></param>
     /// <returns></returns>
     [HttpGet("search/{title}")]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> SearchByTitile(string title)
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> SearchByTitle(string title)
     {
         var assignments = await _context.Assignments.Include(a => a.AuthUser)
             .Where(a => a.Title!.Contains(title)).ToListAsync();
@@ -264,7 +264,8 @@ public class AssignmentController : ControllerBase
     public async Task<ActionResult<Assignment>> PostAssignment(AssignmentView assignmentView)
     {
         var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
-        var user = await _userManager.FindByIdAsync(id);
+        //var user = await _userManager.FindByIdAsync(id);
+        var user = await _context.AuthUsers.FindAsync(Convert.ToInt32(id));
         Assignment assignment = new Assignment
         {
             Title = assignmentView.Title,
@@ -349,7 +350,8 @@ public class AssignmentController : ControllerBase
     public async Task<ActionResult<ResponeMessage<SimpleResp>>> Take(int assignmentId)
     {
         var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
-        var user = await _userManager.FindByIdAsync(id);
+        //var user = await _userManager.FindByIdAsync(id);
+        var user = await _context.AuthUsers.FindAsync(Convert.ToInt32(id));
         var assignment = _context.Assignments.Find(assignmentId);
 
         var resp = new ResponeMessage<SimpleResp>();
