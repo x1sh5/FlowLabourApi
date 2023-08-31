@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
-
+using Microsoft.Net.Http.Headers;
 
 namespace FlowLabourApi.Events;
 /// <summary>
@@ -84,7 +84,18 @@ public class AppJwtBearerEvents : JwtBearerEvents
 
         #region 以下是自定义Token获取方式示例（实际上也是默认方式）
 
-        //string authorization = context.Request.Headers[HeaderNames.Authorization];
+        string authHeader = context.Request.Headers[HeaderNames.Authorization];
+        if (!string.IsNullOrEmpty(authHeader))
+        {
+            if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                // 赋值token
+                context.Token = authHeader["Bearer ".Length..].Trim();
+                return Task.CompletedTask;
+            }
+            
+        }
+
         StringValues authorization;
         bool hasCookie = true;
         bool hasQuery = true;

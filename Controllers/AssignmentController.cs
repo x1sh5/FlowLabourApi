@@ -402,13 +402,27 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete("{id}")]
+    [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteAssignment(int id)
     {
         var assignment = await _context.Assignments.FindAsync(id);
         if (assignment == null)
         {
             return NotFound();
+        }
+        var e = _context.Assignmentusers
+            .Where(x => x.AssignmentId == assignment.Id).FirstOrDefault();
+        if (e != null)
+        {
+            return  Conflict( new ResponeMessage<SimpleResp>
+            {
+                ORCode = ORCode.AsgmHasPicked,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "任务已被他人接取,请等待任务完成或被放弃。"
+                }
+            });
         }
 
         _context.Assignments.Remove(assignment);
