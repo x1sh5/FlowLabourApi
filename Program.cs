@@ -39,8 +39,10 @@ namespace FlowLabourApi
                 options.AddDefaultPolicy(
                     policy =>
                     {
-                        policy.WithOrigins("https://localhost:7221",
-                                            "http://localhost:5134");
+                        policy.WithOrigins(
+                            builder.Configuration.GetSection("corsOrigins")
+                            .GetChildren().Select(o => o.Value).ToArray()
+                            );
                     });
             });
 
@@ -54,8 +56,7 @@ namespace FlowLabourApi
             builder.Services.AddDbContext<XiangxpContext>(
                 (DbContextOptionsBuilder options) =>
                     {
-                        options.UseMySQL(
-                            DbConfig.ConnectStr);
+                        options.UseMySQL(builder.Configuration.GetConnectionString("Connection"));
                     }
             );
 

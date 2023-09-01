@@ -34,15 +34,14 @@
         public string? Description { get; set; }
 
         /// <summary>
-        /// 预计完成日期
+        /// 完成日期
         /// </summary>
         public DateTime? Finishtime { get; set; }
 
         /// <summary>
-        /// 单位：分钟
+        /// 截止日期
         /// </summary>
-        /// <example>30</example>
-        public int? Presumedtime { get; set; }
+        public DateTime Deadline { get; set; }
 
         /// <summary>
         /// 发布日期
@@ -50,9 +49,15 @@
         public DateTime Publishtime { get; set; }
 
         /// <summary>
-        /// 回馈值
+        /// 固定回报的金额。
         /// </summary>
-        public int Reward { get; set; }
+        /// <example>100</example>
+        public int FixedReward { get; set; }
+
+        /// <summary>
+        /// 百分比回报的金额。
+        /// </summary>
+        public int? PercentReward { get; set; }
 
         /// <summary>
         /// 1:固定值，单位：分。2：百分比，精度为小数点后两位。

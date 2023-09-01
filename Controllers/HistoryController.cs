@@ -48,9 +48,10 @@ namespace FlowLabourApi.Controllers
                     TypeId = item.Assignment.TypeId,
                     Status = item.Assignment.Status,
                     Finishtime = item.Assignment.Finishtime,
-                    Presumedtime = item.Assignment.Presumedtime,
+                    Deadline = item.Assignment.Deadline,
                     Publishtime = item.Assignment.Publishtime,
-                    Reward = item.Assignment.Reward,
+                    FixedReward = item.Assignment.FixedReward,
+                    PercentReward = item.Assignment.PercentReward,
                     Rewardtype = item.Assignment.Rewardtype,
                     Verify = item.Assignment.Verify,
                 });

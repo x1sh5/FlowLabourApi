@@ -61,11 +61,12 @@ public class AssignmentController : ControllerBase
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
             assignmentView.TypeId = e.TypeId;
-            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Deadline = e.Deadline;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
-            assignmentView.Reward = e.Reward;
+            assignmentView.FixedReward = e.FixedReward;
+            assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
             assignmentView.UserId = e.UserId;
@@ -103,11 +104,12 @@ public class AssignmentController : ControllerBase
             Description = e.Description,
             Branchid = e.Branchid,
             TypeId = e.TypeId,
-            Presumedtime = e.Presumedtime,
+            Deadline = e.Deadline,
             Publishtime = e.Publishtime,
             Status = e.Status,
             Verify = e.Verify,
-            Reward = e.Reward,
+            FixedReward = e.FixedReward,
+            PercentReward = e.PercentReward,
             Rewardtype = e.Rewardtype,
             Username = e.AuthUser?.UserName,
             UserId = e.UserId,
@@ -142,11 +144,12 @@ public class AssignmentController : ControllerBase
             Description = e.Description,
             Branchid = e.Branchid,
             TypeId = e.TypeId,
-            Presumedtime = e.Presumedtime,
+            Deadline = e.Deadline,
             Publishtime = e.Publishtime,
             Status = e.Status,
             Verify = e.Verify,
-            Reward = e.Reward,
+            FixedReward = e.FixedReward,
+            PercentReward = e.PercentReward,
             Rewardtype = e.Rewardtype,
             Username = e.AuthUser?.UserName,
         };
@@ -174,11 +177,12 @@ public class AssignmentController : ControllerBase
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
             assignmentView.TypeId = e.TypeId;
-            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Deadline = e.Deadline;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
-            assignmentView.Reward = e.Reward;
+            assignmentView.FixedReward = e.FixedReward;
+            assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
             assignmentView.UserId = e.UserId;
@@ -209,11 +213,12 @@ public class AssignmentController : ControllerBase
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
             assignmentView.TypeId = e.TypeId;
-            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Deadline = e.Deadline;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
-            assignmentView.Reward = e.Reward;
+            assignmentView.FixedReward = e.FixedReward;
+            assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = userName;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
@@ -241,11 +246,12 @@ public class AssignmentController : ControllerBase
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
             assignmentView.TypeId = e.TypeId;
-            assignmentView.Presumedtime = e.Presumedtime;
+            assignmentView.Deadline = e.Deadline;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
-            assignmentView.Reward = e.Reward;
+            assignmentView.FixedReward = e.FixedReward;
+            assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
             assignmentView.UserId = e.UserId;
@@ -272,11 +278,12 @@ public class AssignmentController : ControllerBase
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
             TypeId = assignmentView.TypeId,
-            Presumedtime = assignmentView.Presumedtime,
+            Deadline = assignmentView.Deadline,
             Publishtime = DateTime.Now,
             Status = assignmentView.Status,
             Verify = assignmentView.Verify,
-            Reward = assignmentView.Reward,
+            FixedReward = assignmentView.FixedReward,
+            PercentReward = assignmentView.PercentReward,
             Rewardtype = assignmentView.Rewardtype,
             UserId = user.Id,
         };
@@ -313,11 +320,12 @@ public class AssignmentController : ControllerBase
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
             TypeId = assignmentView.TypeId,
-            Presumedtime = assignmentView.Presumedtime,
+            Deadline = assignmentView.Deadline,
             Publishtime = assignmentView.Publishtime,
             Status = assignmentView.Status,
             Verify = assignmentView.Verify,
-            Reward = assignmentView.Reward,
+            FixedReward = assignmentView.FixedReward,
+            PercentReward = assignmentView.PercentReward,
             Rewardtype = assignmentView.Rewardtype,
         };
         _context.Entry(assignment).State = EntityState.Modified;

@@ -63,20 +63,20 @@ public partial class XiangxpContext : DbContext
 
     //public virtual DbSet<VideoInfo> VideoInfos { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-#warning To protect potentially sensitive information in your connection string, 
-        //you should move it out of source code. You can avoid scaffolding the
-        //connection string by using the Name= syntax to read it from configuration -
-        //see https://go.microsoft.com/fwlink/?linkid=2131148. For more
-        //guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        //if (!IsConfigured)
-        //{
-            optionsBuilder.UseMySQL(DbConfig.ConnectStr);
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+        // //#warning To protect potentially sensitive information in your connection string, 
+        // //you should move it out of source code. You can avoid scaffolding the
+        // //connection string by using the Name= syntax to read it from configuration -
+        // //see https://go.microsoft.com/fwlink/?linkid=2131148. For more
+        // //guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        // //if (!IsConfigured)
+        // //{
+            //optionsBuilder.UseMySQL(DbConfig.ConnectStr);
             //IsConfigured = true;
-        //}
+        // //}
 
-    }
+    //}
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -135,16 +135,19 @@ public partial class XiangxpContext : DbContext
                 .HasDefaultValue(null)
                 .IsRequired(false)
                 .HasColumnName("finishtime");
-            entity.Property(e => e.Presumedtime)
-                .HasComment("单位：分钟")
-                .HasColumnType("int(11)")
-                .HasColumnName("presumedtime");
+            entity.Property(e => e.Deadline)
+                .HasColumnType("datetime")
+                .HasColumnName("deadline");
             entity.Property(e => e.Publishtime)
                 .HasColumnType("datetime")
                 .HasColumnName("publishtime");
-            entity.Property(e => e.Reward)
+            entity.Property(e => e.FixedReward)
                 .HasColumnType("int(11)")
-                .HasColumnName("reward");
+                .HasColumnName("fixedreward");
+            entity.Property(e => e.PercentReward)
+                .HasColumnType("int(11)")
+                .IsRequired(false)
+                .HasColumnName("percentreward");
             entity.Property(e => e.Rewardtype)
                 .HasComment("1:固定值，单位：分。2：百分比，精度为小数点后两位。")
                 .HasColumnType("tinyint(4)")

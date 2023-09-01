@@ -36,10 +36,9 @@ public partial class Assignment
     public sbyte Status { get; set; }
 
     /// <summary>
-    /// 预计需要的时间。 单位：分钟
+    /// 截止日期
     /// </summary>
-    /// <example>60</example>
-    public int? Presumedtime { get; set; }
+    public DateTime Deadline { get;set;}
 
     /// <summary>
     /// 1:固定值，单位：分。2：百分比，精度为小数点后两位。
@@ -48,12 +47,15 @@ public partial class Assignment
     public sbyte Rewardtype { get; set; }
 
     /// <summary>
-    /// 回报值。如果rewardtype的值为1，则表示固定回报的金额。
-    /// 单位：分。如果rewardtype的值为2，表示百分比回报。
-    /// 单位：万分之一，计算公式：值/100 * 100%（如填写1，则实际回报比为 0.01%，填写2000，则实际回报比为 20%）
+    /// 固定回报的金额。
     /// </summary>
     /// <example>100</example>
-    public int Reward { get; set; }
+    public int FixedReward { get; set; }
+
+    /// <summary>
+    /// 百分比回报的金额。
+    /// </summary>
+    public int? PercentReward { get; set; }
 
     /// <summary>
     /// 发布日期
