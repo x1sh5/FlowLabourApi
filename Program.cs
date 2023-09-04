@@ -244,6 +244,7 @@ namespace FlowLabourApi
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHsts();
+            //app.UseExceptionHandler("/Home/Error");
             //Configure the HTTP request pipeline.
             //if (!app.Environment.IsDevelopment())
             //{
@@ -252,8 +253,8 @@ namespace FlowLabourApi
             //    app.UseHsts();
             //}
 
-        // <snippet_UseWebSockets>
-        var webSocketOptions = new WebSocketOptions
+            // <snippet_UseWebSockets>
+            var webSocketOptions = new WebSocketOptions
             {
                 KeepAliveInterval = TimeSpan.FromMinutes(20)
             };
@@ -280,7 +281,7 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-                //.AllowAnyOrigin()  //服务器环境下注释该行
+                .AllowAnyOrigin()  //服务器环境下注释该行
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });

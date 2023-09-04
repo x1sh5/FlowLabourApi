@@ -289,14 +289,45 @@ public class AssignmentController : ControllerBase
         };
         var e = _context.Assignments.Add(assignment);
         _context.SaveChanges();
-        _context.Assignmentusers.Add(new AssignmentUser
-        {
-            AssignmentId = e.Entity.Id,
-            UserId = user.Id,
-        });
-        _context.SaveChanges();
 
         return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id }, e.Entity);
+    }
+
+    /// <summary>
+    /// 新建关联任务
+    /// </summary>
+    /// <param name="id">关联id</param>
+    /// <param name="assignmentView"></param>
+    /// <returns></returns>
+    [HttpPost("contact/{id}")]
+    public async Task<ActionResult<Assignment>> ContactAssignment(int id, AssignmentView assignmentView)
+    {
+        var userid = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+        var a = await _context.Assignments.FindAsync(id);
+        if(a==null)
+        {
+            return NotFound($"id为{id}的任务不存在。");
+        }
+        Assignment assignment = new Assignment
+        {
+            Title = assignmentView.Title,
+            Description = assignmentView.Description,
+            Branchid = assignmentView.Branchid,
+            TypeId = assignmentView.TypeId,
+            Deadline = assignmentView.Deadline,
+            Publishtime = DateTime.Now,
+            Status = assignmentView.Status,
+            Verify = assignmentView.Verify,
+            FixedReward = assignmentView.FixedReward,
+            PercentReward = assignmentView.PercentReward,
+            Rewardtype = assignmentView.Rewardtype,
+            UserId = int.Parse(userid),
+        };
+        var e = _context.Assignments.Add(assignment);
+        _context.SaveChanges();
+        _context.Relatedtasks.Add(new RelatedAssignment { AssignmentId = e.Entity.Id, RelatedId=id});
+        _context.SaveChanges();
+        return Ok();
     }
 
     /// <summary>

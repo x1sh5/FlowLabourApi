@@ -8,10 +8,10 @@ public partial class Relatedtask
     /// <summary>
     /// 主任务的id
     /// </summary>
-    public int? Taskid { get; set; }
+    public int? TaskId { get; set; }
 
     /// <summary>
     /// 相关任务的id
     /// </summary>
-    public int? Relatedid { get; set; }
+    public int? RelatedId { get; set; }
 }
