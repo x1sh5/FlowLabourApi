@@ -34,17 +34,18 @@ namespace FlowLabourApi
             //IHostEnvironment env = builder.Environment;
             //builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                    policy =>
-                    {
-                        policy.WithOrigins(
-                            builder.Configuration.GetSection("corsOrigins")
-                            .GetChildren().Select(o => o.Value).ToArray()
-                            );
-                    });
-            });
+            builder.Services.AddCors(
+                //options =>
+                //{
+                //options.AddDefaultPolicy(
+                //    policy =>
+                //    {
+                //        policy.WithOrigins(
+                //            builder.Configuration.GetSection("corsOrigins")
+                //            .GetChildren().Select(o => o.Value).ToArray()
+                //            );
+                //    });}
+            );
 
             builder.Services.AddControllersWithViews()
                 .AddJsonOptions(o =>
@@ -281,7 +282,7 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-                .AllowAnyOrigin()  //服务器环境下注释该行
+                //.AllowAnyOrigin()  //服务器环境下注释该行
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });
