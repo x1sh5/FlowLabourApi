@@ -121,6 +121,8 @@ namespace FlowLabourApi
             builder.Services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
+                options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+                options.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
             });
 
             //自定义身份验证
