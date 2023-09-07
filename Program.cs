@@ -1,3 +1,4 @@
+#define linux
 using FlowLabourApi.Authentication;
 using FlowLabourApi.Config;
 using FlowLabourApi.Events;
@@ -30,29 +31,16 @@ namespace FlowLabourApi
         {
             var builder = WebApplication.CreateBuilder(args);
             
-            //服务器下需要下两行
             //IHostEnvironment env = builder.Environment;
             //builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
-            builder.Services.AddCors(
-                //options =>
-                //{
-                //options.AddDefaultPolicy(
-                //    policy =>
-                //    {
-                //        policy.WithOrigins(
-                //            builder.Configuration.GetSection("corsOrigins")
-                //            .GetChildren().Select(o => o.Value).ToArray()
-                //            );
-                //    });}
-            );
+            builder.Services.AddCors();
 
             builder.Services.AddControllersWithViews()
-                .AddJsonOptions(o =>
-                {//解决json循环引用
-                    o.JsonSerializerOptions
-                      .ReferenceHandler = ReferenceHandler.Preserve;
-                });
+                .AddNewtonsoftJson(//解决json循环引用
+                    op =>op.SerializerSettings
+                    .ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
 
             builder.Services.AddDbContext<XiangxpContext>(
                 (DbContextOptionsBuilder options) =>
@@ -123,7 +111,7 @@ namespace FlowLabourApi
                 options.EnableDetailedErrors = true;
                 options.HandshakeTimeout = TimeSpan.FromSeconds(30);
                 options.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
-            });
+            }).AddNewtonsoftJsonProtocol();
 
             //自定义身份验证
             //AddDefaultTokenProviders
@@ -247,7 +235,11 @@ namespace FlowLabourApi
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseHsts();
-            //app.UseExceptionHandler("/Home/Error");
+#if linux
+            app.UseExceptionHandler("/Home/Error");//服务器环境添加此行
+#endif
+
+
             //Configure the HTTP request pipeline.
             //if (!app.Environment.IsDevelopment())
             //{
@@ -284,7 +276,9 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-                //.AllowAnyOrigin()  //服务器环境下注释该行
+#if notlinux 
+                .AllowAnyOrigin()
+#endif
                 .AllowAnyMethod()
                 .AllowAnyHeader();
             });
