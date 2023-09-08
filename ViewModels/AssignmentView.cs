@@ -57,16 +57,19 @@
         /// <summary>
         /// 百分比回报的金额。
         /// </summary>
+        /// <example>0</example>
         public int? PercentReward { get; set; }
 
         /// <summary>
         /// 1:固定值，单位：分。2：百分比，精度为小数点后两位。
         /// </summary>
+        /// <example>1</example>
         public sbyte Rewardtype { get; set; }
 
         /// <summary>
         /// 0:代接，1：已结待完成，2：已完成。
         /// </summary>
+        /// <example>0</example>
         public sbyte Status { get; set; }
 
         /// <summary>
@@ -83,6 +86,7 @@
         /// <summary>
         /// 0:未审核通过，1：审核通过。
         /// </summary>
+        /// <example>1</example>
         public sbyte Verify { get; set; }
 
         /// <summary>

@@ -339,7 +339,7 @@ public class AssignmentController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAssignment(int id, Assignment assignmentView)
     {
-
+        var userid = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
         if (id != assignmentView.Id)
         {
             return BadRequest();
@@ -358,6 +358,7 @@ public class AssignmentController : ControllerBase
             FixedReward = assignmentView.FixedReward,
             PercentReward = assignmentView.PercentReward,
             Rewardtype = assignmentView.Rewardtype,
+            UserId = int.Parse(userid),
         };
         _context.Entry(assignment).State = EntityState.Modified;
 

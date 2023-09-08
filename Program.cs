@@ -276,7 +276,9 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-#if notlinux 
+#if linux 
+                //.AllowAnyOrigin()
+#else 
                 .AllowAnyOrigin()
 #endif
                 .AllowAnyMethod()
