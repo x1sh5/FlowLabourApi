@@ -1,4 +1,4 @@
-#define linux
+#define win
 using FlowLabourApi.Authentication;
 using FlowLabourApi.Config;
 using FlowLabourApi.Events;
@@ -22,6 +22,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using FlowLabourApi.Controllers;
 
 namespace FlowLabourApi
 {
@@ -37,7 +38,7 @@ namespace FlowLabourApi
             builder.Services.AddCors();
 
             builder.Services.AddControllersWithViews()
-                .AddNewtonsoftJson(//½â¾öjsonÑ­»·ÒıÓÃ
+                .AddNewtonsoftJson(//è§£å†³jsonå¾ªç¯å¼•ç”¨
                     op =>op.SerializerSettings
                     .ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
@@ -79,7 +80,7 @@ namespace FlowLabourApi
             // at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
-            {//Ìí¼Ó×Ö¶Î×¢ÊÍ
+            {//æ·»åŠ å­—æ®µæ³¨é‡Š
                 c.SwaggerDoc("v1",
                     new OpenApiInfo
                     {
@@ -89,19 +90,19 @@ namespace FlowLabourApi
                  );
                 var filePath = Path.Combine(System.AppContext.BaseDirectory, "FlowLabourApi.xml");
                 c.IncludeXmlComments(filePath);
-                // ¿ªÆôĞ¡Ëø
+                // å¼€å¯å°é”
                 c.OperationFilter<AddResponseHeadersFilter>();
                 c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
 
-                // ÔÚheaderÖĞÌí¼Ótoken£¬´«µİµ½ºóÌ¨
+                // åœ¨headerä¸­æ·»åŠ tokenï¼Œä¼ é€’åˆ°åå°
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
 
                 c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
 
-                    Description = "JWTÊÚÈ¨(Êı¾İ½«ÔÚÇëÇóÍ·ÖĞ½øĞĞ´«Êä) Ö±½ÓÔÚÏÂ¿òÖĞÊäÈëBearer {token}£¨×¢ÒâÁ½ÕßÖ®¼äÊÇÒ»¸ö¿Õ¸ñ£©\"",
-                    Name = "Authorization",//jwtÄ¬ÈÏµÄ²ÎÊıÃû³Æ
-                    In = ParameterLocation.Header,//jwtÄ¬ÈÏ´æ·ÅAuthorizationĞÅÏ¢µÄÎ»ÖÃ(ÇëÇóÍ·ÖĞ)
+                    Description = "JWTæˆæƒ(æ•°æ®å°†åœ¨è¯·æ±‚å¤´ä¸­è¿›è¡Œä¼ è¾“) ç›´æ¥åœ¨ä¸‹æ¡†ä¸­è¾“å…¥Bearer {token}ï¼ˆæ³¨æ„ä¸¤è€…ä¹‹é—´æ˜¯ä¸€ä¸ªç©ºæ ¼ï¼‰\"",
+                    Name = "Authorization",//jwté»˜è®¤çš„å‚æ•°åç§°
+                    In = ParameterLocation.Header,//jwté»˜è®¤å­˜æ”¾Authorizationä¿¡æ¯çš„ä½ç½®(è¯·æ±‚å¤´ä¸­)
                     Type = SecuritySchemeType.ApiKey
                 });
             });
@@ -113,7 +114,7 @@ namespace FlowLabourApi
                 options.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
             }).AddNewtonsoftJsonProtocol();
 
-            //×Ô¶¨ÒåÉí·İÑéÖ¤
+            //è‡ªå®šä¹‰èº«ä»½éªŒè¯
             //AddDefaultTokenProviders
 
             builder.Services.Configure<MyIdentityOptions>(options =>
@@ -177,7 +178,8 @@ namespace FlowLabourApi
                             ValidateIssuerSigningKey = true,
 
                             ValidateLifetime = true,
-
+                            
+                            
                             //RequireSignedTokens = true,
                             //RequireExpirationTime = true,
 
@@ -187,7 +189,7 @@ namespace FlowLabourApi
 
                             //ClockSkew = TimeSpan.Zero,
                         };
-
+                        
                         options.SaveToken = true;
 
                         options.SecurityTokenValidators.Clear();
@@ -195,13 +197,13 @@ namespace FlowLabourApi
 
                         options.EventsType = typeof(AppJwtBearerEvents);
                     });
-                //.AddGoogle(googleOptions =>
-                //{
-                //    googleOptions.ClientId = "588162123232-04cs7bopvtes67f74m1p6rudh7lgaprd.apps.googleusercontent.com";
-                //    googleOptions.ClientSecret = "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";
-                //});
+            //.AddGoogle(googleOptions =>
+            //{
+            //    googleOptions.ClientId = "588162123232-04cs7bopvtes67f74m1p6rudh7lgaprd.apps.googleusercontent.com";
+            //    googleOptions.ClientSecret = "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";
+            //});
 
-#pragma warning disable CS8620 // ÓÉÓÚÒıÓÃÀàĞÍµÄ¿ÉÎª null ĞÔ²îÒì£¬Êµ²Î²»ÄÜÓÃÓÚĞÎ²Î¡£
+#pragma warning disable CS8620 // ç”±äºå¼•ç”¨ç±»å‹çš„å¯ä¸º null æ€§å·®å¼‚ï¼Œå®å‚ä¸èƒ½ç”¨äºå½¢å‚ã€‚
             builder.Services.AddAuthorization(options =>
             {
                 //options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -210,25 +212,25 @@ namespace FlowLabourApi
                 options.AddPolicy(Permission.Default,
                     policy => policy.RequireRole(Permission.Default)
                     .RequireAuthenticatedUser()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//µ¥¶À½ÇÉ«
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//å•ç‹¬è§’è‰²
                 options.AddPolicy(Permission.Admin,
                     policy => policy.RequireRole(Permission.Admin).RequireAuthenticatedUser()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));
                 options.AddPolicy(Permission.SystemOrAmin,
                     policy => policy.RequireRole(Permission.Admin, Permission.System)
                     .RequireAuthenticatedUser()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//»òµÄ¹ØÏµ
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//æˆ–çš„å…³ç³»
                 options.AddPolicy(Permission.SystemAndAmin,
                     policy => policy.RequireRole(Permission.Admin).RequireRole(Permission.System)
                     .RequireAuthenticatedUser()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//ÇÒµÄ¹ØÏµ
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme));//ä¸”çš„å…³ç³»
             })
                 .TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, RolesAuthorizationRequirement>(
                     x => new RolesAuthorizationRequirement(
                         typeof(Permission).GetFields(BindingFlags.Public | BindingFlags.Static)
                                 .Select(field => field.GetValue(null).ToString())
                         )));
-#pragma warning restore CS8620 // ÓÉÓÚÒıÓÃÀàĞÍµÄ¿ÉÎª null ĞÔ²îÒì£¬Êµ²Î²»ÄÜÓÃÓÚĞÎ²Î¡£
+#pragma warning restore CS8620 // ç”±äºå¼•ç”¨ç±»å‹çš„å¯ä¸º null æ€§å·®å¼‚ï¼Œå®å‚ä¸èƒ½ç”¨äºå½¢å‚ã€‚
 
             var app = builder.Build();
 
@@ -236,7 +238,7 @@ namespace FlowLabourApi
             app.UseSwaggerUI();
             app.UseHsts();
 #if linux
-            app.UseExceptionHandler("/Home/Error");//·şÎñÆ÷»·¾³Ìí¼Ó´ËĞĞ
+            app.UseExceptionHandler("/Home/Error");//æœåŠ¡å™¨ç¯å¢ƒæ·»åŠ æ­¤è¡Œ
 #endif
 
 
@@ -256,22 +258,19 @@ namespace FlowLabourApi
 
             app.UseWebSockets(webSocketOptions);
             // </snippet_UseWebSockets>
-            #region ĞÂ¼Ó
+            #region æ–°åŠ 
             app.UseDefaultFiles();
 
-            app.UseHttpsRedirection(); //nginxÅäÖÃÊ§°ÜÔ­Òò
+            app.UseHttpsRedirection(); //nginxé…ç½®å¤±è´¥åŸå› 
             app.UseStaticFiles();
-
-
 
             //app.UseRouting();
 
-            //app.UseHttpsRedirection();
             #endregion
 
             app.MapControllers();
 
-            //¿çÓò
+            //è·¨åŸŸ
             app.UseCors(builder =>
             {
                 builder
@@ -304,6 +303,7 @@ namespace FlowLabourApi
             });
 
             app.MapHub<ChatHub>("/chatHub");//use HubConnectionHandler<THub> actually
+
             //app.Use((context,next)=>
             //{
             //    context.Response.Headers.AccessControlExposeHeaders.Append("Set-Cookie");

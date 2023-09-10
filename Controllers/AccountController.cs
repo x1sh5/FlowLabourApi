@@ -11,8 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Microsoft.Win32;
-using NuGet.Protocol.Plugins;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -26,7 +24,7 @@ namespace FlowLabourApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly XiangxpContext _context;
-        private JwtOptions _jwtOptions;
+        private readonly JwtOptions _jwtOptions;
         //private readonly IUserStore<AuthUser> _flowUserStore;
         //private SignInManager<AuthUser> signInManager;
         private readonly IAuthTokenService _authTokenService;
@@ -216,22 +214,28 @@ namespace FlowLabourApi.Controllers
                );
             if (user == null)
             {
-                return Unauthorized();
+                return Unauthorized("用户身份未通过验证。");
             }
+
+            var UA = Request.Headers.UserAgent[0];
+
+            var ua = HashUtil.Md5(UA ?? "unkownAgent");
+
+            var t = _context.UserTokens.FirstOrDefault(e => e.UserId == user.Id);
+            if (t != null)
+            {
+                if(t.LoginProvider == ua&&!t.IsExpired)
+                {
+                    return Unauthorized("用户已在其他地方登录。");
+                }
+            }
+
             UserRole? userRole = _context.UserRoles.Include(o => o.Role).FirstOrDefault(e => e.UserId == user.Id);
             if (userRole == null)
             {
                 return Unauthorized("用户身份未通过验证。");
             }
             userRole.User = user;
-
-            //await HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, User);
-
-            //await signInManager.SignInAsync(user, true);
-
-            var UA = Request.Headers.UserAgent[0];
-
-            var ua = HashUtil.Md5(UA ?? "unkownAgent");
 
             //SecurityToken? token = GenerateToken(userRole);
             AuthTokenDto? token = await _authTokenService.CreateAuthTokenAsync(userRole, ua,_context);
@@ -281,7 +285,7 @@ namespace FlowLabourApi.Controllers
         /// <returns></returns>
         [HttpPost("logout")]
         [Authorize]
-        public async void Logout()
+        public async Task<IActionResult> Logout()
         {
             var id = User.FindFirstValue(JwtClaimTypes.IdClaim);
             var UA = Request.Headers.UserAgent[0];
@@ -294,7 +298,7 @@ namespace FlowLabourApi.Controllers
                 userToken.Expires = DateTime.Now;
                 await _context.SaveChangesAsync();
             }
-            
+            return NoContent();
         }
 
         /// <summary>

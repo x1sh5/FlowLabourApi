@@ -47,6 +47,8 @@ public partial class XiangxpContext : DbContext
 
     public virtual DbSet<RelatedAssignment> Relatedtasks { get; set; }
 
+    public virtual DbSet<Reference> References { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Session> Sessions { get; set; }
@@ -588,6 +590,29 @@ public partial class XiangxpContext : DbContext
                 .WithMany()
                 .HasForeignKey(d => d.RelatedId)
                 .IsRequired();
+        });
+
+        modelBuilder.Entity<Reference>(entity =>
+        {
+            entity.ToTable("Reference", tb => tb.HasComment("审核区间"));
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity.Property(e => e.CreateTime)
+                .HasColumnType("datetime")
+                .HasColumnName("createtime");
+            entity.Property(e => e.title)
+                .HasColumnName("title")
+                .HasColumnType("varchar(45)")
+                .HasMaxLength(45);
+            entity.Property(e => e.Content)
+                .HasColumnName("content")
+                .HasColumnType("text");
+            entity.Property(e => e.AuthId)
+                .HasColumnName("authid")
+                .HasColumnType("int(11)");
         });
 
         modelBuilder.Entity<Role>(entity =>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,11 +18,13 @@ using System.Linq.Expressions;
 public class AssignmentController : ControllerBase
 {
     private readonly XiangxpContext _context;
+    private readonly ILogger<AssignmentController> _logger;
     //private readonly UserManager<AuthUser> _userManager;
 
-    public AssignmentController(XiangxpContext context)
+    public AssignmentController(XiangxpContext context, ILogger<AssignmentController> logger)
     {
         _context = context;
+        _logger = logger;
         //_userManager = userManager;
     }
 
@@ -287,10 +290,19 @@ public class AssignmentController : ControllerBase
             Rewardtype = assignmentView.Rewardtype,
             UserId = user.Id,
         };
-        var e = _context.Assignments.Add(assignment);
-        _context.SaveChanges();
+        EntityEntry<Assignment>? e;
+        try
+        {
+            e = _context.Assignments.Add(assignment);
+            _context.SaveChanges();
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return BadRequest("创建失败。");
+        }
 
-        return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id }, e.Entity);
+
+        return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id },"创建成功。");
     }
 
     /// <summary>
@@ -323,10 +335,18 @@ public class AssignmentController : ControllerBase
             Rewardtype = assignmentView.Rewardtype,
             UserId = int.Parse(userid),
         };
-        var e = _context.Assignments.Add(assignment);
-        _context.SaveChanges();
-        _context.Relatedtasks.Add(new RelatedAssignment { AssignmentId = e.Entity.Id, RelatedId=id});
-        _context.SaveChanges();
+        try
+        {
+            var e = _context.Assignments.Add(assignment);
+            _context.SaveChanges();
+            _context.Relatedtasks.Add(new RelatedAssignment { AssignmentId = e.Entity.Id, RelatedId = id });
+            _context.SaveChanges();
+        }catch(Exception e)
+        {
+            _logger.LogError(e.Message);
+            return BadRequest("创建失败。");
+        }
+
         return Ok();
     }
 
@@ -465,8 +485,16 @@ public class AssignmentController : ControllerBase
             });
         }
 
-        _context.Assignments.Remove(assignment);
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.Assignments.Remove(assignment);
+            await _context.SaveChangesAsync();
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return BadRequest("删除失败。");
+        }
+
 
         return NoContent();
     }
