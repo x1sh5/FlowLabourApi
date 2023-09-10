@@ -221,15 +221,6 @@ namespace FlowLabourApi.Controllers
 
             var ua = HashUtil.Md5(UA ?? "unkownAgent");
 
-            var t = _context.UserTokens.FirstOrDefault(e => e.UserId == user.Id);
-            if (t != null)
-            {
-                if(t.LoginProvider == ua&&!t.IsExpired)
-                {
-                    return Unauthorized("用户已在其他地方登录。");
-                }
-            }
-
             UserRole? userRole = _context.UserRoles.Include(o => o.Role).FirstOrDefault(e => e.UserId == user.Id);
             if (userRole == null)
             {
@@ -290,6 +281,7 @@ namespace FlowLabourApi.Controllers
             var id = User.FindFirstValue(JwtClaimTypes.IdClaim);
             var UA = Request.Headers.UserAgent[0];
             var ua = HashUtil.Md5(UA ?? "unkownAgent");
+            var ip = HttpContext.Connection.RemoteIpAddress.ToString();
 
             var userToken = await _context.UserTokens
                 .FirstOrDefaultAsync(t => t.LoginProvider == ua && t.UserId == int.Parse(id));

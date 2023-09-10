@@ -179,9 +179,8 @@ namespace FlowLabourApi
 
                             ValidateLifetime = true,
                             
-                            
                             //RequireSignedTokens = true,
-                            //RequireExpirationTime = true,
+                            RequireExpirationTime = true,
 
                             NameClaimType = JwtBearerDefaults.AuthenticationScheme,
                             RoleClaimType = JwtClaimTypes.RoleClaim,
