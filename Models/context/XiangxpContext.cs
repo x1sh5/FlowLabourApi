@@ -319,6 +319,9 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(45)
                 .HasColumnName("name");
+            entity.Property(e => e.RewardType)
+                .HasMaxLength(20)
+                .HasColumnName("rewardtype");
         });
 
         modelBuilder.Entity<ContentType>(entity =>
@@ -594,7 +597,7 @@ public partial class XiangxpContext : DbContext
 
         modelBuilder.Entity<Reference>(entity =>
         {
-            entity.ToTable("Reference", tb => tb.HasComment("审核区间"));
+            entity.ToTable("reference", tb => tb.HasComment("审核区间"));
             entity.HasKey(e => e.Id).HasName("PRIMARY");
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")

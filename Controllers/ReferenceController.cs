@@ -1,5 +1,6 @@
 ﻿using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -8,6 +9,7 @@ namespace FlowLabourApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ReferenceController : ControllerBase
     {
         private readonly XiangxpContext _context;
@@ -21,6 +23,7 @@ namespace FlowLabourApi.Controllers
 
 
         [HttpGet("count")]
+        [AllowAnonymous]
         public int Count()
         {
             return _context.References.Count();
@@ -49,11 +52,13 @@ namespace FlowLabourApi.Controllers
         [HttpPost]
         public ActionResult<Reference> Post([FromBody] Reference value)
         {
+            var id = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
+
             var r = new Reference()
             {
                 title = value.title,
                 Content = value.Content,
-                AuthId = value.AuthId,
+                AuthId = int.Parse(id),
                 CreateTime = DateTime.Now
             };
             try

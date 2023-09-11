@@ -21,8 +21,6 @@ using Swashbuckle.AspNetCore.Filters;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Reflection;
-using System.Text.Json.Serialization;
-using FlowLabourApi.Controllers;
 
 namespace FlowLabourApi
 {

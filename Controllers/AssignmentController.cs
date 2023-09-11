@@ -364,6 +364,26 @@ public class AssignmentController : ControllerBase
         {
             return BadRequest();
         }
+
+        var oldAssignment = _context.Assignments.Find(id);
+        if(oldAssignment == null)
+        {
+            return NotFound();
+        }
+
+        if(oldAssignment.Status != (sbyte)TaskState.WaitForAccept)
+        {
+            return Conflict(new ResponeMessage<SimpleResp>
+            {
+                ORCode = ORCode.AsgmHasPicked,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "任务已被接取,请等待任务完成或被放弃。"
+                }
+            });
+        }
+
         Assignment assignment = new Assignment
         {
             Id = assignmentView.Id,
