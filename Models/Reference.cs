@@ -29,5 +29,10 @@
         /// 
         /// </summary>
         public DateTime? CreateTime { get; set; }
+
+        /// <summary>
+        /// version
+        /// </summary>
+        public int Version { get; set; }
     }
 }

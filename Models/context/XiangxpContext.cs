@@ -616,6 +616,9 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.AuthId)
                 .HasColumnName("authid")
                 .HasColumnType("int(11)");
+            entity.Property(entity => entity.Version)
+                .HasColumnName("version")
+                .HasColumnType("int(11)");
         });
 
         modelBuilder.Entity<Role>(entity =>

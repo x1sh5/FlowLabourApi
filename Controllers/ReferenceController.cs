@@ -81,13 +81,18 @@ namespace FlowLabourApi.Controllers
             var r = _context.References.Find(id);
             if (r!=null)
             {
-                r.title = value.title;
-                r.Content = value.Content;
-                r.AuthId = value.AuthId;
-                r.CreateTime = DateTime.Now;
+                var e = new Reference
+                {
+                    title = value.title,
+                    Content = value.Content,
+                    AuthId = value.AuthId,
+                    CreateTime = DateTime.Now,
+                    Version = r.Version + 1
+                };
+
                 try
                 {
-                    _context.References.Update(r);
+                    _context.References.Add(e);
                     _context.SaveChanges();
                     return Ok("修改成功！");
                 }
