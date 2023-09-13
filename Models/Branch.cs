@@ -18,11 +18,6 @@ public partial class Branch
     public string Name { get; set; } = null!;
 
     /// <summary>
-    /// 报酬类型，用于区分不同部门的报酬类型
-    /// </summary>
-    public string RewardType { get; set; } = null!;
-
-    /// <summary>
     /// 简要描述，可以不填
     /// </summary>
     /// <example>技术</example>

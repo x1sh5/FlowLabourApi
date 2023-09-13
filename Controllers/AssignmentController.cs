@@ -17,11 +17,11 @@ using System.Linq.Expressions;
 [Authorize]
 public class AssignmentController : ControllerBase
 {
-    private readonly XiangxpContext _context;
+    private readonly FlowContext _context;
     private readonly ILogger<AssignmentController> _logger;
     //private readonly UserManager<AuthUser> _userManager;
 
-    public AssignmentController(XiangxpContext context, ILogger<AssignmentController> logger)
+    public AssignmentController(FlowContext context, ILogger<AssignmentController> logger)
     {
         _context = context;
         _logger = logger;
@@ -433,6 +433,37 @@ public class AssignmentController : ControllerBase
         //var user = await _userManager.FindByIdAsync(id);
         var user = await _context.AuthUsers.FindAsync(Convert.ToInt32(id));
         var assignment = _context.Assignments.Find(assignmentId);
+        if(user == null)
+        {
+            return new ResponeMessage<SimpleResp>
+            {
+                ORCode = ORCode.AsgmHasPicked,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "用户异常。"
+                }
+            };
+        }
+
+        var aus = _context.Assignmentusers
+            .Where(x => x.UserId == user.Id)
+            .Include(o=>o.Assignment).ToList();
+
+        var c = aus.Select(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
+        
+        if(c>1)
+        {
+            return new ResponeMessage<SimpleResp>
+            {
+                ORCode = ORCode.AsgmHasPicked,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "有待完成的任务，请完成后再接取新任务。"
+                }
+            };
+        }
 
         var resp = new ResponeMessage<SimpleResp>();
         if (assignment != null)
@@ -460,12 +491,12 @@ public class AssignmentController : ControllerBase
             return new ResponeMessage<SimpleResp> { 
                 ORCode = ORCode.AsgmHasPicked,
                 Data = new SimpleResp
-                {
-                    Success = false,
-                    Reason = "任务已被接取,请刷新页面"
-                }
-            };
-        }
+                    {
+                        Success = false,
+                        Reason = "任务已被接取,请刷新页面"
+                    }
+                };
+            }
 
         return new ResponeMessage<SimpleResp> { 
             ORCode = ORCode.AsgmNotFound,

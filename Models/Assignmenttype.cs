@@ -28,4 +28,9 @@ public partial class Assignmenttype
     /// </summary>
     /// <example>1</example>
     public int? Level { get; set; }
+
+    /// <summary>
+    /// 回报类型
+    /// </summary>
+    public string RewardType { get; internal set; } = null!;
 }

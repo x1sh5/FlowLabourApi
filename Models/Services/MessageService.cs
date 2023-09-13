@@ -8,9 +8,9 @@ namespace FlowLabourApi.Models.Services
 {
     public class MessageService
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public MessageService(XiangxpContext context)
+        public MessageService(FlowContext context)
         {
             _context = context;
         }

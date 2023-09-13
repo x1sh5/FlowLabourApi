@@ -5,9 +5,9 @@ namespace FlowLabourApi.Models.Services
 {
     public class AuthUserService : IDbService<AuthUser>
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
         private readonly ILogger<AuthUserService> _logger;
-        public AuthUserService(XiangxpContext context, ILogger<AuthUserService> logger)
+        public AuthUserService(FlowContext context, ILogger<AuthUserService> logger)
         {
             _context = context;
             _logger = logger;

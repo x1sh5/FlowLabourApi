@@ -15,7 +15,7 @@ namespace FlowLabourApi.Controllers
     //[ApiExplorerSettings(IgnoreApi = true)]
     public class MessagesController : ControllerBase
     {
-        //private readonly XiangxpContext _context;
+        //private readonly FlowContext _context;
         private readonly MessageService _messageService;
 
         public MessagesController(MessageService messageService)

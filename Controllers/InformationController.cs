@@ -12,9 +12,9 @@ namespace FlowLabourApi.Controllers
     [ApiController]
     public class InformationController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public InformationController(XiangxpContext context)
+        public InformationController(FlowContext context)
         {
             _context = context;
         }

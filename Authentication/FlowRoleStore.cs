@@ -8,10 +8,10 @@ namespace FlowLabourApi.Authentication
     public class FlowRoleStore : IRoleStore<Role>
     {
         private bool disposedValue;
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
         private readonly ILogger<FlowRoleStore> _logger;
 
-        public FlowRoleStore(XiangxpContext context, ILogger<FlowRoleStore> logger, bool disposedValue = false)
+        public FlowRoleStore(FlowContext context, ILogger<FlowRoleStore> logger, bool disposedValue = false)
         {
             this.disposedValue = disposedValue;
             _context = context;

@@ -27,7 +27,7 @@ namespace FlowLabourApi.Authentication
         public AuthTokenService(
            IOptionsSnapshot<JwtBearerOptions> jwtBearerOptions,
            //IOptionsSnapshot<JwtOptions> jwtOptions,
-           XiangxpContext dbContext,
+           FlowContext dbContext,
            ILogger<AuthTokenService> logger)
         {
             _jwtBearerOptions = jwtBearerOptions.Get(JwtBearerDefaults.AuthenticationScheme);
@@ -36,7 +36,7 @@ namespace FlowLabourApi.Authentication
             //_httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur, string loginProvider, XiangxpContext _dbContext)
+        public async Task<AuthTokenDto> CreateAuthTokenAsync(UserRole ur, string loginProvider, FlowContext _dbContext)
         {
             var result = new AuthTokenDto();
 
@@ -65,7 +65,7 @@ namespace FlowLabourApi.Authentication
         /// <param name="userId"></param>
         /// <param name="useragent_bs64">UA 通过base64后得到的字符串 </param>
         /// <returns></returns>
-        private async Task<string> CreateRefreshTokenAsync(int userId, string useragent_bs64, XiangxpContext _dbContext)
+        private async Task<string> CreateRefreshTokenAsync(int userId, string useragent_bs64, FlowContext _dbContext)
         {
             //var tokenId = Guid.NewGuid().ToString("N");
 
@@ -126,7 +126,7 @@ namespace FlowLabourApi.Authentication
             return accessToken;
         }
 
-        public async Task<AuthTokenDto> RefreshAuthTokenAsync(AuthTokenDto token, XiangxpContext _dbContext)
+        public async Task<AuthTokenDto> RefreshAuthTokenAsync(AuthTokenDto token, FlowContext _dbContext)
         {
             var validationParameters = _jwtBearerOptions.TokenValidationParameters.Clone();
             validationParameters.ValidateLifetime = false;

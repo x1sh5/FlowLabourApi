@@ -14,9 +14,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class AuthUserGroupController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public AuthUserGroupController(XiangxpContext context)
+        public AuthUserGroupController(FlowContext context)
         {
             _context = context;
         }

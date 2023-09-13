@@ -16,9 +16,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class ImageController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public ImageController(XiangxpContext context)
+        public ImageController(FlowContext context)
         {
             _context = context;
         }

@@ -14,9 +14,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class HistoryController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public HistoryController(XiangxpContext context)
+        public HistoryController(FlowContext context)
         {
             _context = context;
         }

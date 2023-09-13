@@ -13,7 +13,7 @@
         /// <summary>
         /// 
         /// </summary>
-        public string title { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// 
@@ -26,6 +26,11 @@
         public int AuthId { get; set; }
 
         /// <summary>
+        /// 用户名
+        /// </summary>
+        public string UserName { get; set; }
+
+        /// <summary>
         /// 
         /// </summary>
         public DateTime? CreateTime { get; set; }
@@ -34,5 +39,10 @@
         /// version
         /// </summary>
         public int Version { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual IEnumerable<ReferEdit>? ReferEdits { get; set; } = new List<ReferEdit>();
     }
 }

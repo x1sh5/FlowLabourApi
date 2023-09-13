@@ -17,9 +17,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class AssignmentUserController : ControllerBase
     {
-        private readonly XiangxpContext _xiangxpContext;
+        private readonly FlowContext _xiangxpContext;
 
-        public AssignmentUserController(XiangxpContext xiangxpContext)
+        public AssignmentUserController(FlowContext xiangxpContext)
         {
             _xiangxpContext = xiangxpContext;
         }

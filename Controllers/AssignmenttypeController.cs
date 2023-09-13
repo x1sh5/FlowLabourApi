@@ -14,9 +14,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class AssignmenttypeController : Controller
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public AssignmenttypeController(XiangxpContext context)
+        public AssignmenttypeController(FlowContext context)
         {
             _context = context;
         }

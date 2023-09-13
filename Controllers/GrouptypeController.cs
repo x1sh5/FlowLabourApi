@@ -14,9 +14,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class GrouptypeController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public GrouptypeController(XiangxpContext context)
+        public GrouptypeController(FlowContext context)
         {
             _context = context;
         }

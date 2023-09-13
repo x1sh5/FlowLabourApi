@@ -23,7 +23,7 @@ namespace FlowLabourApi.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
         private readonly JwtOptions _jwtOptions;
         //private readonly IUserStore<AuthUser> _flowUserStore;
         //private SignInManager<AuthUser> signInManager;
@@ -35,7 +35,7 @@ namespace FlowLabourApi.Controllers
         /// <param name="context"></param>
         /// <param name="jwtOptions"></param>
         /// <param name="authTokenService"></param>
-        public AccountController(XiangxpContext context,
+        public AccountController(FlowContext context,
             //SignInManager<AuthUser> signInManager,
             IOptionsSnapshot<JwtOptions> jwtOptions,
             IAuthTokenService authTokenService

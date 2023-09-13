@@ -10,10 +10,10 @@ namespace FlowLabourApi.Authentication
     public class FlowUserStore : IUserStore<AuthUser>, IDisposable
     {
         private bool disposedValue;
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
         private readonly ILogger<FlowUserStore> _logger;
 
-        public FlowUserStore(XiangxpContext context, ILogger<FlowUserStore> logger, bool disposedValue = false)
+        public FlowUserStore(FlowContext context, ILogger<FlowUserStore> logger, bool disposedValue = false)
         {
             this.disposedValue = disposedValue;
             _context = context;

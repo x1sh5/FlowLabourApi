@@ -16,13 +16,13 @@ namespace FlowLabourApi.Controllers
     [Authorize(Policy = Permission.Admin)]
     public class AdminLogController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="context"></param>
-        public AdminLogController(XiangxpContext context)
+        public AdminLogController(FlowContext context)
         {
             _context = context;
         }

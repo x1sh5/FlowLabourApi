@@ -14,9 +14,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class BranchController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public BranchController(XiangxpContext context)
+        public BranchController(FlowContext context)
         {
             _context = context;
         }

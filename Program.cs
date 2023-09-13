@@ -41,7 +41,7 @@ namespace FlowLabourApi
                     .ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
 
-            builder.Services.AddDbContext<XiangxpContext>(
+            builder.Services.AddDbContext<FlowContext>(
                 (DbContextOptionsBuilder options) =>
                     {
                         options.UseMySQL(builder.Configuration.GetConnectionString("Connection"));

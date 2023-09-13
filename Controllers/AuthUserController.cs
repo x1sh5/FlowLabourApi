@@ -13,9 +13,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class AuthUserController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public AuthUserController(XiangxpContext context)
+        public AuthUserController(FlowContext context)
         {
             _context = context;
         }

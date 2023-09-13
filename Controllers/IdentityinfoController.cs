@@ -15,9 +15,9 @@ namespace FlowLabourApi.Controllers
     [Authorize]
     public class IdentityInfoController : ControllerBase
     {
-        private readonly XiangxpContext _context;
+        private readonly FlowContext _context;
 
-        public IdentityInfoController(XiangxpContext context)
+        public IdentityInfoController(FlowContext context)
         {
             _context = context;
         }

@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlowLabourApi.Models.context;
 
-public partial class XiangxpContext : DbContext
+public partial class FlowContext : DbContext
 {
-    public XiangxpContext()
+    public FlowContext()
     {
     }
 
-    public XiangxpContext(DbContextOptions options): base(options)
+    public FlowContext(DbContextOptions options): base(options)
     { 
     }
     //public static bool IsConfigured { set; get; } = false;
@@ -46,6 +46,8 @@ public partial class XiangxpContext : DbContext
     public virtual DbSet<Message> Messages { get; set; }
 
     public virtual DbSet<RelatedAssignment> Relatedtasks { get; set; }
+
+    public virtual DbSet<ReferEdit> ReferEdits { get; set; }
 
     public virtual DbSet<Reference> References { get; set; }
 
@@ -200,6 +202,9 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Level)
                 .HasColumnType("int(11)")
                 .HasColumnName("level");
+            entity.Property(e => e.RewardType)
+                .HasMaxLength(20)
+                .HasColumnName("rewardtype");
         });
 
         modelBuilder.Entity<AssignmentUser>(entity =>
@@ -319,9 +324,7 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(45)
                 .HasColumnName("name");
-            entity.Property(e => e.RewardType)
-                .HasMaxLength(20)
-                .HasColumnName("rewardtype");
+            
         });
 
         modelBuilder.Entity<ContentType>(entity =>
@@ -595,6 +598,44 @@ public partial class XiangxpContext : DbContext
                 .IsRequired();
         });
 
+        modelBuilder.Entity<ReferEdit>(entity =>
+        {
+            entity.ToTable("referEdit", tb => tb.HasComment("修改内容"));
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity.Property(e => e.Old)
+                .HasColumnName("old")
+                .HasColumnType("text");
+            entity.Property(e => e.Change)
+                .HasColumnName("change")
+                .HasColumnType("text");
+            entity.Property(entity => entity.UserName)
+                .HasColumnName("username")
+                .HasColumnType("varchar(25)");
+            entity.Property(e => e.ReferId)
+                .HasColumnType("int(11)")
+                .HasColumnName("referid");
+            entity.Property(e => e.EditTime)
+                .HasColumnType("datetime")
+                .HasColumnName("edittime");
+            entity.Property(e => e.Title)
+                .HasColumnName("title")
+                .HasColumnType("varchar(90)")
+                .HasMaxLength(90);
+            entity.Property(entity => entity.Version)
+                .HasColumnName("version")
+                .HasColumnType("int(11)");
+            entity.HasOne(d => d.Reference)
+                .WithMany(e => e.ReferEdits)
+                .HasForeignKey(d => d.ReferId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .HasConstraintName("fk_edit_referid_refer_id");
+
+        });
+
         modelBuilder.Entity<Reference>(entity =>
         {
             entity.ToTable("reference", tb => tb.HasComment("审核区间"));
@@ -606,10 +647,13 @@ public partial class XiangxpContext : DbContext
             entity.Property(e => e.CreateTime)
                 .HasColumnType("datetime")
                 .HasColumnName("createtime");
-            entity.Property(e => e.title)
+            entity.Property(e => e.Title)
                 .HasColumnName("title")
-                .HasColumnType("varchar(45)")
-                .HasMaxLength(45);
+                .HasColumnType("varchar(90)")
+                .HasMaxLength(90);
+            entity.Property(entity => entity.UserName)
+                .HasColumnName("username")
+                .HasColumnType("varchar(25)");
             entity.Property(e => e.Content)
                 .HasColumnName("content")
                 .HasColumnType("text");
