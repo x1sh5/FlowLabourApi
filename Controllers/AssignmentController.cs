@@ -305,6 +305,80 @@ public class AssignmentController : ControllerBase
         return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id },"创建成功。");
     }
 
+    [HttpPost("posts")]
+    public async Task<ActionResult<ResponeMessage<SimpleResp>>> PostsAssignment([FromBody]List<AssignmentView> assignmentViews)
+    {
+        var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+        //var user = await _userManager.FindByIdAsync(id);
+        var user = await _context.AuthUsers.FindAsync(Convert.ToInt32(id));
+        var m = assignmentViews.Where(o => o.Main == 1).ToArray();
+        if(m.Length != 1 )
+        {
+            return BadRequest("数据不合规！");
+        }
+
+        using var transaction = _context.Database.BeginTransaction();
+        transaction.CreateSavepoint("before");
+        EntityEntry<Assignment> entityEntry = null;
+        
+        try
+        {
+            entityEntry = _context.Assignments.Add(new Assignment
+            {
+                Title = m[0].Title,
+                Description = m[0].Description,
+                Branchid = m[0].Branchid,
+                TypeId = m[0].TypeId,
+                Deadline = m[0].Deadline,
+                Publishtime = DateTime.Now,
+                Status = m[0].Status,
+                Verify = m[0].Verify,
+                FixedReward = m[0].FixedReward,
+                PercentReward = m[0].PercentReward,
+                Rewardtype = m[0].Rewardtype,
+                UserId = user.Id,
+            });
+        }catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return BadRequest("主任务创建失败。");
+        }
+        assignmentViews.Remove(m[0]);
+        try
+        {
+            foreach (var assignment in assignmentViews)
+            {
+                var e = _context.Assignments.Add(new Assignment
+                {
+                    Title = assignment.Title,
+                    Description = assignment.Description,
+                    Branchid = assignment.Branchid,
+                    TypeId = assignment.TypeId,
+                    Deadline = assignment.Deadline,
+                    Publishtime = DateTime.Now,
+                    Status = assignment.Status,
+                    Verify = assignment.Verify,
+                    FixedReward = assignment.FixedReward,
+                    PercentReward = assignment.PercentReward,
+                    Rewardtype = assignment.Rewardtype,
+                    UserId = user.Id,
+                });
+                _context.SaveChanges();
+                _context.Relatedtasks.Add(new RelatedAssignment { AssignmentId = entityEntry.Entity.Id, RelatedId = e.Entity.Id });
+                _context.SaveChanges();
+            }
+            transaction.Commit();
+        }
+        catch(Exception ex1)
+        {
+            _logger.LogError(ex1.Message);
+            transaction.RollbackToSavepoint("before");
+            return BadRequest("副任务创建失败。");
+        }
+
+        return CreatedAtAction(nameof(PostsAssignment), new { id = entityEntry.Entity.Id }, "创建成功。");
+    }
+
     /// <summary>
     /// 新建关联任务
     /// </summary>

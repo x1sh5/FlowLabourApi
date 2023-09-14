@@ -73,6 +73,11 @@
         public sbyte Status { get; set; }
 
         /// <summary>
+        /// 主任务。0：不是，1：是。
+        /// </summary>
+        public sbyte Main { get; set; }
+
+        /// <summary>
         /// 标题
         /// </summary>
         public string? Title { get; set; }

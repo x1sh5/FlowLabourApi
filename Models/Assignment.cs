@@ -36,6 +36,11 @@ public partial class Assignment
     public sbyte Status { get; set; }
 
     /// <summary>
+    /// 主任务
+    /// </summary>
+    public sbyte Main { get; set; }
+
+    /// <summary>
     /// 截止日期
     /// </summary>
     public DateTime Deadline { get;set;}

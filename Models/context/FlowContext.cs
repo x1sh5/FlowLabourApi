@@ -156,6 +156,10 @@ public partial class FlowContext : DbContext
                 .HasComment("1:固定值，单位：分。2：百分比，精度为小数点后两位。")
                 .HasColumnType("tinyint(4)")
                 .HasColumnName("rewardtype");
+            entity.Property(e => e.Main)
+                .HasComment("主任务，0：否，1：是。")
+                .HasColumnType("tinyint(4)")
+                .HasColumnName("main");
             entity.Property(e => e.Status)
                 .HasComment("0:代接，1：已结待完成，2：已完成。")
                 .HasColumnType("tinyint(4)")
@@ -582,9 +586,10 @@ public partial class FlowContext : DbContext
 
         modelBuilder.Entity<RelatedAssignment>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("relatedassignment", tb => tb.HasComment("关联任务"));
+            entity.HasNoKey();
+            entity.HasAlternateKey(e => new { e.AssignmentId, e.RelatedId });
+            entity.ToTable("relatedassignment", tb => tb.HasComment("关联任务"));
+
 
             entity.Property(e => e.RelatedId)
                 .HasColumnType("int(11)")
