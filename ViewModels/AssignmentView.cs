@@ -78,6 +78,11 @@
         public sbyte Main { get; set; }
 
         /// <summary>
+        /// 能否被接取，0：不能，1：能。
+        /// </summary>
+        public sbyte CanTake { get; set; }
+
+        /// <summary>
         /// 标题
         /// </summary>
         public string? Title { get; set; }

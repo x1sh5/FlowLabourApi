@@ -49,6 +49,7 @@ namespace FlowLabourApi.Controllers
                     Status = item.Assignment.Status,
                     Finishtime = item.Assignment.Finishtime,
                     Deadline = item.Assignment.Deadline,
+                    CanTake = item.Assignment.CanTake,
                     Publishtime = item.Assignment.Publishtime,
                     FixedReward = item.Assignment.FixedReward,
                     PercentReward = item.Assignment.PercentReward,

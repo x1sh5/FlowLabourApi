@@ -73,6 +73,7 @@ public class AssignmentController : ControllerBase
             assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
+            assignmentView.CanTake = e.CanTake;
             assignmentView.UserId = e.UserId;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
@@ -112,6 +113,7 @@ public class AssignmentController : ControllerBase
             Publishtime = e.Publishtime,
             Status = e.Status,
             Verify = e.Verify,
+            CanTake = e.CanTake,
             FixedReward = e.FixedReward,
             PercentReward = e.PercentReward,
             Rewardtype = e.Rewardtype,
@@ -152,6 +154,7 @@ public class AssignmentController : ControllerBase
             Publishtime = e.Publishtime,
             Status = e.Status,
             Verify = e.Verify,
+            CanTake = e.CanTake,
             FixedReward = e.FixedReward,
             PercentReward = e.PercentReward,
             Rewardtype = e.Rewardtype,
@@ -185,6 +188,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
+            assignmentView.CanTake = e.CanTake;
             assignmentView.FixedReward = e.FixedReward;
             assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
@@ -221,6 +225,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
+            assignmentView.CanTake = e.CanTake;
             assignmentView.FixedReward = e.FixedReward;
             assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
@@ -254,6 +259,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
+            assignmentView.CanTake = e.CanTake;
             assignmentView.FixedReward = e.FixedReward;
             assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
@@ -286,6 +292,7 @@ public class AssignmentController : ControllerBase
             Publishtime = DateTime.Now,
             Status = assignmentView.Status,
             Verify = assignmentView.Verify,
+            CanTake = assignmentView.Main==1 && assignmentView.PercentReward==10000 ? (sbyte)1:(sbyte)0,
             FixedReward = assignmentView.FixedReward,
             PercentReward = assignmentView.PercentReward,
             Rewardtype = assignmentView.Rewardtype,
@@ -334,6 +341,7 @@ public class AssignmentController : ControllerBase
                 Publishtime = DateTime.Now,
                 Status = m[0].Status,
                 Verify = m[0].Verify,
+                CanTake = m[0].Main == 1 && m[0].PercentReward == 10000 ? (sbyte)0 : (sbyte)1,
                 FixedReward = m[0].FixedReward,
                 PercentReward = m[0].PercentReward,
                 Rewardtype = m[0].Rewardtype,
@@ -351,7 +359,7 @@ public class AssignmentController : ControllerBase
         {
             for (int i= 0; i < assignmentViews.Count; i++)
             {
-               var e = _context.Assignments.Add(new Assignment
+                var e1 = new Assignment
                 {
                     Title = assignmentViews[i].Title,
                     Description = assignmentViews[i].Description,
@@ -361,21 +369,25 @@ public class AssignmentController : ControllerBase
                     Publishtime = DateTime.Now,
                     Status = assignmentViews[i].Status,
                     Verify = assignmentViews[i].Verify,
+                    CanTake = assignmentViews[i].CanTake,
                     FixedReward = assignmentViews[i].FixedReward,
                     PercentReward = assignmentViews[i].PercentReward,
                     Rewardtype = assignmentViews[i].Rewardtype,
                     UserId = user.Id,
-                });
-                _context.SaveChanges();
-                asgs.Add(e);
-                var re =  _context.Relatedtasks
-                    .Add(new RelatedAssignment 
-                    { AssignmentId = entityEntry.Entity.Id, 
-                        RelatedId = e.Entity.Id });
-                _context.SaveChanges();
-                rasgs.Add(re);
+                };
+               var e = _context.Assignments.Add(e1);
+               asgs.Add(e);
+                var e2 = new RelatedAssignment
+                {
+                    AssignmentId = entityEntry.Entity.Id,
+                    RelatedId = e.Entity.Id
+                };
+               var re =  _context.Relatedtasks.Add(e2);
+                
+               rasgs.Add(re);
 
             }
+            _context.SaveChanges();
             transaction.Commit();
         }
         catch(Exception ex1)
@@ -413,6 +425,7 @@ public class AssignmentController : ControllerBase
             Publishtime = DateTime.Now,
             Status = assignmentView.Status,
             Verify = assignmentView.Verify,
+            CanTake = assignmentView.CanTake,
             FixedReward = assignmentView.FixedReward,
             PercentReward = assignmentView.PercentReward,
             Rewardtype = assignmentView.Rewardtype,
@@ -478,6 +491,7 @@ public class AssignmentController : ControllerBase
             Publishtime = assignmentView.Publishtime,
             Status = assignmentView.Status,
             Verify = assignmentView.Verify,
+            CanTake = assignmentView.CanTake,
             FixedReward = assignmentView.FixedReward,
             PercentReward = assignmentView.PercentReward,
             Rewardtype = assignmentView.Rewardtype,

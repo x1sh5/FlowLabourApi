@@ -175,6 +175,10 @@ public partial class FlowContext : DbContext
                 .HasComment("0:未审核通过，1：审核通过。")
                 .HasColumnType("tinyint(4)")
                 .HasColumnName("verify");
+            entity.Property(e => e.CanTake)
+                .HasComment("能否被接取，0：不能，1：能。")
+                .HasColumnType("tinyint(4)")
+                .HasColumnName("cantake");
             entity.Property(e => e.UserId)
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
@@ -183,6 +187,12 @@ public partial class FlowContext : DbContext
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasForeignKey(entity => entity.UserId)
                 .HasConstraintName("fk_assigment_userid_user_id");
+            //entity.HasMany(entity=>entity.Relates)
+            //    .WithOne(entity=>entity.Assignment)
+            //    .HasForeignKey(entity=>entity.AssignmentId)
+            //    .OnDelete(DeleteBehavior.NoAction)
+            //    .HasConstraintName("fk_rasg_mid_rsg_id");
+
 
         });
 
@@ -586,21 +596,22 @@ public partial class FlowContext : DbContext
 
         modelBuilder.Entity<RelatedAssignment>(entity =>
         {
- 
-            entity.HasKey(e => new { e.AssignmentId, e.RelatedId });
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+            //entity.HasKey(e => new { e.AssignmentId, e.RelatedId }).HasName("PRIMARY");
             entity.ToTable("relatedassignment", tb => tb.HasComment("关联任务"));
 
-
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
             entity.Property(e => e.RelatedId)
                 .HasColumnType("int(11)")
                 .HasColumnName("relatedid");
             entity.Property(e => e.AssignmentId)
                 .HasColumnType("int(11)")
                 .HasColumnName("assignmentid");
-            //entity.HasOne(d => d.Assignment)
-            //    .WithMany(o=>o.Relates)
-            //    .HasForeignKey(d => d.AssignmentId)
-            //    .IsRequired();
+            
+
         });
 
         modelBuilder.Entity<ReferEdit>(entity =>

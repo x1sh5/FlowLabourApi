@@ -87,6 +87,11 @@ public partial class Assignment
     public sbyte Verify { get; set; }
 
     /// <summary>
+    /// 能否被接取，0：不能，1：能。
+    /// </summary>
+    public sbyte CanTake { get; set; }
+
+    /// <summary>
     /// 发布人id
     /// </summary>
     public int UserId { get; set; }
@@ -106,9 +111,6 @@ public partial class Assignment
     /// </summary>
     public virtual List<History> AsgHistories { get; set; } = new List<History>();
 
-    /// <summary>
-    /// 关联任务
-    /// </summary>
-    //public virtual List<RelatedAssignment> Relates { get; set; } = new List<RelatedAssignment>();
+    //public virtual List<RelatedAssignment>? Relates { get; set; } = new List<RelatedAssignment>();
 
 }
