@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
@@ -344,28 +345,36 @@ public class AssignmentController : ControllerBase
             return BadRequest("主任务创建失败。");
         }
         assignmentViews.Remove(m[0]);
+        List<EntityEntry<Assignment>> asgs = new List<EntityEntry<Assignment>>();
+        List<EntityEntry<RelatedAssignment>> rasgs = new List<EntityEntry<RelatedAssignment>>();
         try
         {
-            foreach (var assignment in assignmentViews)
+            for (int i= 0; i < assignmentViews.Count; i++)
             {
-                var e = _context.Assignments.Add(new Assignment
+               var e = _context.Assignments.Add(new Assignment
                 {
-                    Title = assignment.Title,
-                    Description = assignment.Description,
-                    Branchid = assignment.Branchid,
-                    TypeId = assignment.TypeId,
-                    Deadline = assignment.Deadline,
+                    Title = assignmentViews[i].Title,
+                    Description = assignmentViews[i].Description,
+                    Branchid = assignmentViews[i].Branchid,
+                    TypeId = assignmentViews[i].TypeId,
+                    Deadline = assignmentViews[i].Deadline,
                     Publishtime = DateTime.Now,
-                    Status = assignment.Status,
-                    Verify = assignment.Verify,
-                    FixedReward = assignment.FixedReward,
-                    PercentReward = assignment.PercentReward,
-                    Rewardtype = assignment.Rewardtype,
+                    Status = assignmentViews[i].Status,
+                    Verify = assignmentViews[i].Verify,
+                    FixedReward = assignmentViews[i].FixedReward,
+                    PercentReward = assignmentViews[i].PercentReward,
+                    Rewardtype = assignmentViews[i].Rewardtype,
                     UserId = user.Id,
                 });
                 _context.SaveChanges();
-                _context.Relatedtasks.Add(new RelatedAssignment { AssignmentId = entityEntry.Entity.Id, RelatedId = e.Entity.Id });
+                asgs.Add(e);
+                var re =  _context.Relatedtasks
+                    .Add(new RelatedAssignment 
+                    { AssignmentId = entityEntry.Entity.Id, 
+                        RelatedId = e.Entity.Id });
                 _context.SaveChanges();
+                rasgs.Add(re);
+
             }
             transaction.Commit();
         }

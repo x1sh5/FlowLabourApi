@@ -5,11 +5,11 @@
 /// </summary>
 public partial class RelatedAssignment
 {
-    public int? AssignmentId { get; set; }
+    public int AssignmentId { get; set; }
 
-    public Assignment Assignment { get; set; }
+    public Assignment? Assignment { get; set; }
 
-    public int? RelatedId { get; set; }
+    public int RelatedId { get; set; }
 
-    public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public Assignment? RelateAssignment { get; set; }
 }

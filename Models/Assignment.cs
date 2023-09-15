@@ -106,4 +106,9 @@ public partial class Assignment
     /// </summary>
     public virtual List<History> AsgHistories { get; set; } = new List<History>();
 
+    /// <summary>
+    /// 关联任务
+    /// </summary>
+    //public virtual List<RelatedAssignment> Relates { get; set; } = new List<RelatedAssignment>();
+
 }

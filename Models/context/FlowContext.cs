@@ -586,8 +586,8 @@ public partial class FlowContext : DbContext
 
         modelBuilder.Entity<RelatedAssignment>(entity =>
         {
-            entity.HasNoKey();
-            entity.HasAlternateKey(e => new { e.AssignmentId, e.RelatedId });
+ 
+            entity.HasKey(e => new { e.AssignmentId, e.RelatedId });
             entity.ToTable("relatedassignment", tb => tb.HasComment("关联任务"));
 
 
@@ -597,10 +597,10 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.AssignmentId)
                 .HasColumnType("int(11)")
                 .HasColumnName("assignmentid");
-            entity.HasOne(d => d.Assignment)
-                .WithMany()
-                .HasForeignKey(d => d.RelatedId)
-                .IsRequired();
+            //entity.HasOne(d => d.Assignment)
+            //    .WithMany(o=>o.Relates)
+            //    .HasForeignKey(d => d.AssignmentId)
+            //    .IsRequired();
         });
 
         modelBuilder.Entity<ReferEdit>(entity =>

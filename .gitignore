@@ -368,3 +368,5 @@ FodyWeavers.xsd
 *.conf
 FlowLabour.loca.conf
 www.wangyan.net.conf
+appsettings.json
+appsettings.json
