@@ -15,7 +15,7 @@ public partial class Assignment
     /// 标题
     /// </summary>
     /// <example>任务1</example>
-    public string? Title { get; set; }
+    public string Title { get; set; }
 
     /// <summary>
     /// 所属部门，对应branch表的id

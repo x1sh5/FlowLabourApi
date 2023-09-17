@@ -347,6 +347,7 @@ public class AssignmentController : ControllerBase
                 Rewardtype = m[0].Rewardtype,
                 UserId = user.Id,
             });
+            _context.SaveChanges();
         }catch (Exception ex)
         {
             _logger.LogError(ex.Message);
@@ -376,6 +377,7 @@ public class AssignmentController : ControllerBase
                     UserId = user.Id,
                 };
                var e = _context.Assignments.Add(e1);
+               _context.SaveChanges();
                asgs.Add(e);
                 var e2 = new RelatedAssignment
                 {
