@@ -17,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NLog;
+using NLog.Web;
 using Swashbuckle.AspNetCore.Filters;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -28,10 +30,17 @@ namespace FlowLabourApi
     {
         public static void Main(string[] args)
         {
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+            logger.Debug("init main");
+
             var builder = WebApplication.CreateBuilder(args);
-            
+
             //IHostEnvironment env = builder.Environment;
             //builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
+
+            // NLog: Setup NLog for Dependency injection
+            builder.Logging.ClearProviders();
+            builder.Host.UseNLog();
 
             builder.Services.AddCors();
 
@@ -306,7 +315,19 @@ namespace FlowLabourApi
             //    context.Response.Headers.AccessControlExposeHeaders.Append("Set-Cookie");
             //    return next.Invoke();
             //});
-            app.Run();
+            try
+            {
+                app.Run();
+            }
+            catch(Exception ex)
+            {
+                logger.Error(ex, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                NLog.LogManager.Shutdown();
+            }
         }
     }
 }
