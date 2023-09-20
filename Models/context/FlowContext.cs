@@ -57,7 +57,7 @@ public partial class FlowContext : DbContext
 
     public virtual DbSet<SigninLog> SigninLogs { get; set; }
 
-    //public virtual DbSet<TendencyUser> TendencyUsers { get; set; }
+    public virtual DbSet<TaskRequest> TaskRequests { get; set; }
 
     public virtual DbSet<UserIdentity> UserIdentities { get; set; }
 
@@ -749,24 +749,37 @@ public partial class FlowContext : DbContext
                 .IsRequired();
         });
 
-        #region TendencyUser
-        //modelBuilder.Entity<TendencyUser>(entity =>
-        //{
-        //    entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-        //    entity.ToTable("tendency_user");
+        modelBuilder.Entity<TaskRequest>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-        //    entity.Property(e => e.Id)
-        //        .HasColumnType("int(11)")
-        //        .HasColumnName("id");
-        //    entity.Property(e => e.Name)
-        //        .HasMaxLength(20)
-        //        .HasColumnName("name");
-        //    entity.Property(e => e.Password)
-        //        .HasMaxLength(20)
-        //        .HasColumnName("password");
-        //});
-        #endregion
+            entity.ToTable("taskrequest");
+
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity.Property(e => e.UserId)
+                .HasColumnType("int(11)")
+                .HasColumnName("userid");
+            entity.Property(e => e.TaskId)
+                .HasColumnType("int(11)")
+                .HasColumnName("taskid");
+            entity.Property(e => e.Agree)
+                .HasColumnType("tinyint(4)")
+                .HasColumnName("agree");
+            entity.Property(e => e.RequestDate)
+                .HasColumnType("datetime")
+                .HasColumnName("reqdate");
+            entity.Property(e => e.RequestDate)
+                .HasColumnType("datetime")
+                .HasColumnName("agreedate");
+            entity.Property(e => e.Comment)
+                .HasMaxLength(300)
+                .HasColumnName("comment");
+        });
+
 
         modelBuilder.Entity<UserIdentity>(entity =>
         {

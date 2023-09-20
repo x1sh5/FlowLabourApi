@@ -237,6 +237,87 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
+    /// 获取子任务
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("childs/{id}")]
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetChilds([Required] int id)
+    {
+        var userName = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
+        var cs = _context.Relatedtasks
+            .Where(x => x.AssignmentId == id)
+            .Select(x => x.RelatedId).ToArray();
+        if (cs.Length == 0)
+        {
+            return NoContent();
+        }
+        var es = _context.Assignments.Where(x => cs.Contains(x.Id)).ToArray();
+        List<AssignmentView> assignmentViews = new List<AssignmentView>();
+        foreach (var e in es)
+        {
+            assignmentViews.Add(new AssignmentView
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Deadline = e.Deadline,
+                Description = e.Description,
+                Branchid = e.Branchid,
+                CanTake = e.CanTake,
+                Finishtime = e.Finishtime,
+                FixedReward = e.FixedReward,
+                PercentReward = e.PercentReward,
+                Publishtime = e.Publishtime,
+                TypeId = e.TypeId,
+                Main = e.Main,
+                Rewardtype = e.Rewardtype,
+                Status = e.Status,
+                UserId = e.UserId,
+                Verify = e.Verify,
+                Username = userName,
+            });
+        }
+
+        return assignmentViews;
+    }
+
+    [HttpGet("parent/{id}")]
+    public async Task<ActionResult<AssignmentView>> GetParent([Required] int id)
+    {
+        var userName = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
+        var cs = _context.Relatedtasks
+            .Where(x => x.RelatedId == id)
+            .Select(x => x.AssignmentId).ToArray();
+        if (cs.Length != 1)
+        {
+            return NoContent();
+        }
+        var e = _context.Assignments.Where(x => x.Id == cs[0]).FirstOrDefault();
+        AssignmentView assignmentViews = new AssignmentView
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Deadline = e.Deadline,
+                Description = e.Description,
+                Branchid = e.Branchid,
+                CanTake = e.CanTake,
+                Finishtime = e.Finishtime,
+                FixedReward = e.FixedReward,
+                PercentReward = e.PercentReward,
+                Publishtime = e.Publishtime,
+                TypeId = e.TypeId,
+                Main = e.Main,
+                Rewardtype = e.Rewardtype,
+                Status = e.Status,
+                UserId = e.UserId,
+                Verify = e.Verify,
+                Username = userName,
+            };
+
+        return assignmentViews;
+    }
+
+    /// <summary>
     /// 按标题搜索
     /// </summary>
     /// <param name="title"></param>

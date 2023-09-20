@@ -17,5 +17,9 @@
         /// 已完成状态
         /// </summary>
         Finished = 2,
+        /// <summary>
+        /// 公示
+        /// </summary>
+        Announcement = 3,
     }
 }
