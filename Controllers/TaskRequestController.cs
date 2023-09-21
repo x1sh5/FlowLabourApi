@@ -63,19 +63,56 @@ namespace FlowLabourApi.Controllers
             {
                 _logger.LogError(ex, $"add TaskRequest:{e} err");
             }
-            return Ok("申请成功，请等待！");
+            return Ok("申请已成功递交，请等待！");
         }
 
         // PUT api/<TaskRequestController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(int id, [FromBody] TaskRequest value)
         {
+            if(id != value.Id)
+            {
+                return BadRequest();
+            }
+            var r = _context.TaskRequests.SingleOrDefault(x => x.Id == id);
+            if (r == null)
+            {
+                return NotFound();
+            }
+            r.Agree = value.Agree;
+            r.Comment = value.Comment;
+            r.AgreeDate = DateTime.Now;
+            try
+            {
+                _context.TaskRequests.Update(r);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"update TaskRequest:{r} err");
+            }
+            return Ok("修改成功");
         }
 
         // DELETE api/<TaskRequestController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
+            var r = _context.TaskRequests.SingleOrDefault(x => x.Id == id);
+            if (r == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                _context.TaskRequests.Remove(r);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"delete TaskRequest:{r} err");
+                return BadRequest();
+            }
+
+            return Ok("删除成功");
         }
     }
 }
