@@ -47,6 +47,38 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult> Post([FromBody] TaskRequest value)
         {
             var userid = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+
+            var entity1 = _context.TaskRequests
+                .SingleOrDefault(x => x.UserId == int.Parse(userid) && x.TaskId == value.TaskId);
+            if(entity1 != null)
+            {
+                if (entity1.Agree == 0)
+                {
+                    if(DateTime.Now - entity1.RequestDate < TimeSpan.FromHours(8))
+                    {
+                           return BadRequest("您最近已经申请过了，请稍后再申请！");
+                    }
+                    else
+                    {
+                        entity1.Agree = 3;
+                        entity1.RequestDate = DateTime.Now;
+                        try
+                        {
+                            _context.TaskRequests.Update(entity1);
+                            _context.SaveChanges();
+                            return Ok("申请已成功递交，请等待！");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, $"update TaskRequest:{entity1} err");
+                            return BadRequest("error");
+                        }
+                    }
+                }
+
+                return BadRequest("您已经申请过了，请勿重复申请！");
+            }
+
             var e = new TaskRequest
             {
                 UserId = int.Parse(userid),

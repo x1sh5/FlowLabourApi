@@ -11,6 +11,9 @@
 
         public int TaskId { get; set; }
 
+        /// <summary>
+        /// 是否同意。0：不同意，1： 同意，2：未读。
+        /// </summary>
         public sbyte Agree { get; set; }
 
         public DateTime RequestDate { get; set; }
