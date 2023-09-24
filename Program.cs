@@ -1,4 +1,5 @@
 #define win
+using Essensoft.Paylink.WeChatPay;
 using FlowLabourApi.Authentication;
 using FlowLabourApi.Config;
 using FlowLabourApi.Events;
@@ -14,12 +15,14 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
 using Swashbuckle.AspNetCore.Filters;
+using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Reflection;
@@ -43,6 +46,7 @@ namespace FlowLabourApi
             builder.Host.UseNLog();
 
             builder.Services.AddCors();
+            builder.Services.AddWeChatPay();
 
             builder.Services.AddControllersWithViews()
                 .AddNewtonsoftJson(//解决json循环引用
@@ -121,9 +125,9 @@ namespace FlowLabourApi
                 options.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
             }).AddNewtonsoftJsonProtocol();
 
+            builder.Services.Configure<WeChatPayOptions>(builder.Configuration.GetSection("WeChatPay"));
             //自定义身份验证
             //AddDefaultTokenProviders
-
             builder.Services.Configure<MyIdentityOptions>(options =>
             {
                 // Password settings.

@@ -602,17 +602,17 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// 接取任务
+    /// 同意接取任务
     /// </summary>
-    /// <param name="assignmentId"></param>
+    /// <param name="requestId">任务请求id</param>
     /// <returns></returns>
-    [HttpGet("take/{assignmentId}")]
-    public async Task<ActionResult<ResponeMessage<SimpleResp>>> Take(int assignmentId)
+    [HttpGet("take/{requestId}")]
+    public async Task<ActionResult<ResponeMessage<SimpleResp>>> Take(int requestId)
     {
         var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
         //var user = await _userManager.FindByIdAsync(id);
         var user = await _context.AuthUsers.FindAsync(Convert.ToInt32(id));
-        var assignment = _context.Assignments.Find(assignmentId);
+        
         if(user == null)
         {
             return new ResponeMessage<SimpleResp>
@@ -625,6 +625,19 @@ public class AssignmentController : ControllerBase
                 }
             };
         }
+        var r = _context.TaskRequests.SingleOrDefault(x => x.Id == requestId);
+        if (r == null)
+        {
+            return new ResponeMessage<SimpleResp>
+            {
+                ORCode = ORCode.RequestNotFound,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "任务请求异常。"
+                }
+            };
+        }
 
         var aus = _context.Assignmentusers
             .Where(x => x.UserId == user.Id)
@@ -632,7 +645,7 @@ public class AssignmentController : ControllerBase
 
         var c = aus.Select(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
         
-        if(c>1)
+        if(c>=1)
         {
             return new ResponeMessage<SimpleResp>
             {
@@ -644,7 +657,8 @@ public class AssignmentController : ControllerBase
                 }
             };
         }
-
+        var assignmentId = r.TaskId;
+        var assignment = _context.Assignments.Find(assignmentId);
         var resp = new ResponeMessage<SimpleResp>();
         if (assignment != null)
         {
@@ -658,6 +672,7 @@ public class AssignmentController : ControllerBase
                     UserId = user.Id,
                 });
                 assignment.Status = (sbyte)TaskState.Unfinished;
+
                 _context.SaveChanges();
                 return new ResponeMessage<SimpleResp> { 
                     ORCode = ORCode.AsgmTakeS,

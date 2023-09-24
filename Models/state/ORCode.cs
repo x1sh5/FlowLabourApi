@@ -27,5 +27,10 @@
         /// 任务接取失败,任务以不存在
         /// </summary>
         public static int AsgmNotFound = 02402;
+
+        /// <summary>
+        /// 任务接取失败,任务请求不存在
+        /// </summary>
+        public static int RequestNotFound = 02404;
     }
 }

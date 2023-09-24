@@ -25,6 +25,8 @@ public partial class FlowContext : DbContext
 
     public virtual DbSet<AuthUserGroup> AuthUserGroups { get; set; }
 
+    public virtual DbSet<Bill> Bills { get; set; }
+
     public virtual DbSet<Branch> Branches { get; set; }
 
     public virtual DbSet<ContentType> ContentTypes { get; set; }
@@ -319,6 +321,34 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.Groupdescipt)
                 .HasMaxLength(250)
                 .HasColumnName("groupdescipt");
+        });
+
+        modelBuilder.Entity<Bill>(entity=> 
+        { 
+            entity.HasKey(e => e.Id).HasName("PRIMARY"); 
+            entity.ToTable("bill", tb => tb.HasComment("账单表"));
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id")
+                .ValueGeneratedOnAdd();
+            entity.Property(e => e.UserId)
+                .HasColumnType("int(11)")
+                .HasColumnName("userid");
+            entity.Property(e => e.AssignmentId)
+                .HasColumnType("int(11)")
+                .HasColumnName("taskid");
+            entity.Property(e => e.Date)
+                .HasColumnType("datetime")
+                .HasColumnName("date");
+            entity.Property(e => e.Status)
+                .HasColumnType("int(11)")
+                .HasColumnName("status");
+            entity.Property(e => e.BillNo)
+                .HasMaxLength(45)
+                .HasColumnName("billno");
+            entity.Property(e => e.Mount)
+                .HasColumnType("int(11)")
+                .HasColumnName("mount");
         });
 
         modelBuilder.Entity<Branch>(entity =>

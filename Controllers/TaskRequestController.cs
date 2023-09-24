@@ -1,6 +1,8 @@
 ﻿using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
+using FlowLabourApi.Models.state;
+using FlowLabourApi.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +32,41 @@ namespace FlowLabourApi.Controllers
             return await _context.TaskRequests.ToListAsync();
         }
 
+        /// <summary>
+        /// 我的申请
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("myapply")]
+        public async Task<ActionResult<TaskRequest>> MyApply()
+        {
+            var userid = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var r = _context.TaskRequests.Where(x => x.UserId == int.Parse(userid)).ToList();
+            if (r == null)
+            {
+                return NotFound();
+            }
+            return Ok(r);
+        }
+
+        /// <summary>
+        /// 申请我的任务
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("applytome")]
+        public async Task<ActionResult<TaskRequest>> ApplyToMe()
+        {
+            var userid = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var asignments = _context.Assignments
+                .Where(x => x.UserId == int.Parse(userid))
+                .Select(x=>x.Id).ToList();
+            var r = _context.TaskRequests.Where(x => asignments.Contains(x.TaskId)).ToList();
+            if (r == null)
+            {
+                return NotFound();
+            }
+            return Ok(r);
+        }
+
         // GET api/<TaskRequestController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskRequest>> Get(int id)
@@ -47,6 +84,16 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult> Post([FromBody] TaskRequest value)
         {
             var userid = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+
+            var aus = _context.Assignmentusers
+            .Where(x => x.UserId == int.Parse(userid))
+            .Include(o => o.Assignment).ToList();
+
+            var c = aus.Select(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
+            if (c >= 1)
+            {
+                return BadRequest("有待完成的任务，请完成后再接取新任务。");
+            }
 
             var entity1 = _context.TaskRequests
                 .SingleOrDefault(x => x.UserId == int.Parse(userid) && x.TaskId == value.TaskId);
