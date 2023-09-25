@@ -63,7 +63,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
     /// </remarks>
     public override Task MessageReceived(MessageReceivedContext context)
     {
-        Console.WriteLine("-------------- MessageReceived Begin --------------");
         //if(context.Request.Path.StartsWithSegments("/chathub", StringComparison.OrdinalIgnoreCase))
         //{
         //    var accessToken = context.Request.Query["access_token"];
@@ -146,7 +145,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
 
         #endregion
         base.MessageReceived(context);
-        Console.WriteLine("-------------- MessageReceived End --------------");
         return Task.CompletedTask;
     }
 
@@ -157,24 +155,22 @@ public class AppJwtBearerEvents : JwtBearerEvents
     /// <returns></returns>
     public override Task TokenValidated(TokenValidatedContext context)
     {
-        Console.WriteLine("-------------- TokenValidated Begin --------------");
-
         base.TokenValidated(context);
         if (context.Result != null)
         {
             return Task.CompletedTask;
         }
 
-        Console.WriteLine($"User Name: {context.Principal.Identity.Name}");
-        Console.WriteLine($"Scheme: {context.Scheme.Name}");
+       // Console.WriteLine($"User Name: {context.Principal.Identity.Name}");
+        //Console.WriteLine($"Scheme: {context.Scheme.Name}");
 
         var token = context.SecurityToken;
-        Console.WriteLine($"Token Id: {token.Id}");
-        Console.WriteLine($"Token Issuer: {token.Issuer}");
-        Console.WriteLine($"Token Valid From: {token.ValidFrom}");
-        Console.WriteLine($"Token Valid To: {token.ValidTo}");
+        //Console.WriteLine($"Token Id: {token.Id}");
+        //Console.WriteLine($"Token Issuer: {token.Issuer}");
+        //Console.WriteLine($"Token Valid From: {token.ValidFrom}");
+        //Console.WriteLine($"Token Valid To: {token.ValidTo}");
 
-        Console.WriteLine($"Token SecurityKey: {token.SecurityKey}");
+        //Console.WriteLine($"Token SecurityKey: {token.SecurityKey}");
 
         //SymmetricSecurityKey
 
@@ -187,8 +183,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
             Console.WriteLine($"Token SigningKey: {token.SigningKey}");
         }
 
-        Console.WriteLine("-------------- TokenValidated End --------------");
-
         return Task.CompletedTask;
     }
 
@@ -199,18 +193,14 @@ public class AppJwtBearerEvents : JwtBearerEvents
     /// <returns></returns>
     public override Task AuthenticationFailed(AuthenticationFailedContext context)
     {
-        Console.WriteLine("-------------- AuthenticationFailed Begin --------------");
-
         base.AuthenticationFailed(context);
         if (context.Result != null)
         {
             return Task.CompletedTask;
         }
 
-        Console.WriteLine($"Scheme: {context.Scheme.Name}");
-        Console.WriteLine($"Exception: {context.Exception}");
-
-        Console.WriteLine("-------------- AuthenticationFailed End --------------");
+        //Console.WriteLine($"Scheme: {context.Scheme.Name}");
+        //Console.WriteLine($"Exception: {context.Exception}");
 
         return Task.CompletedTask;
     }
@@ -222,7 +212,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
     /// <returns></returns>
     public override Task Challenge(JwtBearerChallengeContext context)
     {
-        Console.WriteLine("-------------- Challenge Begin --------------");
 
         base.Challenge(context);
         if (context.Handled)
@@ -230,13 +219,12 @@ public class AppJwtBearerEvents : JwtBearerEvents
             return Task.CompletedTask;
         }
 
-        Console.WriteLine($"Scheme: {context.Scheme.Name}");
-        Console.WriteLine($"Authenticate Failure: {context.AuthenticateFailure}");
-        Console.WriteLine($"Error: {context.Error}");
-        Console.WriteLine($"Error Description: {context.ErrorDescription}");
-        Console.WriteLine($"Error Uri: {context.ErrorUri}");
+        //Console.WriteLine($"Scheme: {context.Scheme.Name}");
+        //Console.WriteLine($"Authenticate Failure: {context.AuthenticateFailure}");
+        //Console.WriteLine($"Error: {context.Error}");
+        //Console.WriteLine($"Error Description: {context.ErrorDescription}");
+        //Console.WriteLine($"Error Uri: {context.ErrorUri}");
 
-        Console.WriteLine("-------------- Challenge End --------------");
         //context.Response.Headers.Location = "/login";
         return Task.CompletedTask;
     }
@@ -248,7 +236,6 @@ public class AppJwtBearerEvents : JwtBearerEvents
     /// <returns></returns>
     public override Task Forbidden(ForbiddenContext context)
     {
-        Console.WriteLine("-------------- Forbidden Begin --------------");
 
         base.Forbidden(context);
         if (context.Result != null)
@@ -256,9 +243,8 @@ public class AppJwtBearerEvents : JwtBearerEvents
             return Task.CompletedTask;
         }
 
-        Console.WriteLine($"Scheme: {context.Scheme.Name}");
+        //Console.WriteLine($"Scheme: {context.Scheme.Name}");
 
-        Console.WriteLine("-------------- Forbidden End --------------");
 
         return Task.CompletedTask;
     }

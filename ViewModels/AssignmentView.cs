@@ -67,7 +67,7 @@
         public sbyte Rewardtype { get; set; }
 
         /// <summary>
-        /// 0:代接，1：已结待完成，2：已完成。
+        /// 0:代接，1：已结待完成，2：已完成。3:公示。
         /// </summary>
         /// <example>0</example>
         public sbyte Status { get; set; }
@@ -98,6 +98,12 @@
         /// </summary>
         /// <example>1</example>
         public sbyte Verify { get; set; }
+
+        /// <summary>
+        /// 是否支付，0:未支付，1：支付。
+        /// </summary>
+        /// <example>1</example>
+        public sbyte Payed { get; set; }
 
         /// <summary>
         /// 用户图片

@@ -33,17 +33,21 @@ namespace FlowLabourApi
     {
         public static void Main(string[] args)
         {
+#if linux
             var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
             logger.Debug("init main");
+#endif
 
             var builder = WebApplication.CreateBuilder(args);
 
             //IHostEnvironment env = builder.Environment;
             //builder.Configuration.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, true);
 
-            // NLog: Setup NLog for Dependency injection
+// NLog: Setup NLog for Dependency injection
+#if linux
             builder.Logging.ClearProviders();
             builder.Host.UseNLog();
+#endif
 
             builder.Services.AddCors();
             builder.Services.AddWeChatPay();
@@ -57,6 +61,7 @@ namespace FlowLabourApi
             builder.Services.AddDbContext<FlowContext>(
                 (DbContextOptionsBuilder options) =>
                     {
+                        options.EnableSensitiveDataLogging();
                         options.UseMySQL(builder.Configuration.GetConnectionString("Connection"));
                     }
             );
@@ -285,9 +290,9 @@ namespace FlowLabourApi
             {
                 builder
                 //.AllowCredentials()
-#if linux 
+#if linux
                 //.AllowAnyOrigin()
-#else 
+#else
                 .AllowAnyOrigin()
 #endif
                 .AllowAnyMethod()
@@ -319,6 +324,8 @@ namespace FlowLabourApi
             //    context.Response.Headers.AccessControlExposeHeaders.Append("Set-Cookie");
             //    return next.Invoke();
             //});
+
+#if linux
             try
             {
                 app.Run();
@@ -332,6 +339,9 @@ namespace FlowLabourApi
             {
                 NLog.LogManager.Shutdown();
             }
+#else
+            app.Run();
+#endif
         }
     }
 }

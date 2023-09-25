@@ -162,6 +162,9 @@ public partial class FlowContext : DbContext
                 .HasComment("主任务，0：否，1：是。")
                 .HasColumnType("tinyint(4)")
                 .HasColumnName("main");
+            entity.Property(e => e.Payed)
+                .HasColumnType("tinyint(4)")
+                .HasColumnName("payed");
             entity.Property(e => e.Status)
                 .HasComment("0:代接，1：已结待完成，2：已完成。")
                 .HasColumnType("tinyint(4)")
@@ -796,18 +799,24 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.TaskId)
                 .HasColumnType("int(11)")
                 .HasColumnName("taskid");
+            entity.Property(e => e.TypeId)
+                .HasColumnType("int(11)")
+                .HasColumnName("typeid");
             entity.Property(e => e.Agree)
                 .HasColumnType("tinyint(4)")
                 .HasColumnName("agree");
             entity.Property(e => e.RequestDate)
                 .HasColumnType("datetime")
                 .HasColumnName("reqdate");
-            entity.Property(e => e.RequestDate)
+            entity.Property(e => e.AgreeDate)
                 .HasColumnType("datetime")
                 .HasColumnName("agreedate");
             entity.Property(e => e.Comment)
                 .HasMaxLength(300)
                 .HasColumnName("comment");
+            entity.Property(e => e.Title)
+                .HasMaxLength(45)
+                .HasColumnName("title");
         });
 
 

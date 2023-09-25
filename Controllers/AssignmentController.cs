@@ -75,6 +75,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Username = e.AuthUser?.UserName;
             assignmentView.CanTake = e.CanTake;
             assignmentView.UserId = e.UserId;
+            assignmentView.Main = e.Main;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -119,6 +120,7 @@ public class AssignmentController : ControllerBase
             Rewardtype = e.Rewardtype,
             Username = e.AuthUser?.UserName,
             UserId = e.UserId,
+            Main = e.Main,
         }).ToList();
         return assignmentViews;
     }
@@ -159,6 +161,7 @@ public class AssignmentController : ControllerBase
             PercentReward = e.PercentReward,
             Rewardtype = e.Rewardtype,
             Username = e.AuthUser?.UserName,
+            Main = e.Main,
         };
 
         return assignmentView;
@@ -194,6 +197,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
             assignmentView.UserId = e.UserId;
+            assignmentView.Main = e.Main;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -230,6 +234,7 @@ public class AssignmentController : ControllerBase
             assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = userName;
+            assignmentView.Main = e.Main;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -346,6 +351,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = e.AuthUser?.UserName;
             assignmentView.UserId = e.UserId;
+            assignmentView.Main = e.Main;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -423,10 +429,11 @@ public class AssignmentController : ControllerBase
                 Status = m[0].Status,
                 Verify = m[0].Verify,
                 CanTake = m[0].Main == 1 && m[0].PercentReward == 10000 ? (sbyte)0 : (sbyte)1,
-                FixedReward = m[0].FixedReward,
+                FixedReward = assignmentViews.Sum(x=>x.FixedReward),
                 PercentReward = m[0].PercentReward,
                 Rewardtype = m[0].Rewardtype,
                 UserId = user.Id,
+                Main= m[0].Main,
             });
             _context.SaveChanges();
         }catch (Exception ex)
@@ -480,7 +487,7 @@ public class AssignmentController : ControllerBase
             return BadRequest("副任务创建失败。");
         }
 
-        return CreatedAtAction(nameof(PostsAssignment), new { id = entityEntry.Entity.Id }, "创建成功。");
+        return CreatedAtAction(nameof(PostsAssignment), new { id = entityEntry.Entity.Id,Msg= "创建成功。" });
     }
 
     /// <summary>
@@ -672,6 +679,8 @@ public class AssignmentController : ControllerBase
                     UserId = user.Id,
                 });
                 assignment.Status = (sbyte)TaskState.Unfinished;
+                r.Agree = 1;
+                r.AgreeDate = DateTime.Now;
 
                 _context.SaveChanges();
                 return new ResponeMessage<SimpleResp> { 

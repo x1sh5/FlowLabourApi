@@ -45,7 +45,7 @@ namespace FlowLabourApi.ViewModels
         public string OpenId { get; set; }
 
         [JsonProperty(PropertyName = "errcode")]
-        public int ErrCode { get; set; }
+        public int ErrCode { get; set; } = int.MaxValue;
     }
 
     public class WeChatPayQueryByTransactionIdViewModel

@@ -16,6 +16,10 @@
         /// </summary>
         public sbyte Agree { get; set; }
 
+        public string? Title { get; set; }
+
+        public int TypeId { get; set; }
+
         public DateTime RequestDate { get; set; }
 
         public DateTime AgreeDate { get; set; }

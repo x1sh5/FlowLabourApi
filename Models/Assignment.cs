@@ -87,6 +87,12 @@ public partial class Assignment
     public sbyte Verify { get; set; }
 
     /// <summary>
+    /// 是否支付，0:未支付，1：支付。
+    /// </summary>
+    /// <example>1</example>
+    public sbyte Payed { get; set; } = 0;
+
+    /// <summary>
     /// 能否被接取，0：不能，1：能。
     /// </summary>
     public sbyte CanTake { get; set; }

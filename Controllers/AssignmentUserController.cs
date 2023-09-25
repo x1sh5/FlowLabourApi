@@ -110,6 +110,7 @@ namespace FlowLabourApi.Controllers
                     Rewardtype = item.Assignment.Rewardtype,
                     Verify = item.Assignment.Verify,
                     CanTake = item.Assignment.CanTake,
+                    Main = item.Assignment.Main,
                 });
             }
             return Ok(assignments);

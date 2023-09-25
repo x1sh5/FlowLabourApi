@@ -10,6 +10,7 @@ using Essensoft.Paylink.WeChatPay.V3.Domain;
 using MySqlX.XDevAPI;
 using FlowLabourApi.ViewModels;
 using Newtonsoft.Json;
+using Essensoft.Paylink.WeChatPay.V3.Response;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -53,7 +54,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <param name="viewModel"></param>
         [HttpPost("pubPayV3")]
-        public async Task<IActionResult> MiniProgramPayTask([FromBody] WeChatPayPubPayV3ViewModel viewModel)
+        public async Task<IActionResult> MiniProgramPayTask([FromBody] FlowWeChatBill viewModel)
         {
             Jscode2Session? j2s;
             using (var client = new HttpClient())
@@ -63,26 +64,27 @@ namespace FlowLabourApi.Controllers
                 var result = await response1.Content.ReadAsStringAsync();
                 j2s = JsonConvert.DeserializeObject<Jscode2Session>(result);
             }
-            if (j2s == null||j2s.ErrCode==0)
+            if (j2s == null||j2s.ErrCode!=int.MaxValue)
             {
                 return BadRequest("调用微信支付失败。");
             }
 
-            var model = new WeChatPayTransactionsJsApiBodyModel
+            WeChatPayTransactionsJsApiBodyModel? model = new WeChatPayTransactionsJsApiBodyModel
             {
                 AppId = _optionsAccessor.Value.AppId,
                 MchId = _optionsAccessor.Value.MchId,
                 Amount = new Amount { Total = viewModel.Total, Currency = "CNY" },
                 Description = viewModel.Description,
                 NotifyUrl = viewModel.NotifyUrl,
-                OutTradeNo = viewModel.OutTradeNo,
-                Payer = new PayerInfo { OpenId = j2s.OpenId }
+                OutTradeNo = Guid.NewGuid().ToString().Replace("-", ""),
+                Payer = new PayerInfo { OpenId = j2s.OpenId },
+                Attach = viewModel.Attach,
             };
 
-            var request = new WeChatPayTransactionsJsApiRequest();
+            WeChatPayTransactionsJsApiRequest? request = new WeChatPayTransactionsJsApiRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            WeChatPayTransactionsJsApiResponse? response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
 
             if (!response.IsError)
             {
@@ -91,7 +93,7 @@ namespace FlowLabourApi.Controllers
                     Package = "prepay_id=" + response.PrepayId
                 };
 
-                var parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value);
+                WeChatPayDictionary? parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value);
 
                 // 将参数(parameter)给 小程序端
                 // https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_5_4.shtml
@@ -110,7 +112,7 @@ namespace FlowLabourApi.Controllers
         /// 查询单笔退款
         /// </summary>
         /// <param name="viewModel"></param>
-        [HttpPost]
+        [HttpPost("RefundQuery")]
         public async Task<IActionResult> RefundQuery(WeChatPayV3RefundQueryViewModel viewModel)
         {
             var request = new WeChatPayRefundDomesticRefundsOutRefundNoRequest
@@ -128,7 +130,7 @@ namespace FlowLabourApi.Controllers
         /// 退款申请
         /// </summary>
         /// <param name="viewModel"></param>
-        [HttpPost]
+        [HttpPost("Refund")]
         public async Task<IActionResult> Refund(WeChatPayV3RefundViewModel viewModel)
         {
             var model = new WeChatPayRefundDomesticRefundsBodyModel()
@@ -152,7 +154,7 @@ namespace FlowLabourApi.Controllers
         /// 下载账单
         /// </summary>
         /// <param name="viewModel"></param>
-        [HttpPost]
+        [HttpPost("BillDownload")]
         public async Task<IActionResult> BillDownload(WeChatPayBillDownloadViewModel viewModel)
         {
             var request = new WeChatPayBillDownloadRequest();
@@ -167,7 +169,7 @@ namespace FlowLabourApi.Controllers
         /// 关闭订单
         /// </summary>
         /// <param name="viewModel"></param>
-        [HttpPost]
+        [HttpPost("OutTradeNoClose")]
         public async Task<IActionResult> OutTradeNoClose(WeChatPayOutTradeNoCloseViewModel viewModel)
         {
             var model = new WeChatPayTransactionsOutTradeNoCloseBodyModel
@@ -191,7 +193,7 @@ namespace FlowLabourApi.Controllers
         /// 商户订单号查询
         /// </summary>
         /// <param name="viewModel"></param>
-        [HttpPost]
+        [HttpPost("QueryByOutTradeNo")]
         public async Task<IActionResult> QueryByOutTradeNo(WeChatPayQueryByOutTradeNoViewModel viewModel)
         {
             var model = new WeChatPayTransactionsOutTradeNoQueryModel
@@ -215,7 +217,7 @@ namespace FlowLabourApi.Controllers
         /// 微信支付订单号查询
         /// </summary>
         /// <param name="viewModel"></param>
-        [HttpPost]
+        [HttpPost("QueryByTransactionId")]
         public async Task<IActionResult> QueryByTransactionId(WeChatPayQueryByTransactionIdViewModel viewModel)
         {
             var model = new WeChatPayTransactionsIdQueryModel

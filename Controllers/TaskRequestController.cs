@@ -107,7 +107,7 @@ namespace FlowLabourApi.Controllers
                     }
                     else
                     {
-                        entity1.Agree = 3;
+                        entity1.Agree = 2;
                         entity1.RequestDate = DateTime.Now;
                         try
                         {
@@ -130,24 +130,28 @@ namespace FlowLabourApi.Controllers
             {
                 UserId = int.Parse(userid),
                 TaskId = value.TaskId,
-                Agree = 0,
+                Agree = 2,
+                Title = value.Title,
+                TypeId = value.TypeId,
                 RequestDate = DateTime.Now,
                 Comment = value.Comment,
             };
             try
             {
                 _context.TaskRequests.Add(e);
+                _context.SaveChanges();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"add TaskRequest:{e} err");
+                return BadRequest("申请任务出错！");
             }
             return Ok("申请已成功递交，请等待！");
         }
 
         // PUT api/<TaskRequestController>/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] TaskRequest value)
+        [HttpPut("agree/{id}")]
+        public async Task<ActionResult> Agree(int id, [FromBody] TaskRequest value)
         {
             if(id != value.Id)
             {
@@ -158,7 +162,7 @@ namespace FlowLabourApi.Controllers
             {
                 return NotFound();
             }
-            r.Agree = value.Agree;
+            r.Agree = 1;
             r.Comment = value.Comment;
             r.AgreeDate = DateTime.Now;
             try
@@ -168,6 +172,34 @@ namespace FlowLabourApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"update TaskRequest:{r} err");
+                return BadRequest("状态修改出错");
+            }
+            return Ok("修改成功");
+        }
+
+        [HttpPut("disagree/{id}")]
+        public async Task<ActionResult> Disagree(int id, [FromBody] TaskRequest value)
+        {
+            if (id != value.Id)
+            {
+                return BadRequest();
+            }
+            var r = _context.TaskRequests.SingleOrDefault(x => x.Id == id);
+            if (r == null)
+            {
+                return NotFound();
+            }
+            r.Agree = 0;
+            r.Comment = value.Comment;
+            r.AgreeDate = DateTime.Now;
+            try
+            {
+                _context.TaskRequests.Update(r);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"update TaskRequest:{r} err");
+                return BadRequest("状态修改出错");
             }
             return Ok("修改成功");
         }
