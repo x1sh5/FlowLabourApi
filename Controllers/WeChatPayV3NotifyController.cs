@@ -6,7 +6,8 @@ using Microsoft.Extensions.Options;
 
 namespace FlowLabourApi.Controllers
 {
-    [Route("wechatpay/v3/notify")]
+    [Route("api/wechatpay/v3/notify")]
+    [ApiController]
     public class WeChatPayV3NotifyController : Controller
     {
         private readonly ILogger<WeChatPayV3NotifyController> _logger;
