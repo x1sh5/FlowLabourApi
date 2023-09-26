@@ -69,6 +69,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;
+            assignmentView.Payed = e.Payed;
             assignmentView.FixedReward = e.FixedReward;
             assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
@@ -121,6 +122,7 @@ public class AssignmentController : ControllerBase
             Username = e.AuthUser?.UserName,
             UserId = e.UserId,
             Main = e.Main,
+            Payed = e.Payed,
         }).ToList();
         return assignmentViews;
     }
@@ -162,6 +164,7 @@ public class AssignmentController : ControllerBase
             Rewardtype = e.Rewardtype,
             Username = e.AuthUser?.UserName,
             Main = e.Main,
+            Payed = e.Payed,
         };
 
         return assignmentView;
@@ -198,6 +201,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Username = e.AuthUser?.UserName;
             assignmentView.UserId = e.UserId;
             assignmentView.Main = e.Main;
+            assignmentView.Payed = e.Payed;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -235,6 +239,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = userName;
             assignmentView.Main = e.Main;
+            assignmentView.Payed = e.Payed;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
@@ -280,6 +285,7 @@ public class AssignmentController : ControllerBase
                 UserId = e.UserId,
                 Verify = e.Verify,
                 Username = userName,
+                Payed = e.Payed,
             });
         }
 
@@ -317,6 +323,7 @@ public class AssignmentController : ControllerBase
                 UserId = e.UserId,
                 Verify = e.Verify,
                 Username = userName,
+                Payed = e.Payed,
             };
 
         return assignmentViews;
@@ -342,6 +349,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Branchid = e.Branchid;
             assignmentView.TypeId = e.TypeId;
             assignmentView.Deadline = e.Deadline;
+            assignmentView.Payed = e.Payed;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
             assignmentView.Verify = e.Verify;

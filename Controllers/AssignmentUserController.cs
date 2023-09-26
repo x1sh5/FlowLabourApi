@@ -111,6 +111,7 @@ namespace FlowLabourApi.Controllers
                     Verify = item.Assignment.Verify,
                     CanTake = item.Assignment.CanTake,
                     Main = item.Assignment.Main,
+                    Payed = item.Assignment.Payed,
                 });
             }
             return Ok(assignments);

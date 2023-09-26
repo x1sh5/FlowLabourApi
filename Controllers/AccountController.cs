@@ -275,7 +275,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("logout")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Logout()
         {
             var id = User.FindFirstValue(JwtClaimTypes.IdClaim);

@@ -11,6 +11,9 @@ using MySqlX.XDevAPI;
 using FlowLabourApi.ViewModels;
 using Newtonsoft.Json;
 using Essensoft.Paylink.WeChatPay.V3.Response;
+using FlowLabourApi.Config;
+using FlowLabourApi.Models;
+using System.Drawing;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -37,9 +40,10 @@ namespace FlowLabourApi.Controllers
 
         // GET: api/<BillController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Bill> Get()
         {
-            return new string[] { "value1", "value2" };
+            var userid = User.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.IdClaim)?.Value;
+            return _context.Bills.Where(x=>x.UserId==int.Parse(userid)).ToList();
         }
 
         // GET api/<BillController>/5
@@ -56,6 +60,23 @@ namespace FlowLabourApi.Controllers
         [HttpPost("pubPayV3")]
         public async Task<IActionResult> MiniProgramPayTask([FromBody] FlowWeChatBill viewModel)
         {
+            var AssignmentId = viewModel.Attach.Replace("taskid=", "");
+            
+            var valid = int.TryParse(AssignmentId, out int assignmentId);
+            if (!valid)
+            {
+                return BadRequest("任务信息有误。");
+            }
+            var obill = _context.Bills.SingleOrDefault(x=>x.AssignmentId==assignmentId);
+            if (obill != null)
+            {
+                if(DateTime.Now - obill.Date < TimeSpan.FromMinutes(10))
+                {
+                    return BadRequest("订单已创建，请勿重复创建。订单状态可能会有延迟，请稍后刷新试试");
+                }
+                
+            }
+            var userid = User.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.IdClaim)?.Value;
             Jscode2Session? j2s;
             using (var client = new HttpClient())
             {
@@ -94,6 +115,53 @@ namespace FlowLabourApi.Controllers
                 };
 
                 WeChatPayDictionary? parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value);
+
+                if (obill == null)
+                {
+                    var bill = new Bill
+                    {
+                        UserId = int.Parse(userid),
+                        AssignmentId = assignmentId,
+                        Date = DateTime.Now,
+                        Status = 0,
+                        BillNo = model.OutTradeNo,
+                        Mount = viewModel.Total,
+                        WeChatBillNo = response.PrepayId,
+                        Description = viewModel.Description
+                    };
+                    try
+                    {
+                        _context.Add(bill);
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError("创建账单失败: " + ex.Message);
+                        return BadRequest("调用微信支付失败。");
+                    }
+                }
+                else
+                {
+                    obill.Date = DateTime.Now;
+                    obill.Description = viewModel.Description;
+                    obill.BillNo = model.OutTradeNo;
+                    obill.Mount = viewModel.Total;
+                    obill.WeChatBillNo = response.PrepayId;
+                    obill.UserId = int.Parse(userid);
+                    obill.AssignmentId = assignmentId;
+                    try
+                    {
+                        _context.Update(obill);
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError("创建账单失败: " + ex.Message);
+                        return BadRequest("调用微信支付失败。");
+                    }
+                }
+
+
 
                 // 将参数(parameter)给 小程序端
                 // https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_5_4.shtml

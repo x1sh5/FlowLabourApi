@@ -349,6 +349,12 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.BillNo)
                 .HasMaxLength(45)
                 .HasColumnName("billno");
+            entity.Property(e => e.WeChatBillNo)
+                .HasMaxLength(45)
+                .HasColumnName("wechatbillno");
+            entity.Property(e => e.Description)
+                .HasMaxLength(125)
+                .HasColumnName("description");
             entity.Property(e => e.Mount)
                 .HasColumnType("int(11)")
                 .HasColumnName("mount");

@@ -30,5 +30,9 @@
         /// 金额
         /// </summary>
         public int Mount { get; set; }
+
+        public string WeChatBillNo { get; set; } = null!;
+
+        public string Description { get; set; } = null!;
     }
 }

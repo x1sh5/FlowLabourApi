@@ -3,6 +3,7 @@ using Essensoft.Paylink.WeChatPay.V3;
 using Essensoft.Paylink.WeChatPay;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using FlowLabourApi.Models.context;
 
 namespace FlowLabourApi.Controllers
 {
@@ -12,13 +13,17 @@ namespace FlowLabourApi.Controllers
     {
         private readonly ILogger<WeChatPayV3NotifyController> _logger;
         private readonly IWeChatPayNotifyClient _client;
+        private readonly FlowContext _context;
         private readonly IOptions<WeChatPayOptions> _optionsAccessor;
 
-        public WeChatPayV3NotifyController(ILogger<WeChatPayV3NotifyController> logger, IWeChatPayNotifyClient client, IOptions<WeChatPayOptions> optionsAccessor)
+        public WeChatPayV3NotifyController(ILogger<WeChatPayV3NotifyController> logger,
+            IWeChatPayNotifyClient client, IOptions<WeChatPayOptions> optionsAccessor,
+            FlowContext context)
         {
             _logger = logger;
             _client = client;
             _optionsAccessor = optionsAccessor;
+            _context = context;
         }
 
         /// <summary>
@@ -30,10 +35,30 @@ namespace FlowLabourApi.Controllers
         {
             try
             {
-                var notify = await _client.ExecuteAsync<WeChatPayTransactionsNotify>(Request, _optionsAccessor.Value);
+                WeChatPayTransactionsNotify? notify = await _client.ExecuteAsync<WeChatPayTransactionsNotify>(Request, _optionsAccessor.Value);
                 if (notify.TradeState == WeChatPayTradeState.Success)
                 {
-                    _logger.LogInformation("支付结果通知 => OutTradeNo: " + notify.OutTradeNo);
+                    _logger.LogInformation("支付结果通知 => OutTradeNo: " + notify.OutTradeNo+ ";TransactionId="+notify.TransactionId);
+                    var bill = _context.Bills.FirstOrDefault(b => b.BillNo == notify.OutTradeNo);
+                    if (bill != null)
+                    {
+                        bill.Status = 1;
+                        var a = _context.Assignments.FirstOrDefault(a => a.Id == bill.AssignmentId);
+                        if (a != null)
+                        {
+                            a.Payed = 1;
+                        }
+                        try
+                        {
+                            _context.Assignments.Update(a);
+                            _context.Bills.Update(bill);
+                            _context.SaveChanges();
+                        }catch(Exception e)
+                        {
+                            _logger.LogError("更新账单"+notify.OutTradeNo + "失败: " + e.Message);
+                        }
+
+                    }
                     return WeChatPayNotifyResult.Success;
                 }
 
@@ -55,10 +80,11 @@ namespace FlowLabourApi.Controllers
         {
             try
             {
-                var notify = await _client.ExecuteAsync<WeChatPayRefundDomesticRefundsNotify>(Request, _optionsAccessor.Value);
+                WeChatPayRefundDomesticRefundsNotify? notify = await _client.ExecuteAsync<WeChatPayRefundDomesticRefundsNotify>(Request, _optionsAccessor.Value);
                 if (notify.RefundStatus == WeChatPayRefundStatus.Success)
                 {
                     _logger.LogInformation("退款结果通知 => OutTradeNo: " + notify.OutTradeNo);
+
                     return WeChatPayNotifyResult.Success;
                 }
 
@@ -133,7 +159,7 @@ namespace FlowLabourApi.Controllers
         {
             try
             {
-                var notify = await _client.ExecuteAsync<WeChatPayScoreUserPaidNotify>(Request, _optionsAccessor.Value);
+                WeChatPayScoreUserPaidNotify? notify = await _client.ExecuteAsync<WeChatPayScoreUserPaidNotify>(Request, _optionsAccessor.Value);
                 if (notify.State == WeChatPayServiceOrderState.Done)
                 {
                     _logger.LogInformation("订单支付成功回调通知 => " + notify.Body);

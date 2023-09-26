@@ -1,4 +1,6 @@
-﻿namespace FlowLabourApi.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FlowLabourApi.ViewModels
 {
     /// <summary>
     /// 任务详细的前端视图
@@ -103,7 +105,8 @@
         /// 是否支付，0:未支付，1：支付。
         /// </summary>
         /// <example>1</example>
-        public sbyte Payed { get; set; }
+        [Required]
+        public sbyte Payed { get;  set; }
 
         /// <summary>
         /// 用户图片
