@@ -296,6 +296,9 @@ public partial class FlowContext : DbContext
                   .HasDefaultValue(0)
                   .HasColumnType("int(11)")
                   .HasColumnName("lockoutend");
+            entity.Property(e => e.Avatar)
+                  .HasMaxLength(95)
+                  .HasColumnName("avatar");
             entity.Property(e => e.AccessFailedCount)
                   .HasColumnName("accessfailedcount")
                   .HasColumnType("int(11)");

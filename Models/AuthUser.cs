@@ -62,6 +62,11 @@ public partial class AuthUser
     public int LockoutEnd { set; get; } = 0;
 
     /// <summary>
+    /// 头像
+    /// </summary>
+    public string? Avatar { get; set; } = null;
+
+    /// <summary>
     /// 锁定状态，1：锁定，0：非锁定。
     /// </summary>
     public sbyte LockoutEnabled { get; set; } = 0;
@@ -80,5 +85,5 @@ public partial class AuthUser
     /// 领取的任务信息
     /// </summary>
     public virtual AssignmentUser? AssignmentUser { get; set; }
-
+  
 }

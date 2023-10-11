@@ -145,5 +145,44 @@ namespace FlowLabourApi.Controllers
         {
             return _context.AuthUsers.Any(e => e.Id == id);
         }
+
+        #region useravstar
+        /// <summary>
+        /// 获取头像
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("avatar/{id}")]
+        public string GetAvatar(int id)
+        {
+            var authUser = _context.AuthUsers.Find(id);
+            if (authUser == null)
+            {
+                return null;
+            }
+            return authUser.Avatar;
+        }
+
+        /// <summary>
+        /// 设置头像
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="avatar"></param>
+        /// <returns></returns>
+        [HttpPost("setavatar")]
+        public async Task<IActionResult> PostAvatar(int id, string avatar)
+        {
+            var authUser = await _context.AuthUsers.FindAsync(id);
+            if (authUser == null)
+            {
+                return NotFound();
+            }
+            authUser.Avatar = avatar;
+            _context.Entry(authUser).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        #endregion
     }
 }

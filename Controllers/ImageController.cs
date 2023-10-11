@@ -47,9 +47,10 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("upload")]
-        public async Task<ActionResult<IEnumerable<Image>>> Upload()
+        public async Task<ActionResult<IEnumerable<Image>>> Upload(IEnumerable<IFormFile> files)
         {
-            var files = Request.Form.Files;
+            if(files==null)
+                files = Request.Form.Files;
             long size = files.Sum(f => f.Length);
             List<Image> images = new List<Image>();
             foreach (IFormFile formFile in files)
@@ -76,7 +77,7 @@ namespace FlowLabourApi.Controllers
                 Image image = new Image()
                 {
                     Md5 = md5,
-                    Url = newName,
+                    Url = "/flow/static/"+newName,
                 };
                 var msg = Create(image);
                 images.Add(image);
