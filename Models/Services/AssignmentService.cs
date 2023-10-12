@@ -31,13 +31,13 @@ namespace FlowLabourApi.Models.Services
             .Take((int)count).ToListAsync();
         }
 
-        public async Task<List<Assignment>> GetAssignments(int? typeid)
+        public async Task<List<Assignment>> GetAssignments(int? branchid)
         {
             List<Assignment> assignments;
-            if (typeid != null)
+            if (branchid != null)
             {
                 assignments = await _context.Assignments.Include(o => o.AuthUser)
-                    .Where(e => e.TypeId == typeid).ToListAsync();
+                    .Where(e => e.Branchid == branchid).ToListAsync();
             }
             else
             {

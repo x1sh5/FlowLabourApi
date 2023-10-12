@@ -1,4 +1,4 @@
-#define linux
+#define win
 using Essensoft.Paylink.WeChatPay;
 using FlowLabourApi.Authentication;
 using FlowLabourApi.Config;

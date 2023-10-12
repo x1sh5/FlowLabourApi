@@ -24,7 +24,7 @@ namespace FlowLabourApi.ViewModels
 
         public string? Username { get; set; }
         /// <summary>
-        /// 所属部门，对应branch表的id
+        /// 所属部门(类型)，对应branch表的id
         /// </summary>
         /// <example>1</example>
         public int Branchid { get; set; }
@@ -90,10 +90,10 @@ namespace FlowLabourApi.ViewModels
         public string? Title { get; set; }
 
         /// <summary>
-        /// tasktype的id外键
+        /// task的tag
         /// </summary>
         /// <example>1</example>
-        public int TypeId { get; set; }
+        public string Tag { get; set; }
 
         /// <summary>
         /// 0:未审核通过，1：审核通过。

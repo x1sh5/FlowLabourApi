@@ -34,19 +34,19 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <param name="count"></param>
     /// <param name="offset"></param>
-    /// <param name="typeid"></param>
+    /// <param name="branchid"></param>
     /// <example>GET api/assignment?count=10&offset=0</example>
     /// <returns></returns>
     [HttpGet]
     [AllowAnonymous]
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
     public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments([Required]uint count,
-        [Required]int offset, int? typeid)
+        [Required]int offset, int? branchid)
     {
         Expression<Func<Assignment, bool>> expression;
-        if (typeid != null)
+        if (branchid != null)
         {
-            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished &&o.TypeId == typeid;
+            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished &&o.Branchid == branchid;
         }
         else
         {
@@ -64,7 +64,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.TypeId = e.TypeId;
+            assignmentView.Tag = e.Tag;
             assignmentView.Deadline = e.Deadline;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
@@ -84,19 +84,19 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// 获取所有类型为typeid的任务
+    /// 获取所有类型为branchid的任务
     /// </summary>
     /// <returns></returns>
-    [HttpGet("type/{typeid?}")]
+    [HttpGet("type/{branchid?}")]
     [AllowAnonymous]
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments(int? typeid)
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments(int? branchid)
     {
         List<Assignment> assignments;
-        if (typeid != null)
+        if (branchid != null)
         {
             assignments = await _context.Assignments.Include(o => o.AuthUser)
-                .Where(e => e.TypeId == typeid).ToListAsync();
+                .Where(e => e.Branchid == branchid).ToListAsync();
         }
         else
         {
@@ -110,7 +110,7 @@ public class AssignmentController : ControllerBase
             Title = e.Title,
             Description = e.Description,
             Branchid = e.Branchid,
-            TypeId = e.TypeId,
+            Tag = e.Tag,
             Deadline = e.Deadline,
             Publishtime = e.Publishtime,
             Status = e.Status,
@@ -153,7 +153,7 @@ public class AssignmentController : ControllerBase
             Title = e.Title,
             Description = e.Description,
             Branchid = e.Branchid,
-            TypeId = e.TypeId,
+            Tag = e.Tag,
             Deadline = e.Deadline,
             Publishtime = e.Publishtime,
             Status = e.Status,
@@ -189,7 +189,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.TypeId = e.TypeId;
+            assignmentView.Tag = e.Tag;
             assignmentView.Deadline = e.Deadline;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
@@ -228,7 +228,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.TypeId = e.TypeId;
+            assignmentView.Tag = e.Tag;
             assignmentView.Deadline = e.Deadline;
             assignmentView.Publishtime = e.Publishtime;
             assignmentView.Status = e.Status;
@@ -278,7 +278,7 @@ public class AssignmentController : ControllerBase
                 FixedReward = e.FixedReward,
                 PercentReward = e.PercentReward,
                 Publishtime = e.Publishtime,
-                TypeId = e.TypeId,
+                Tag = e.Tag,
                 Main = e.Main,
                 Rewardtype = e.Rewardtype,
                 Status = e.Status,
@@ -316,7 +316,7 @@ public class AssignmentController : ControllerBase
                 FixedReward = e.FixedReward,
                 PercentReward = e.PercentReward,
                 Publishtime = e.Publishtime,
-                TypeId = e.TypeId,
+                Tag = e.Tag,
                 Main = e.Main,
                 Rewardtype = e.Rewardtype,
                 Status = e.Status,
@@ -330,7 +330,7 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// 按标题搜索
+    /// 按标题和tag搜索
     /// </summary>
     /// <param name="title"></param>
     /// <returns></returns>
@@ -338,7 +338,7 @@ public class AssignmentController : ControllerBase
     public async Task<ActionResult<IEnumerable<AssignmentView>>> SearchByTitle(string title)
     {
         var assignments = await _context.Assignments.Include(a => a.AuthUser)
-            .Where(a => a.Title!.Contains(title)).ToListAsync();
+            .Where(a => a.Title!.Contains(title)||a.Tag.Contains(title)).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
         foreach (var e in assignments)
         {
@@ -347,7 +347,7 @@ public class AssignmentController : ControllerBase
             assignmentView.Title = e.Title;
             assignmentView.Description = e.Description;
             assignmentView.Branchid = e.Branchid;
-            assignmentView.TypeId = e.TypeId;
+            assignmentView.Tag = e.Tag;
             assignmentView.Deadline = e.Deadline;
             assignmentView.Payed = e.Payed;
             assignmentView.Publishtime = e.Publishtime;
@@ -382,7 +382,7 @@ public class AssignmentController : ControllerBase
             Title = assignmentView.Title,
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
-            TypeId = assignmentView.TypeId,
+            Tag = assignmentView.Tag,
             Deadline = assignmentView.Deadline,
             Publishtime = DateTime.Now,
             Status = assignmentView.Status,
@@ -431,7 +431,7 @@ public class AssignmentController : ControllerBase
                 Title = m[0].Title,
                 Description = m[0].Description,
                 Branchid = m[0].Branchid,
-                TypeId = m[0].TypeId,
+                Tag = m[0].Tag,
                 Deadline = m[0].Deadline,
                 Publishtime = DateTime.Now,
                 Status = m[0].Status,
@@ -461,7 +461,7 @@ public class AssignmentController : ControllerBase
                     Title = assignmentViews[i].Title,
                     Description = assignmentViews[i].Description,
                     Branchid = assignmentViews[i].Branchid,
-                    TypeId = assignmentViews[i].TypeId,
+                    Tag = assignmentViews[i].Tag,
                     Deadline = assignmentViews[i].Deadline,
                     Publishtime = DateTime.Now,
                     Status = assignmentViews[i].Status,
@@ -518,7 +518,7 @@ public class AssignmentController : ControllerBase
             Title = assignmentView.Title,
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
-            TypeId = assignmentView.TypeId,
+            Tag = assignmentView.Tag,
             Deadline = assignmentView.Deadline,
             Publishtime = DateTime.Now,
             Status = assignmentView.Status,
@@ -584,7 +584,7 @@ public class AssignmentController : ControllerBase
             Title = assignmentView.Title,
             Description = assignmentView.Description,
             Branchid = assignmentView.Branchid,
-            TypeId = assignmentView.TypeId,
+            Tag = assignmentView.Tag,
             Deadline = assignmentView.Deadline,
             Publishtime = assignmentView.Publishtime,
             Status = assignmentView.Status,

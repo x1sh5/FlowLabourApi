@@ -18,16 +18,16 @@ public partial class Assignment
     public string Title { get; set; }
 
     /// <summary>
-    /// 所属部门，对应branch表的id
+    /// 所属部门(类型)，对应branch表的id
     /// </summary>
     /// <example>1</example>
     public int Branchid { get; set; }
 
     /// <summary>
-    /// 任务类型的id，对应assignmenttype的id
+    /// 任务类型的tag
     /// </summary>
     /// <example>1</example>
-    public int TypeId { get; set; }
+    public string Tag { get; set; }
 
     /// <summary>
     /// 0:代接，1：已结待完成，2：已完成。

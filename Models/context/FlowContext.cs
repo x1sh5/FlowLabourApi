@@ -172,10 +172,9 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(100)
                 .HasColumnName("title");
-            entity.Property(e => e.TypeId)
-                .HasComment("tasktype的id外键")
-                .HasColumnType("int(11)")
-                .HasColumnName("typeid");
+            entity.Property(e => e.Tag)
+                .HasMaxLength(2)
+                .HasColumnName("tag");
             entity.Property(e => e.Verify)
                 .HasComment("0:未审核通过，1：审核通过。")
                 .HasColumnType("tinyint(4)")
