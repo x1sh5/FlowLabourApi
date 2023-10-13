@@ -55,6 +55,8 @@ public partial class FlowContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
+    public virtual DbSet<Search> Searchs { get; set; }
+
     public virtual DbSet<Session> Sessions { get; set; }
 
     public virtual DbSet<SigninLog> SigninLogs { get; set; }

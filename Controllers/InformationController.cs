@@ -43,5 +43,16 @@ namespace FlowLabourApi.Controllers
                 .Where(e => e.Level == 1).AsNoTracking().ToListAsync();
             return reslut;
         }
+
+        [HttpGet("popular")]
+        public async Task<ActionResult<IEnumerable<string>>> GetPopulars()
+        {
+            var reslut =  _context.Searchs
+                .GroupBy(x => x.Word)
+                .OrderByDescending(group => group.Count())
+                .Select(k => k.Key)
+                .Take(10).ToList();
+            return reslut;
+        }
     }
 }

@@ -337,6 +337,7 @@ public class AssignmentController : ControllerBase
     [HttpGet("search/{title}")]
     public async Task<ActionResult<IEnumerable<AssignmentView>>> SearchByTitle(string title)
     {
+        var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
         var assignments = await _context.Assignments.Include(a => a.AuthUser)
             .Where(a => a.Title!.Contains(title)||a.Tag.Contains(title)).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
@@ -363,6 +364,18 @@ public class AssignmentController : ControllerBase
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
             assignmentViews.Add(assignmentView);
         }
+
+        var s = _context.Searchs.Where(x => x.Word == title&&x.UserId==int.Parse(id))
+            .FirstOrDefault();
+        if (s == null)
+        {
+            _ = _context.Searchs.AddAsync(new Search { 
+                Word = title, 
+                UserId= int.Parse(id),
+                Date = DateTime.Now
+            });
+        }
+        _ = _context.SaveChangesAsync();
         return assignmentViews;
     }
 
