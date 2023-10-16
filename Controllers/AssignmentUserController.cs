@@ -29,7 +29,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("holds")]
-        public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignmentUsers()
+        public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignmentUsers(int offset, int count)
         {
             var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
             List<Assignment>? assignments = new List<Assignment>();

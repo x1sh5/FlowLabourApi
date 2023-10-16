@@ -214,12 +214,14 @@ public class AssignmentController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("user")]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentByUser()
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentByUser(int offset, int count)
     {
         var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
         var userName = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
         List<Assignment> assignments;
-        assignments = await _context.Assignments.Where(a => a.UserId == Convert.ToInt32(id)).ToListAsync();
+        assignments = await _context.Assignments
+            .Where(a => a.UserId == Convert.ToInt32(id)&&a.Id>=offset)
+            .Take(count).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
         foreach (var e in assignments)
         {
@@ -333,13 +335,16 @@ public class AssignmentController : ControllerBase
     /// 按标题和tag搜索
     /// </summary>
     /// <param name="title"></param>
+    /// <param name="offset"></param>
+    /// <param name="count"></param>
     /// <returns></returns>
     [HttpGet("search/{title}")]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> SearchByTitle(string title)
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> SearchByTitle(string title,int offset, int count)
     {
         var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
         var assignments = await _context.Assignments.Include(a => a.AuthUser)
-            .Where(a => a.Title!.Contains(title)||a.Tag.Contains(title)).ToListAsync();
+            .Where(a => a.Title!.Contains(title)||a.Tag.Contains(title)&&a.Id>=offset)
+            .Take(count).ToListAsync();
         List<AssignmentView> assignmentViews = new List<AssignmentView>();
         foreach (var e in assignments)
         {
