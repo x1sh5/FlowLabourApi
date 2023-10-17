@@ -432,6 +432,18 @@ public class AssignmentController : ControllerBase
         var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
         //var user = await _userManager.FindByIdAsync(id);
         var user = await _context.AuthUsers.FindAsync(Convert.ToInt32(id));
+        if (user != null&&!user.IsActive)
+        {
+            return Conflict(new ResponeMessage<SimpleResp>
+            {
+                ORCode = ORCode.UserNotActive,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "用户未激活。"
+                }
+            });
+        }
         var m = assignmentViews.Where(o => o.Main == 1).ToArray();
         if(m.Length != 1 )
         {
@@ -658,6 +670,18 @@ public class AssignmentController : ControllerBase
                 }
             };
         }
+        if (user != null && !user.IsActive)
+        {
+            return Conflict(new ResponeMessage<SimpleResp>
+            {
+                ORCode = ORCode.UserNotActive,
+                Data = new SimpleResp
+                {
+                    Success = false,
+                    Reason = "用户未激活。"
+                }
+            });
+        }
         var r = _context.TaskRequests.SingleOrDefault(x => x.Id == requestId);
         if (r == null)
         {
@@ -690,6 +714,7 @@ public class AssignmentController : ControllerBase
                 }
             };
         }
+
         var assignmentId = r.TaskId;
         var assignment = _context.Assignments.Find(assignmentId);
         var resp = new ResponeMessage<SimpleResp>();

@@ -32,5 +32,10 @@
         /// 任务接取失败,任务请求不存在
         /// </summary>
         public static int RequestNotFound = 02404;
+
+        /// <summary>
+        /// 用户未激活
+        /// </summary>
+        public static int UserNotActive = 02409;
     }
 }

@@ -14,6 +14,7 @@ using Essensoft.Paylink.WeChatPay.V3.Response;
 using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using System.Drawing;
+using System.ComponentModel.DataAnnotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -40,10 +41,12 @@ namespace FlowLabourApi.Controllers
 
         // GET: api/<BillController>
         [HttpGet]
-        public IEnumerable<Bill> Get()
+        public IEnumerable<Bill> Get([Required] uint count, [Required] int offset)
         {
             var userid = User.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.IdClaim)?.Value;
-            return _context.Bills.Where(x=>x.UserId==int.Parse(userid)).ToList();
+            return _context.Bills
+                .Where(x=>x.UserId==int.Parse(userid)&&x.Id>=offset)
+                .Take((int)count).ToList();
         }
 
         // GET api/<BillController>/5
