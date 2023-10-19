@@ -1,3 +1,4 @@
+using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.ViewModels;
@@ -141,9 +142,25 @@ namespace FlowLabourApi.Controllers
             return NoContent();
         }
 
+        [NonAction]
         private bool IdentityinfoExists(int id)
         {
             return _context.Identityinfos.Any(e => e.Id == id);
+        }
+
+        [HttpPost("check")]
+        public async Task<IActionResult> Check(string posimg, string negimg)
+        {
+            var userid = User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
+            var i = _context.Identityinfos.Where(x=> x.AuthId==int.Parse(userid)).FirstOrDefault();
+            if (i == null)
+            {
+                return BadRequest("没有找到对应的身份信息。");
+            }
+            i.Posimg = posimg;
+            i.Negimg = negimg;
+            _context.SaveChanges();
+            return Ok("上传信息成功，请等待验证完成。");
         }
     }
 }

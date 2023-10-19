@@ -49,7 +49,7 @@ namespace FlowLabourApi.Controllers
         [HttpPost("upload")]
         public async Task<ActionResult<IEnumerable<Image>>> Upload(IEnumerable<IFormFile> files)
         {
-            if(files==null)
+            if(files==null||files.Count()==0)
                 files = Request.Form.Files;
             long size = files.Sum(f => f.Length);
             List<Image> images = new List<Image>();

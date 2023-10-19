@@ -64,4 +64,19 @@ public partial class IdentityInfo
     /// </summary>
     public DateTime Checkeddate { get; set; }
 
+    /// <summary>
+    /// 反面照
+    /// </summary>
+    public string Posimg { get; set; }
+
+    /// <summary>
+    /// 正面照
+    /// </summary>
+    public string Negimg { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public int AuthId { get; set; }
+
 }

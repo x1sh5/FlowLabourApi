@@ -571,6 +571,14 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.Realname)
                 .HasMaxLength(45)
                 .HasColumnName("realname");
+            entity.Property(e => e.Posimg)
+                .HasMaxLength(85)
+                .HasColumnName("posimg");
+            entity.Property(e => e.Negimg)
+                .HasMaxLength(85)
+                .HasColumnName("negimg");
+            entity.Property(e => e.AuthId)
+                .HasColumnName("authid");
         });
 
         modelBuilder.Entity<Image>(entity =>

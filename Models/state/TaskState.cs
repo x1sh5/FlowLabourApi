@@ -21,5 +21,9 @@
         /// 公示
         /// </summary>
         Announcement = 3,
+        /// <summary>
+        /// 任务失败
+        /// </summary>
+        Failed= 4,
     }
 }
