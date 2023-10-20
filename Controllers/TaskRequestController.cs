@@ -84,6 +84,7 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult> Post([FromBody] TaskRequest value)
         {
             var userid = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            var username = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
 
             var aus = _context.Assignmentusers
             .Where(x => x.UserId == int.Parse(userid))
@@ -132,6 +133,7 @@ namespace FlowLabourApi.Controllers
                 TaskId = value.TaskId,
                 Agree = 2,
                 Title = value.Title,
+                UserName = username,
                 TypeId = value.TypeId,
                 RequestDate = DateTime.Now,
                 Comment = value.Comment,

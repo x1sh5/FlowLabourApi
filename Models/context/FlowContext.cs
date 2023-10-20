@@ -835,6 +835,9 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(45)
                 .HasColumnName("title");
+            entity.Property(e => e.UserName)
+                .HasMaxLength(45)
+                .HasColumnName("username");
         });
 
 

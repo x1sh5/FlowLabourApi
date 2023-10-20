@@ -18,6 +18,11 @@
 
         public string? Title { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? UserName { get; set; }
+
         public int TypeId { get; set; }
 
         public DateTime RequestDate { get; set; }

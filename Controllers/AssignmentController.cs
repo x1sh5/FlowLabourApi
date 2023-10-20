@@ -374,13 +374,13 @@ public class AssignmentController : ControllerBase
             .FirstOrDefault();
         if (s == null)
         {
-            _ = _context.Searchs.AddAsync(new Search { 
+            _ = _context.Searchs.Add(new Search { 
                 Word = title, 
                 UserId= int.Parse(id),
                 Date = DateTime.Now
             });
         }
-        _ = _context.SaveChangesAsync();
+        _ = _context.SaveChanges();
         return assignmentViews;
     }
 
