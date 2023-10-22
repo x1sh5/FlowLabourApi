@@ -249,6 +249,7 @@ namespace FlowLabourApi.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNo = user.PhoneNo,
+                Avatar = user.Avatar,
                 AccessToken = accessTokenstr,
                 RefreshToken = refreshTokenstr
             };

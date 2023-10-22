@@ -1,3 +1,4 @@
+using FlowLabourApi.Config;
 using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Utils;
@@ -152,7 +153,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet("avatar/{id}")]
+        [HttpGet("avatar")]
         public string GetAvatar(int id)
         {
             var authUser = _context.AuthUsers.Find(id);
@@ -170,9 +171,11 @@ namespace FlowLabourApi.Controllers
         /// <param name="avatar"></param>
         /// <returns></returns>
         [HttpPost("setavatar")]
-        public async Task<IActionResult> PostAvatar(int id, string avatar)
+        public async Task<IActionResult> PostAvatar(string avatar)
         {
-            var authUser = await _context.AuthUsers.FindAsync(id);
+            var id = User.Claims
+                .FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim)?.Value;
+            var authUser = await _context.AuthUsers.FindAsync(int.Parse(id));
             if (authUser == null)
             {
                 return NotFound();

@@ -31,6 +31,10 @@
         /// </summary>
         /// <example>false</example>
         public bool IsActive { get; set; } = false;
+        /// <summary>
+        /// 头像
+        /// </summary>
+        public string? Avatar { get; set; } = "";
 
         /// <summary>
         /// 加入日期
