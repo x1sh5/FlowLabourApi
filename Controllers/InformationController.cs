@@ -37,10 +37,9 @@ namespace FlowLabourApi.Controllers
         /// <returns></returns>
         [HttpGet("customtypes")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Assignmenttype>>> GetAssignmentTypes()
+        public async Task<ActionResult<IEnumerable<Branch>>> GetAssignmentTypes()
         {
-            var reslut = await _context.Assignmenttypes
-                .Where(e => e.Level == 1).AsNoTracking().ToListAsync();
+            var reslut = await _context.Branches.AsNoTracking().ToListAsync();
             return reslut;
         }
 

@@ -46,11 +46,13 @@ public class AssignmentController : ControllerBase
         Expression<Func<Assignment, bool>> expression;
         if (branchid != null)
         {
-            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished &&o.Branchid == branchid;
+            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished
+            &&o.Payed==1&&o.Branchid == branchid;
         }
         else
         {
-            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished;
+            expression = o => o.Id > offset && o.Status != (sbyte)TaskState.Unfinished
+            && o.Payed == 1;
         }
         List<Assignment> assignments;
         assignments = await _context.Assignments.Include(a => a.AuthUser)
@@ -82,51 +84,7 @@ public class AssignmentController : ControllerBase
         }
         return assignmentViews;
     }
-
-    /// <summary>
-    /// 获取所有类型为branchid的任务
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet("type/{branchid?}")]
-    [AllowAnonymous]
     //[SwaggerResponse((int)HttpStatusCode.NotFound, Type = typeof(NotFoundResult))]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments(int? branchid)
-    {
-        List<Assignment> assignments;
-        if (branchid != null)
-        {
-            assignments = await _context.Assignments.Include(o => o.AuthUser)
-                .Where(e => e.Branchid == branchid).ToListAsync();
-        }
-        else
-        {
-            assignments = await _context.Assignments.Include(o => o.AuthUser).ToListAsync();
-        } 
-
-        List<AssignmentView> assignmentViews;
-        assignmentViews = assignments.Select(e => new AssignmentView
-        {
-            Id = e.Id,
-            Title = e.Title,
-            Description = e.Description,
-            Branchid = e.Branchid,
-            Tag = e.Tag,
-            Deadline = e.Deadline,
-            Publishtime = e.Publishtime,
-            Status = e.Status,
-            Verify = e.Verify,
-            CanTake = e.CanTake,
-            FixedReward = e.FixedReward,
-            PercentReward = e.PercentReward,
-            Rewardtype = e.Rewardtype,
-            Username = e.AuthUser?.UserName,
-            UserId = e.UserId,
-            Main = e.Main,
-            Payed = e.Payed,
-        }).ToList();
-        return assignmentViews;
-    }
-
 
     /// <summary>
     /// 根据ID获取任务
@@ -176,7 +134,7 @@ public class AssignmentController : ControllerBase
     /// <param name="ids"></param>
     /// <returns></returns>
     [HttpPost("assignments")]
-    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignments(IEnumerable<int> ids)
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> PostAssignments(IEnumerable<int> ids)
     {
         List<Assignment> assignments;
         assignments = await _context.Assignments.Include(a => a.AuthUser)
@@ -603,29 +561,15 @@ public class AssignmentController : ControllerBase
                 Data = new SimpleResp
                 {
                     Success = false,
-                    Reason = "任务已被接取,请等待任务完成或被放弃。"
+                    Reason = "任务已被接取,不能修改。"
                 }
             });
         }
 
-        Assignment assignment = new Assignment
-        {
-            Id = assignmentView.Id,
-            Title = assignmentView.Title,
-            Description = assignmentView.Description,
-            Branchid = assignmentView.Branchid,
-            Tag = assignmentView.Tag,
-            Deadline = assignmentView.Deadline,
-            Publishtime = assignmentView.Publishtime,
-            Status = assignmentView.Status,
-            Verify = assignmentView.Verify,
-            CanTake = assignmentView.CanTake,
-            FixedReward = assignmentView.FixedReward,
-            PercentReward = assignmentView.PercentReward,
-            Rewardtype = assignmentView.Rewardtype,
-            UserId = int.Parse(userid),
-        };
-        _context.Entry(assignment).State = EntityState.Modified;
+        oldAssignment.Title = assignmentView.Title;
+        oldAssignment.Description = assignmentView.Description;
+        oldAssignment.Tag = assignmentView.Tag;
+        oldAssignment.Deadline = assignmentView.Deadline;
 
         try
         {
@@ -786,7 +730,7 @@ public class AssignmentController : ControllerBase
                 Data = new SimpleResp
                 {
                     Success = false,
-                    Reason = "任务已被他人接取,请等待任务完成或被放弃。"
+                    Reason = "任务已被他人接取,不能修改。"
                 }
             });
         }
