@@ -72,14 +72,14 @@ namespace FlowLabourApi.Authentication
             var rnBytes = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(rnBytes);
-            var token = Convert.ToBase64String(rnBytes);
+            var token = Uri.EscapeDataString(Convert.ToBase64String(rnBytes));
 
             var userToken = await _dbContext.UserTokens.FirstOrDefaultAsync(t => t.LoginProvider == useragent_bs64 && t.UserId == userId);
             if (userToken != null)
             {
                 userToken.RefreshToken = token;
-                userToken.Modify = DateTime.Now;
-                userToken.Expires = DateTime.Now + _jwtOptions.RefreshTokenExpires;
+                userToken.Modify = DateTime.UtcNow;
+                userToken.Expires = DateTime.UtcNow + _jwtOptions.RefreshTokenExpires;
                 _dbContext.SaveChanges();
                 return token;
             }
@@ -89,8 +89,8 @@ namespace FlowLabourApi.Authentication
                 LoginProvider = useragent_bs64,
                 UserId = userId,
                 RefreshToken = token,
-                Modify = DateTime.Now,
-                Expires = DateTime.Now + _jwtOptions.RefreshTokenExpires,
+                Modify = DateTime.UtcNow,
+                Expires = DateTime.UtcNow + _jwtOptions.RefreshTokenExpires,
             });
             _dbContext.SaveChanges();
 
@@ -116,11 +116,12 @@ namespace FlowLabourApi.Authentication
                 Subject = identity,
                 Issuer = _jwtOptions.Issuer,
                 Audience = _jwtOptions.Audience,
-                Expires = DateTime.Now + _jwtOptions.AccessTokenExpires,
+                Expires = DateTime.UtcNow + _jwtOptions.AccessTokenExpires,
                 SigningCredentials = new SigningCredentials(secret, SecurityAlgorithms.HmacSha256)
             });
             var handler = new JwtSecurityTokenHandler();
             var accessToken = handler.WriteToken(token);
+            accessToken = Uri.EscapeDataString(accessToken);
             //tokenHandler.WriteToken(token);
 
             return accessToken;
@@ -155,8 +156,7 @@ namespace FlowLabourApi.Authentication
             UserToken? refreshToken = await _dbContext.UserTokens
                 .Where(t => t.UserId == int.Parse(userId) && t.LoginProvider == loginProvider)
                 .FirstOrDefaultAsync();
-            if (refreshToken==null || Uri.EscapeDataString(refreshToken.RefreshToken) != token.RefreshToken
-                || refreshToken.IsExpired)
+            if (refreshToken==null ||refreshToken.RefreshToken!=token.RefreshToken|| refreshToken.IsExpired)
             {
                 throw new BadHttpRequestException("Invalid refresh token");
             }

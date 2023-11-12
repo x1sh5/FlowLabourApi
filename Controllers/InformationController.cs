@@ -43,6 +43,10 @@ namespace FlowLabourApi.Controllers
             return reslut;
         }
 
+        /// <summary>
+        /// 热搜任务
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("popular")]
         public async Task<ActionResult<IEnumerable<string>>> GetPopulars()
         {

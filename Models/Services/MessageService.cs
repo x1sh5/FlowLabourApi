@@ -29,7 +29,9 @@ namespace FlowLabourApi.Models.Services
                 To = messageView.To,
                 Content = messageView.Content,
                 Date = messageView.Date,
-                ContentType = messageView.ContentType
+                ContentType = messageView.ContentType,
+                ReceiverName = messageView.ReceiverName,
+                SenderName = messageView.SenderName,
             };
             EntityEntry<Message>? e = _context.Messages.Add(m);
             await _context.SaveChangesAsync();
@@ -96,8 +98,8 @@ namespace FlowLabourApi.Models.Services
             }
             var message = _context.Messages
                 .Where(expression)
-                .Take(count).OrderBy(m=>m.Date);
-            return message;
+                .OrderByDescending(m=>m.Date).Take(count);
+            return message.OrderBy(m=>m.Id);
         }
 
         /// <summary>

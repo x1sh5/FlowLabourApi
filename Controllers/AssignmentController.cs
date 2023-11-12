@@ -165,11 +165,13 @@ public class AssignmentController : ControllerBase
         }
         return assignmentViews;
     }
-  
+
 
     /// <summary>
-    /// 根据用户获取对应的任务
+    /// 获取当前登录用户的任务
     /// </summary>
+    /// <param name="count">总量</param>
+    /// <param name="offset">任务id偏移量</param>
     /// <returns></returns>
     [HttpGet("user")]
     public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentByUser(int offset, int count)
@@ -198,6 +200,54 @@ public class AssignmentController : ControllerBase
             assignmentView.PercentReward = e.PercentReward;
             assignmentView.Rewardtype = e.Rewardtype;
             assignmentView.Username = userName;
+            assignmentView.Main = e.Main;
+            assignmentView.Payed = e.Payed;
+            //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
+            assignmentViews.Add(assignmentView);
+        }
+        return assignmentViews;
+    }
+
+    /// <summary>
+    /// 获取id用户的任务
+    /// </summary>
+    /// <param name="id">用户id</param>
+    /// <param name="offset">总量</param>
+    /// <param name="count">任务id偏移量</param>
+    /// <param name="status">0:待接, 1:未完成, 2:已完成, 3:公示, 4:失败</param>
+    /// <returns></returns>
+    [HttpGet("byuser")]
+    public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentByUser([Required]int id,int offset, int count, 
+        int? status)
+    {
+        var user = _context.AuthUsers.Find(id);
+        if(user == null)
+        {
+            return NotFound();
+        }
+
+        List<Assignment> assignments;
+        assignments = await _context.Assignments
+            .Where(a =>a.UserId == id && a.Id >= offset&&(status==null||a.Status==status))
+            .Take(count).ToListAsync();
+        List<AssignmentView> assignmentViews = new List<AssignmentView>();
+        foreach (var e in assignments)
+        {
+            AssignmentView assignmentView = new AssignmentView();
+            assignmentView.Id = e.Id;
+            assignmentView.Title = e.Title;
+            assignmentView.Description = e.Description;
+            assignmentView.Branchid = e.Branchid;
+            assignmentView.Tag = e.Tag;
+            assignmentView.Deadline = e.Deadline;
+            assignmentView.Publishtime = e.Publishtime;
+            assignmentView.Status = e.Status;
+            assignmentView.Verify = e.Verify;
+            assignmentView.CanTake = e.CanTake;
+            assignmentView.FixedReward = e.FixedReward;
+            assignmentView.PercentReward = e.PercentReward;
+            assignmentView.Rewardtype = e.Rewardtype;
+            assignmentView.Username = user.UserName;
             assignmentView.Main = e.Main;
             assignmentView.Payed = e.Payed;
             //assignmentView.Images = _context.Images.Where(et => et.AssignmentId == e.Id).Select(e => e.Url).ToArray(); ;
@@ -252,6 +302,11 @@ public class AssignmentController : ControllerBase
         return assignmentViews;
     }
 
+    /// <summary>
+    /// 获取父任务
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("parent/{id}")]
     public async Task<ActionResult<AssignmentView>> GetParent([Required] int id)
     {
@@ -384,6 +439,11 @@ public class AssignmentController : ControllerBase
         return CreatedAtAction(nameof(GetAssignment), new { id = e.Entity.Id },"创建成功。");
     }
 
+    /// <summary>
+    /// 新建（多个）任务，主任务（： 一个单次任务或者比例任务的审核卡）必须在前面
+    /// </summary>
+    /// <param name="assignmentViews"></param>
+    /// <returns></returns>
     [HttpPost("posts")]
     public async Task<ActionResult<ResponeMessage<SimpleResp>>> PostsAssignment([FromBody]List<AssignmentView> assignmentViews)
     {
@@ -430,6 +490,8 @@ public class AssignmentController : ControllerBase
                 Rewardtype = m[0].Rewardtype,
                 UserId = user.Id,
                 Main= m[0].Main,
+                Payed = m[0].Main == 1 && (int)(m[0].Rewardtype) == (int)Rewardtype.Fixed
+                && m[0].FixedReward==0 ? (sbyte)1 : (sbyte)0,
             });
             _context.SaveChanges();
         }catch (Exception ex)
@@ -641,7 +703,7 @@ public class AssignmentController : ControllerBase
         }
 
         var aus = _context.Assignmentusers
-            .Where(x => x.UserId == user.Id)
+            .Where(x => x.UserId == user.Id&&x.Archive=="no")
             .Include(o=>o.Assignment).ToList();
 
         var c = aus.Select(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
@@ -746,6 +808,90 @@ public class AssignmentController : ControllerBase
         }
 
 
+        return NoContent();
+    }
+
+    /// <summary>
+    /// 根据任务ID,归档任务，将任务状态改为完成或者失败，之后发布者不能再修改
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="complete">是否完成，yes：是，no:失败</param>
+    /// <returns></returns>
+    [HttpPost("archive/{id}")]
+    public async Task<IActionResult> ArchiveAssignment(int id,string complete)
+    {
+        if(complete!="yes"&&complete!="no")
+        {
+            return BadRequest("参数错误。");
+        }
+        var assignment = await _context.Assignments.FindAsync(id);
+        if (assignment == null)
+        {
+            return NotFound();
+        }
+        var e = _context.Assignmentusers
+            .Where(x => x.AssignmentId == assignment.Id)
+            .FirstOrDefault();
+        if (e != null)
+        {
+            e.Archive = "yes";
+            e.ArchiveDate = DateTime.Now;
+            if (complete == "yes")
+            {
+                assignment.Status = (sbyte)TaskState.Finished;
+                assignment.Finishtime = DateTime.Now;
+            }
+            else
+            {
+                assignment.Status = (sbyte)TaskState.Failed;
+                assignment.Finishtime = DateTime.Now;
+            }
+        }
+        _context.SaveChanges();
+
+
+        return Content("修改成功。");
+    }
+
+    /// <summary>
+    /// 获取任务期限
+    /// </summary>
+    /// <param name="id">任务ID</param>
+    /// <returns>datetime</returns>
+    [HttpGet("deadline/{id}")]
+    public async Task<IActionResult> GetDeadLine(int id)
+    {
+        var au = await _context.Assignmentusers.Include(x=>x.Assignment)
+            .FirstOrDefaultAsync(x => x.AssignmentId == id);
+
+        
+        if (au == null)
+        {
+            return NotFound();
+        }
+        var ts = DateTime.Now - au.Assignment?.Deadline;
+        return Ok(new { IsArchive = au.Archive=="yes", 
+            Finish=au.Assignment?.Status== (sbyte)TaskState.Finished,
+            Days =ts?.Days,Hours=ts?.Hours,
+            Minutes = ts?.Minutes, Seconds = ts?.Seconds });
+    }
+
+    /// <summary>
+    /// 设置任务期限
+    /// </summary>
+    /// <param name="id">任务ID</param>
+    /// <param name="deadline">日期期限：datetime</param>
+    /// <returns>204 status code</returns>
+    [HttpPut("deadline/{id}")]
+    public async Task<ActionResult<DateTime>> SetDeadLine(int id,DateTime deadline)
+    {
+        var assignment = await _context.Assignments.FindAsync(id);
+        if (assignment == null)
+        {
+            return NotFound();
+        }
+        assignment.Deadline = deadline;
+        _context.SaveChanges();
         return NoContent();
     }
 

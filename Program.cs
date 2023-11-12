@@ -194,6 +194,7 @@ namespace FlowLabourApi
                             ValidateIssuerSigningKey = true,
 
                             ValidateLifetime = true,
+                            //LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
                             
                             //RequireSignedTokens = true,
                             RequireExpirationTime = true,
@@ -202,7 +203,7 @@ namespace FlowLabourApi
                             RoleClaimType = JwtClaimTypes.RoleClaim,
                             TokenDecryptionKey = jwtOptions.SecurityKey,
 
-                            //ClockSkew = TimeSpan.Zero,
+                            ClockSkew = TimeSpan.FromSeconds(60),
                         };
                         
                         options.SaveToken = true;

@@ -17,6 +17,16 @@ public partial class Message
     public int To { get; set; }
 
     /// <summary>
+    /// 发信人姓名
+    /// </summary>
+    public string SenderName { get; set; } = null!;
+
+    /// <summary>
+    /// 收信人姓名
+    /// </summary>
+    public string ReceiverName { get; set; } = null!;
+
+    /// <summary>
     /// 消息内容
     /// </summary>
     public string? Content { get; set; }

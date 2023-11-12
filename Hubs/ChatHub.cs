@@ -119,8 +119,9 @@ public class ChatHub : Hub
     /// </summary>
     /// <param name="user"></param>
     /// <param name="message"></param>
+    /// <param name="contentType"></param>
     /// <returns></returns>
-    public async Task SendToUser(string user, string message)
+    public async Task SendToUser(string user, string message,string contentType="string")
     {
         var FromConId = Context.ConnectionId;
         var userName = Context.User!.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
@@ -147,7 +148,10 @@ public class ChatHub : Hub
                 To = to,
                 Content = message,
                 From = from,
-                Date = DateTime.Now
+                Date = DateTime.Now,
+                ContentType = contentType,
+                SenderName = userName,
+                ReceiverName = hasUser.UserName
             };
 
             var ToConId = _connections.GetConnection(user);
@@ -164,8 +168,12 @@ public class ChatHub : Hub
             await Clients.Client(ToConId).SendAsync("ReceiveMessage", from, new{
                 Id = e.Entity.Id,
                 Content = messageView.Content,
-                Date = messageView.Date.ToString("yyyy/MM/dd HH:mm"),
-                Title = userName
+                Date = messageView.Date?.ToString("yyyy/MM/dd HH:mm"),
+                //Title = userName,
+                ContentType = messageView.ContentType,
+                SenderName = userName,
+                ReceiverName = hasUser.UserName,
+                Unread = messageView.Unread
             });
         }
 

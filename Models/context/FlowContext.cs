@@ -245,6 +245,15 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.UserId)
                 .HasColumnType("int(11)")
                 .HasColumnName("userid");
+            entity.Property(e => e.Archive)
+                .HasMaxLength(4)
+                .HasColumnName("archive");
+            entity.Property(e => e.Date)
+                .HasColumnType("datetime")
+                .HasColumnName("date");
+            entity.Property(e => e.ArchiveDate)
+                .HasColumnType("datetime")
+                .HasColumnName("archivedate");
 
             entity.HasOne(e => e.Assignment)
                 .WithOne(e => e.AssignmentUser);
@@ -625,11 +634,17 @@ public partial class FlowContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("from");
             entity.Property(e => e.Content)
-                .HasMaxLength(45)
+                .HasMaxLength(500)
                 .HasColumnName("message");
             entity.Property(e => e.ContentType)
                 .HasMaxLength(45)
                 .HasColumnName("messagetype");
+            entity.Property(e => e.SenderName)
+                .HasMaxLength(45)
+                .HasColumnName("senderName");
+            entity.Property(e => e.ReceiverName)
+                .HasMaxLength(45)
+                .HasColumnName("receiverName");
             entity.Property(e => e.To)
                 .HasColumnType("int(11)")
                 .HasColumnName("to");

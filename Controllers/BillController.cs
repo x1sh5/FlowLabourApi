@@ -173,7 +173,12 @@ namespace FlowLabourApi.Controllers
             return BadRequest(response.Body);
         }
 
-        // PUT api/<BillController>/5
+        /// <summary>
+        /// 修改账单状态
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="value"></param>
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
@@ -309,6 +314,7 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE api/<BillController>/5
+        [ApiExplorerSettings(IgnoreApi = true)]
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

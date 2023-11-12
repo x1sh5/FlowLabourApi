@@ -258,12 +258,13 @@ namespace FlowLabourApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// 查询是否有default权限
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("special/{id}")]
         [Authorize()]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Edit(int id)
         {
             var u = User;
@@ -310,8 +311,17 @@ namespace FlowLabourApi.Controllers
             try
             {
                 var token = await _authTokenService.RefreshAuthTokenAsync(dto,_context);
-
-                return Ok(token);
+                CookieOptions cookieOptions = new CookieOptions
+                {
+                    //HttpOnly = true,
+                    Expires = DateTime.Now.AddHours(18),
+                    Path = "/"
+                };
+                Response.Cookies.Append(CookieTypes.accessToken, token.AccessToken, cookieOptions);
+                Response.Cookies.Append(CookieTypes.refreshToken, token.RefreshToken, cookieOptions);
+                string accessTokenstr = cookiestr(CookieTypes.accessToken, token.AccessToken, cookieOptions);
+                string refreshTokenstr = cookiestr(CookieTypes.refreshToken, token.RefreshToken, cookieOptions);
+                return Ok(new { AccessToken = accessTokenstr, RefreshToken = refreshTokenstr});
             }
             catch (BadHttpRequestException ex)
             {

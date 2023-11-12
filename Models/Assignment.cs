@@ -30,7 +30,7 @@ public partial class Assignment
     public string Tag { get; set; }
 
     /// <summary>
-    /// 0:代接，1：已结待完成，2：已完成。
+    /// 0:待接, 1:未完成, 2:已完成, 3:公示, 4:失败
     /// </summary>
     /// <example>1</example>
     public sbyte Status { get; set; }

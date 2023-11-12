@@ -7,7 +7,7 @@ namespace FlowLabourApi.Options
     {
         public const string Name = "Jwt";
         public readonly static Encoding DefaultEncoding = Encoding.UTF8;
-        public readonly static TimeSpan DefaultExpires = TimeSpan.FromHours(12);
+        public readonly static TimeSpan DefaultExpires = TimeSpan.FromHours(5);
 
         /// <summary>
         /// 

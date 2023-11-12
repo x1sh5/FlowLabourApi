@@ -18,6 +18,14 @@ public partial class AssignmentUser
     public int UserId { get; set; }
 
     /// <summary>
+    /// 是否归档，yes：是，no:否，归档后不能再对任务进行操作。
+    /// </summary>
+    public string Archive { get; set; } = "no";
+
+    public DateTime? Date { get; set; } = DateTime.Now;
+    public DateTime? ArchiveDate { get; set; }
+
+    /// <summary>
     /// 任务信息
     /// </summary>
     public Assignment? Assignment { get; set; }
@@ -27,4 +35,5 @@ public partial class AssignmentUser
     /// 用户信息
     /// </summary>
     public virtual AuthUser? User { get; set; }
+ 
 }

@@ -27,6 +27,8 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 持有的任务
         /// </summary>
+        /// <param name="count">数量</param>
+        /// <param name="offset">id偏移量</param>
         /// <returns></returns>
         [HttpGet("holds")]
         public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignmentUsers(int offset, int count)
@@ -52,7 +54,7 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 放弃任务
         /// </summary>
-        /// <param name="asgid"></param>
+        /// <param name="asgid">任务ID</param>
         /// <returns></returns>
         [HttpDelete("abandon/{asgid}")]
         public async Task<ActionResult> Abandon(int asgid)
@@ -78,7 +80,7 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// get assignments by status
         /// </summary>
-        /// <param name="statuscode"></param>
+        /// <param name="statuscode">1:待完成，2：完成</param>
         /// <returns></returns>
         [HttpGet("status/{statuscode}")]
         public async Task<ActionResult<IEnumerable<AssignmentView>>> GetAssignmentsByStatus(int statuscode)

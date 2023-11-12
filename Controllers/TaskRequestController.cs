@@ -49,7 +49,7 @@ namespace FlowLabourApi.Controllers
         }
 
         /// <summary>
-        /// 申请我的任务
+        /// 申请我发布任务的请求
         /// </summary>
         /// <returns></returns>
         [HttpGet("applytome")]
@@ -68,6 +68,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // GET api/<TaskRequestController>/5
+        /// <summary>
+        /// 获取任务请求数据
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskRequest>> Get(int id)
         {
@@ -80,6 +85,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // POST api/<TaskRequestController>
+        /// <summary>
+        /// 向发卡人申请任务
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] TaskRequest value)
         {
@@ -87,7 +97,7 @@ namespace FlowLabourApi.Controllers
             var username = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.NameClaim).Value;
 
             var aus = _context.Assignmentusers
-            .Where(x => x.UserId == int.Parse(userid))
+            .Where(x => x.UserId == int.Parse(userid) && x.Archive == "no")
             .Include(o => o.Assignment).ToList();
 
             var c = aus.Select(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
@@ -152,6 +162,12 @@ namespace FlowLabourApi.Controllers
         }
 
         // PUT api/<TaskRequestController>/5
+        /// <summary>
+        /// 任务同意
+        /// </summary>
+        /// <param name="id">任务ID</param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPut("agree/{id}")]
         public async Task<ActionResult> Agree(int id, [FromBody] TaskRequest value)
         {
@@ -179,6 +195,12 @@ namespace FlowLabourApi.Controllers
             return Ok("修改成功");
         }
 
+        /// <summary>
+        /// 拒绝任务请求
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPut("disagree/{id}")]
         public async Task<ActionResult> Disagree(int id, [FromBody] TaskRequest value)
         {
@@ -207,6 +229,11 @@ namespace FlowLabourApi.Controllers
         }
 
         // DELETE api/<TaskRequestController>/5
+        /// <summary>
+        /// 删除任务请求
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {

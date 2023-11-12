@@ -1,6 +1,7 @@
 ﻿using FlowLabourApi.Config;
 using FlowLabourApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -199,6 +200,10 @@ public class AppJwtBearerEvents : JwtBearerEvents
             return Task.CompletedTask;
         }
 
+        //bool isAllowAnonymous = context.HttpContext.GetEndpoint()?.Metadata?.GetMetadata<IAllowAnonymous>() != null;
+
+
+        context.Fail(context.Exception);
         //Console.WriteLine($"Scheme: {context.Scheme.Name}");
         //Console.WriteLine($"Exception: {context.Exception}");
 
@@ -226,6 +231,7 @@ public class AppJwtBearerEvents : JwtBearerEvents
         //Console.WriteLine($"Error Uri: {context.ErrorUri}");
 
         //context.Response.Headers.Location = "/login";
+        
         return Task.CompletedTask;
     }
 

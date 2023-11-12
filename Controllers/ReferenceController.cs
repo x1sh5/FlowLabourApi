@@ -10,6 +10,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FlowLabourApi.Controllers
 {
+    /// <summary>
+    /// 审核区间参考
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -25,7 +28,10 @@ namespace FlowLabourApi.Controllers
             _logger = logger;
         }
 
-
+        /// <summary>
+        /// 参考区间数量
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("count")]
         [AllowAnonymous]
         public int Count()
@@ -33,14 +39,23 @@ namespace FlowLabourApi.Controllers
             return _context.References.Count();
         }
 
-        // GET: api/<ReferenceController>
+        /// <summary>
+        /// 获取参考区间
+        /// </summary>
+        /// <param name="count">数量</param>
+        /// <param name="offset">ID偏移量</param>
+        /// <returns></returns>
         [HttpGet("gets")]
-        public IEnumerable<Reference> Gets()
+        public IEnumerable<Reference> Gets([Required]int count, [Required]int offset)
         {
-            return _context.References.ToList();
+            return _context.References.Where(x=>x.Id>offset).Take(count).ToList();
         }
 
-        // GET api/<ReferenceController>/5
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public ActionResult<Reference> Get(int id)
         {
@@ -52,7 +67,29 @@ namespace FlowLabourApi.Controllers
             return NotFound();
         }
 
-        // POST api/<ReferenceController>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title">标题</param>
+        /// <returns></returns>
+        [HttpGet("search/{title}")]
+        public ActionResult<Reference> Search(string title)
+        {
+            var e = _context.References
+                .Where(x=>x.Title.Contains(title))
+                .Take(10).ToArray();
+            if (e != null)
+            {
+                return Ok(e);
+            }
+            return NotFound();
+        }
+
+        /// <summary>
+        /// 新建审核参考区间
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult<Reference> Post([FromBody] Reference value)
         {
@@ -90,7 +127,12 @@ namespace FlowLabourApi.Controllers
             }
         }
 
-        // PUT api/<ReferenceController>/5
+        /// <summary>
+        /// 修改审核区间参考
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public ActionResult<Reference> Put(int id, [FromBody] Reference value)
         {
@@ -131,20 +173,32 @@ namespace FlowLabourApi.Controllers
             return NotFound();
         }
 
+        /// <summary>
+        /// 历史修改记录
+        /// </summary>
+        /// <param name="referId"></param>
+        /// <param name="offset">id偏移量</param>
+        /// <param name="count">数量</param>
+        /// <returns></returns>
         [HttpGet("history/{referId}")]
-        public ActionResult<ReferEdit> Histroy([Required]int referId)
+        public ActionResult<ReferEdit> Histroy([Required]int referId,
+            [Required] int count, [Required] int offset)
         {
             var r = _context.References.Find(referId);
             if (r!=null)
             {
                 var e = _context.ReferEdits
-                    .Where(e => e.ReferId == referId).ToList();
+                    .Where(e => e.ReferId == referId&&e.Id>offset).Take(count).ToList();
                 return Ok(e);
             }
             return NotFound();
         }
 
-        // DELETE api/<ReferenceController>/5
+        /// <summary>
+        /// 删除审核区间参考
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult<Reference> Delete(int id)
         {
