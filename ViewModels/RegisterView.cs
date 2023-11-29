@@ -8,7 +8,7 @@
         /// <summary>
         /// 邮件
         /// </summary>
-        public string Email { get; set; } = null!;
+        public string? Email { get; set; }
 
         /// <summary>
         /// 密码
@@ -18,7 +18,7 @@
         /// <summary>
         /// 电话
         /// </summary>
-        public string PhoneNo { get; set; } = null!;
+        public string? PhoneNo { get; set; }
 
         /// <summary>
         /// 程序页面显示的名字

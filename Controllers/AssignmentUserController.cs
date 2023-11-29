@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -42,6 +43,34 @@ namespace FlowLabourApi.Controllers
             {
                 var a = _xiangxpContext.Assignments.Find(e.AssignmentId);
                 if(a != null)
+                {
+                    assignments.Add(a);
+                }
+
+            }
+
+            return assignments;
+        }
+
+        /// <summary>
+        /// 持有的任务
+        /// </summary>
+        /// <param name="userid"></param>
+        /// <param name="count">数量</param>
+        /// <param name="offset">id偏移量</param>
+        /// <returns></returns>
+        [HttpGet("holds/{userid}")]
+        public async Task<ActionResult<IEnumerable<Assignment>>> GetAssignmentUsers([Required]int userid, int offset, int count)
+        {
+            var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
+            List<Assignment>? assignments = new List<Assignment>();
+            var x = await _xiangxpContext.Assignmentusers
+                .Where(e => e.UserId == Convert.ToInt32(id))
+                .ToListAsync();
+            foreach (var e in x)
+            {
+                var a = _xiangxpContext.Assignments.Find(e.AssignmentId);
+                if (a != null)
                 {
                     assignments.Add(a);
                 }

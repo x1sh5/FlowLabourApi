@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace FlowLabourApi.Controllers
 {
@@ -68,21 +69,37 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public IActionResult Register([FromBody] RegisterView register)
         {
-            var emailOk =  EmailCheck(register.Email);
-            var isOk = (ResponeMessage<CheckMSg>)emailOk.Value;
-            if (!isOk.Data.Status)
+
+            var nameOk = NameCheck(register.UserName);
+            var namecheck = (ResponeMessage<CheckMSg>)nameOk.Value;
+            if (!namecheck.Data.Status)
             {
-                return BadRequest(new { status = false, message = "邮件无效！" });
+                return BadRequest(new { status = false, message = namecheck.Data.msg });
             }
-            var nameOk =  NameCheck(register.UserName);
-            if (!((ResponeMessage<CheckMSg>)nameOk.Value).Data.Status)
+
+            var pwOk = PassWordCheck(register.Password);
+            if (!pwOk.Status)
             {
-                return BadRequest(new { status = false, message = "用户名已存在！" });
+                return BadRequest(new { status = false, message = pwOk.msg });
             }
-            var phoneOk = PhoneCheck(register.PhoneNo);
-            if (!((ResponeMessage<CheckMSg>)phoneOk.Value).Data.Status)
+
+            if (!string.IsNullOrEmpty(register.Email))
             {
-                return BadRequest(new { status = false, message = "电话号码已被注册！" });
+                var emailOk = EmailCheck(register.Email);
+                var isOk = (ResponeMessage<CheckMSg>)emailOk.Value;
+                if (!isOk.Data.Status)
+                {
+                    return BadRequest(new { status = false, message = isOk.Data.msg });
+                }
+            }
+            if (!string.IsNullOrEmpty(register.PhoneNo))
+            {
+                var phoneOk = PhoneCheck(register.PhoneNo);
+                var phonecheck = (ResponeMessage<CheckMSg>)phoneOk.Value;
+                if (!phonecheck.Data.Status)
+                {
+                    return BadRequest(new { status = false, message = phonecheck.Data.msg });
+                }
             }
 
             var user = new AuthUser
@@ -109,6 +126,12 @@ namespace FlowLabourApi.Controllers
         [AllowAnonymous]
         public ObjectResult NameCheck(string username)
         {
+            if (string.IsNullOrEmpty(username))
+            {
+                return BadRequest(new ResponeMessage<CheckMSg> { ORCode = 400, Message = "用户名无效"
+                ,Data=new CheckMSg(false, "用户名无效")
+                });
+            }
             var user = _context.AuthUsers.FirstOrDefault(e => e.UserName == username);
             var rsm = new ResponeMessage<CheckMSg> { ORCode = 200, Message = "" };
             if (user != null)
@@ -120,6 +143,31 @@ namespace FlowLabourApi.Controllers
             // code to handle registration
             rsm.Data = new CheckMSg(true, "用户名通过");
             return Ok(rsm);
+        }
+
+        [NonAction]
+        private CheckMSg PassWordCheck(string pw)
+        {
+            if (string.IsNullOrEmpty(pw))
+            {
+                return new CheckMSg(false, "密码无效");
+            }
+            if (pw.Length < 8)
+            {
+                return new CheckMSg(false, "密码长度不能小于8位");
+            }
+            if (pw.Length > 16)
+            {
+                return new CheckMSg(false, "密码长度不能大于16位");
+            }
+            
+            var regex = new Regex(@"^(?=.*[0-9])(?=.*[A-Z])(?=.*\W).{8,16}$");
+            if (!regex.IsMatch(pw))
+            {
+                return new CheckMSg(false, "密码格式不符合要求,必须包含特殊字符，大写字母和数字");
+            }
+
+            return new CheckMSg(true, "密码通过");
         }
 
         /// <summary>

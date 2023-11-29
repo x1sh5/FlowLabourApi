@@ -31,6 +31,8 @@ public partial class FlowContext : DbContext
 
     public virtual DbSet<ContentType> ContentTypes { get; set; }
 
+    public virtual DbSet<EmailCode> EmailCodes { get; set; }
+
     public virtual DbSet<Groupmessage> Groupmessages { get; set; }
 
     public virtual DbSet<Grouprole> GroupRoles { get; set; }
@@ -44,6 +46,8 @@ public partial class FlowContext : DbContext
     public virtual DbSet<IdentityInfo> Identityinfos { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
+
+    public virtual DbSet<PrivateImage>  PrivateImages { get; set; }
 
     public virtual DbSet<Message> Messages { get; set; }
 
@@ -580,6 +584,9 @@ public partial class FlowContext : DbContext
             entity.Property(e => e.Realname)
                 .HasMaxLength(45)
                 .HasColumnName("realname");
+            entity.Property(e => e.TaskId)
+                .HasMaxLength(45)
+                .HasColumnName("taskid");
             entity.Property(e => e.Posimg)
                 .HasMaxLength(85)
                 .HasColumnName("posimg");

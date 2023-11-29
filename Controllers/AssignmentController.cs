@@ -209,7 +209,7 @@ public class AssignmentController : ControllerBase
     }
 
     /// <summary>
-    /// 获取id用户的任务
+    /// 获取用户id发布的任务
     /// </summary>
     /// <param name="id">用户id</param>
     /// <param name="offset">总量</param>
@@ -656,9 +656,10 @@ public class AssignmentController : ControllerBase
     /// 同意接取任务
     /// </summary>
     /// <param name="requestId">任务请求id</param>
+    /// <param name="deadline">重设后的截止日期</param>
     /// <returns></returns>
     [HttpGet("take/{requestId}")]
-    public async Task<ActionResult<ResponeMessage<SimpleResp>>> Take(int requestId)
+    public async Task<ActionResult<ResponeMessage<SimpleResp>>> Take(int requestId,DateTime deadline)
     {
         var id = User.Claims.FirstOrDefault(User => User.Type == JwtClaimTypes.IdClaim).Value;
         //var user = await _userManager.FindByIdAsync(id);
@@ -706,7 +707,7 @@ public class AssignmentController : ControllerBase
             .Where(x => x.UserId == user.Id&&x.Archive=="no")
             .Include(o=>o.Assignment).ToList();
 
-        var c = aus.Select(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
+        var c = aus.Where(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
         
         if(c>=1)
         {
@@ -729,6 +730,7 @@ public class AssignmentController : ControllerBase
             if (assignment.Status == 0)
             {
                 assignment.Status = 1;
+                assignment.Deadline = deadline;
                 _context.Entry(assignment).State = EntityState.Modified;
                 _context.Assignmentusers.Add(new AssignmentUser
                 {
@@ -869,11 +871,14 @@ public class AssignmentController : ControllerBase
         {
             return NotFound();
         }
-        var ts = DateTime.Now - au.Assignment?.Deadline;
-        return Ok(new { IsArchive = au.Archive=="yes", 
+        var ts = au.Assignment?.Deadline - DateTime.Now;
+        return Ok(new RequestInfo
+        { IsArchive = au.Archive=="yes", 
             Finish=au.Assignment?.Status== (sbyte)TaskState.Finished,
             Days =ts?.Days,Hours=ts?.Hours,
-            Minutes = ts?.Minutes, Seconds = ts?.Seconds });
+            Minutes = ts?.Minutes, Seconds = ts?.Seconds,
+            OriDeadline = au.Assignment?.Deadline,
+        });
     }
 
     /// <summary>
@@ -911,5 +916,35 @@ public class AssignmentController : ControllerBase
     private bool AssignmentExists(int id)
     {
         return _context.Assignments.Any(e => e.Id == id);
+    }
+
+    /// <summary>
+    /// 任务请求信息
+    /// </summary>
+    class RequestInfo
+    {
+        /// <summary>
+        /// 是否完成
+        /// </summary>
+        public bool Finish { get; set; }
+        /// <summary>
+        /// 是否归档
+        /// </summary>
+        public bool IsArchive { get; set; }
+
+        /// <summary>
+        /// 距离截止日期的天数
+        /// </summary>
+        public int? Days { get; set; }
+        /// <summary>
+        /// 距离截止日期的小时
+        /// </summary>
+        public int? Hours { get; set; }
+        public int? Minutes { get; set; }
+        public int? Seconds { get; set; }
+        /// <summary>
+        /// 原始截止日期
+        /// </summary>
+        public DateTime? OriDeadline { get; set; }
     }
 }

@@ -100,7 +100,7 @@ namespace FlowLabourApi.Controllers
             .Where(x => x.UserId == int.Parse(userid) && x.Archive == "no")
             .Include(o => o.Assignment).ToList();
 
-            var c = aus.Select(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
+            var c = aus.Where(o => o.Assignment.Status == (sbyte)TaskState.WaitForAccept).Count();
             if (c >= 1)
             {
                 return BadRequest("有待完成的任务，请完成后再接取新任务。");

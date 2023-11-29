@@ -23,6 +23,11 @@ public partial class IdentityInfo
     public string Realname { get; set; } = null!;
 
     /// <summary>
+    /// 实名检测id
+    /// </summary>
+    public string? TaskId { get; set; }
+
+    /// <summary>
     /// 身份证号码
     /// </summary>
     /// <example>512431197812131037</example>
@@ -41,7 +46,7 @@ public partial class IdentityInfo
     }
 
     /// <summary>
-    /// 是否验证通过
+    /// 是否验证通过,1:通过，0:未通过
     /// </summary>
     /// <example>1</example>
     public sbyte Checked { get; set; }

@@ -31,13 +31,13 @@ public partial class AuthUser
     /// 电话号码
     /// </summary>
     /// <example>13800138000</example>
-    public string PhoneNo { get; set; }
+    public string? PhoneNo { get; set; }
 
     /// <summary>
     /// 邮件
     /// </summary>
     /// <example>zhangsan@localhost.com</example>
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
     /// <summary>
     /// 是否实名验证。为实名验证的用户只能浏览。

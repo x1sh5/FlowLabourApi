@@ -1,4 +1,5 @@
-﻿using FlowLabourApi.Models;
+﻿#define linux
+using FlowLabourApi.Models;
 using FlowLabourApi.Models.context;
 using FlowLabourApi.Models.state;
 using FlowLabourApi.Utils;
@@ -45,6 +46,8 @@ namespace FlowLabourApi.Controllers
         /// <summary>
         /// 上传图片
         /// </summary>
+        /// <param name="files">图片文件</param>
+        /// <param name="pub">是否公开</param>
         /// <returns></returns>
         [HttpPost("upload")]
         public async Task<ActionResult<IEnumerable<Image>>> Upload(IEnumerable<IFormFile> files)
@@ -62,7 +65,7 @@ namespace FlowLabourApi.Controllers
                     return BadRequest(new { errMsg = $"The file {formFile.FileName} is of unsupported format." });
                 }
 
-                if (formFile.Length > 2097152)
+                if (formFile.Length > 5*1024*1024)
                 {
                     return BadRequest(new { errMsg = $"The file {formFile.FileName} exceeds the maximum size of 2 MB." });
                 }
@@ -71,8 +74,7 @@ namespace FlowLabourApi.Controllers
                 var openstream = formFile.OpenReadStream();
                 var md5 = HashUtil.CalculateMD5(openstream);
                 var newName = md5 + "_" + fileName;
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/flow/static", newName);
-
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/flow/static", newName);
 
                 Image image = new Image()
                 {
@@ -88,6 +90,75 @@ namespace FlowLabourApi.Controllers
                 }
             }
             return CreatedAtAction(nameof(Upload),images);
+        }
+
+        /// <summary>
+        /// 上传图片，非公开
+        /// </summary>
+        /// <param name="files"></param>
+        /// <returns></returns>
+        [HttpPost("pupload")]
+        public async Task<ActionResult<IEnumerable<PrivateImage>>> PUpload(IEnumerable<IFormFile> files)
+        {
+            if (files == null || files.Count() == 0)
+                files = Request.Form.Files;
+            long size = files.Sum(f => f.Length);
+            List<PrivateImage> images = new List<PrivateImage>();
+
+            List<PrivateImage> results = new List<PrivateImage>();
+
+            foreach (IFormFile formFile in files)
+            {
+                var supportedMediaTypes = new[] { "image/jpeg", "image/png", "application/pdf", "application/msword", "text/plain" };
+
+                if (!supportedMediaTypes.Contains(formFile.ContentType.ToLowerInvariant()))
+                {
+                    return BadRequest(new { errMsg = $"The file {formFile.FileName} is of unsupported format." });
+                }
+
+                if (formFile.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest(new { errMsg = $"The file {formFile.FileName} exceeds the maximum size of 2 MB." });
+                }
+
+                var fileName = Path.GetFileName(formFile.FileName);
+                var openstream = formFile.OpenReadStream();
+                var md5 = HashUtil.CalculateMD5(openstream);
+                var newName = md5 + "_" + fileName;
+                string filePath;
+#if win
+                    filePath = Path.Combine("D:\\LocalPrivateWebData\\flow\\image", newName);
+#else
+                    filePath = Path.Combine("/usr/local/xxp/PrivateWebData/flow/image", newName);
+#endif
+
+                PrivateImage image = new PrivateImage()
+                {
+                    Md5 = md5,
+                    Url = newName,
+                };
+                var img = _context.PrivateImages.Where(e => e.Md5 == image.Md5).FirstOrDefault();
+                if (img != null)
+                {
+                    results.Add(img);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+                }
+                else
+                {
+                    results.Add(image);
+                    images.Add(image);
+                }
+                
+
+            }
+
+            _context.PrivateImages.AddRange(images);
+            _context.SaveChanges();
+
+            return CreatedAtAction(nameof(Upload), results);
         }
 
         [NonAction]
