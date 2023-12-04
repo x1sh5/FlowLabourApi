@@ -307,8 +307,7 @@ public partial class FlowContext : DbContext
                   .HasColumnType("tinyint")
                   .HasColumnName("lockoutenabled");
             entity.Property(e => e.LockoutEnd)
-                  .HasDefaultValue(0)
-                  .HasColumnType("int(11)")
+                  .HasColumnType("datetime")
                   .HasColumnName("lockoutend");
             entity.Property(e => e.Avatar)
                   .HasMaxLength(95)

@@ -83,6 +83,7 @@ namespace FlowLabourApi
             builder.Services.TryAddScoped<AppJwtBearerEvents>();
             //signalR
             builder.Services.TryAddSingleton<IUserIdProvider, FlowUserIdProvider>();
+            builder.Services.TryAddSingleton<IBlacklistService, BlacklistService>();
             //builder.Services.AddSingleton<IAuthorizationHandler, RolesAuthorizationRequirement>(
             //    x=>new RolesAuthorizationRequirement(new[] { Permission.Admin }));
             //builder.Services.AddSingleton<>();
@@ -301,6 +302,7 @@ namespace FlowLabourApi
             });
 
             app.UseAuthentication();
+            app.UseMiddleware<BlacklistMiddleware>();
             app.UseAuthorization();
 
             app.UseStatusCodePages(async contextAccessor =>

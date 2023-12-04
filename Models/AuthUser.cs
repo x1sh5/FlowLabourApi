@@ -59,7 +59,7 @@ public partial class AuthUser
     /// <summary>
     /// 多次登录失败后的锁定时间，单位：分钟。
     /// </summary>
-    public int LockoutEnd { set; get; } = 0;
+    public DateTime? LockoutEnd { set; get; } = DateTime.Now+TimeSpan.FromMinutes(20);
 
     /// <summary>
     /// 头像

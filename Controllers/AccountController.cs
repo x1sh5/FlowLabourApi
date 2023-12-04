@@ -257,19 +257,44 @@ namespace FlowLabourApi.Controllers
             }
             //var user = await _flowUserStore.FindByLoginViewAsync(login,CancellationToken.None);
             var user = _context.AuthUsers.FirstOrDefault(
-                e => e.UserName == login.UserName &&
-                e.Passwordhash == HashUtil.Sha256(login.Password)
-               );
+                e => e.UserName == login.UserName );
             if (user == null)
             {
-                return Unauthorized("用户身份未通过验证。");
+                return Unauthorized("用户不存在。");
+            }
+            //if(user.ConcurrencyStamp != login.OpenId)
+            //{
+            //    return Unauthorized("用户信息已过期，请刷新页面后再试。");
+            //}
+            if (user.LockoutEnabled==1 && user.LockoutEnd > DateTime.Now)
+            {
+                return Unauthorized($"用户已被锁定{(user.LockoutEnd - DateTime.Now)?.TotalMinutes}分钟，请稍后再试。");
+            }
+            if (user.Passwordhash != HashUtil.Sha256(login.Password))
+            {
+                user.AccessFailedCount++;
+                if (user.AccessFailedCount >= 5)
+                {
+                    user.LockoutEnabled = 1;
+                    user.LockoutEnd = DateTime.Now + TimeSpan.FromMinutes(20);
+                }
+                if(user.AccessFailedCount >= 10)
+                {
+                    user.LockoutEnabled = 1;
+                    user.LockoutEnd = DateTime.Now + TimeSpan.FromMinutes(60);
+                }
+                return Unauthorized("用户名或者密码错误。");
             }
 
+            user.AccessFailedCount = 0;
+            user.LockoutEnabled = 0;
+            _context.SaveChanges();
             var UA = Request.Headers.UserAgent[0];
 
             var ua = HashUtil.Md5(UA ?? "unkownAgent");
 
-            UserRole? userRole = _context.UserRoles.Include(o => o.Role).FirstOrDefault(e => e.UserId == user.Id);
+            UserRole? userRole = _context.UserRoles.Include(o => o.Role)
+                .FirstOrDefault(e => e.UserId == user.Id);
             if (userRole == null)
             {
                 return Unauthorized("用户身份未通过验证。");

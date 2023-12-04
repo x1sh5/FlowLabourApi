@@ -39,7 +39,7 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<IdentityInfo>>> GetIdentityinfos()
+        public async Task<ActionResult<IEnumerable<Models.IdentityInfo>>> GetIdentityinfos()
         {
             return await _context.Identityinfos.Take(10).ToListAsync();
         }
@@ -52,7 +52,7 @@ namespace FlowLabourApi.Controllers
         public async Task<ActionResult> Validate()
         {
             var userid = User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
-            IdentityInfo? i = _context.Identityinfos
+            Models.IdentityInfo? i = _context.Identityinfos
                 .Where(x => x.AuthId == int.Parse(userid))
                 .FirstOrDefault();
             return i?.Checked == 1 ? Ok("已经验证通过。") : BadRequest("身份验证失败！");
@@ -65,7 +65,7 @@ namespace FlowLabourApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<IdentityInfo>> GetIdentityinfo(int id)
+        public async Task<ActionResult<Models.IdentityInfo>> GetIdentityinfo(int id)
         {
             var identityinfo = await _context.Identityinfos.FirstOrDefaultAsync(i => i.Id == id);
 
@@ -78,12 +78,37 @@ namespace FlowLabourApi.Controllers
         }
 
         /// <summary>
-        /// 发送邮箱验证码
+        /// 获取当前用户的绑定邮箱
         /// </summary>
         /// <returns></returns>
-        [HttpGet("mailcode/send")]
-        public async Task<ActionResult> SendMailCode(string mail)
+        [HttpGet("email")]
+        public async Task<ActionResult> GetMail()
         {
+            var userid = User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
+            var user = await _context.AuthUsers.FindAsync(int.Parse(userid));
+            return Ok(user==null?"":user.Email);
+        }
+
+        /// <summary>
+        /// 发送邮箱验证码
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpGet("emailcode/send")]
+        public async Task<ActionResult> SendMailCode(string email)
+        {
+            var isok = IdentityValidateUtil.ValidateEmailFormat(email);
+            if(!isok)
+            {
+                return BadRequest("不合法的邮箱地址。");
+            }
+
+            var user = _context.AuthUsers.FirstOrDefault(e => e.Email == email);
+            if (user != null)
+            {
+                return BadRequest("该邮件以绑定其他账号");
+            }
+
             var code = CodeUtil.GenerateRandomCode();
             var userid = User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
             
@@ -91,26 +116,37 @@ namespace FlowLabourApi.Controllers
             var codeinfo = new EmailCode()
             {
                 AuthId = int.Parse(userid),
-                Email = mail,
+                Email = email,
                 Code = code,
             };
             _context.EmailCodes.Add(codeinfo);
             _context.SaveChanges();
-            var smt = new SmtpClient
+            var smtpClient = new SmtpClient("smtp.qq.com")
             {
-                Host = "smtp.163.com",
-                Port = 25,
-                EnableSsl = false,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("","")
+                Port = 587,
+                Credentials = new NetworkCredential("2541613004@qq.com", "cqtsytxbcfqxecgb"),//
+                EnableSsl = true,
             };
-            smt.SendCompleted += (s, e) =>
+            var mailMessage = new MailMessage
             {
-                smt.Dispose();
+                From = new MailAddress("2541613004@qq.com", "流沙任务系统", System.Text.Encoding.UTF8),
+                Subject = "安全验证码",
+                SubjectEncoding = System.Text.Encoding.UTF8,
+                Body = $"您的验证码是：{code}，请在5分钟内输入。",
+                BodyEncoding = System.Text.Encoding.UTF8,
+                IsBodyHtml = false,
             };
-            smt.SendAsync("","" , "", "验证码", $"您的验证码是：{code}，请在5分钟内输入。");
+            mailMessage.To.Add(email);
+            try
+            {
+                smtpClient.Send(mailMessage);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
             
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>
@@ -118,16 +154,26 @@ namespace FlowLabourApi.Controllers
         /// </summary>
         /// <param name="code">验证码</param>
         /// <returns></returns>
-        [HttpPost("mailcode/confirm")]
-        public async Task<ActionResult<IdentityInfo>> MailCodeConfirm(string code)
+        [HttpPost("emailcode/confirm")]
+        public async Task<ActionResult<Models.IdentityInfo>> MailCodeConfirm(string? code)
         {
             var userid = User.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.IdClaim).Value;
-            var c = _context.EmailCodes.Where(x => x.AuthId == int.Parse(userid)).FirstOrDefault();
-            if (c?.Code == code)
+            var c = _context.EmailCodes.Where(x => x.AuthId == int.Parse(userid)
+            &&x.Code==code).FirstOrDefault();
+
+            if (c!=null)
             {
-                return Ok();
+                if (c.IsExpired)
+                {
+                    BadRequest("验证码过期");
+                }
+                var user = await _context.AuthUsers.FindAsync(int.Parse(userid));
+                user!.Email = c.Email;
+                _context.EmailCodes.Remove(c);
+                await _context.SaveChangesAsync();
+                return Ok("绑定成功");
             }
-            return BadRequest();
+            return BadRequest("验证码错误");
         }
 
         // PUT: api/IdentityInfo/5
@@ -144,7 +190,7 @@ namespace FlowLabourApi.Controllers
             {
                 return BadRequest();
             }
-            IdentityInfo identityinfo = new IdentityInfo()
+            Models.IdentityInfo identityinfo = new IdentityInfo()
             {
                 Id = identityinfoView.Id,
                 Realname = identityinfoView.Realname,

@@ -16,5 +16,10 @@
         /// </summary>
         /// <example>zhangsan1234</example>
         public string Password { get; set; } = null!;
+
+        /// <summary>
+        /// 微信小程序的openid
+        /// </summary>
+        public string? OpenId { get; set; }
     }
 }

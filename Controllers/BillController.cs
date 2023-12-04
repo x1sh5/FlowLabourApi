@@ -57,6 +57,29 @@ namespace FlowLabourApi.Controllers
         }
 
         /// <summary>
+        /// 获取微信小程序openid
+        /// </summary>
+        /// <param name="code">登录时获取的 code，可通过wx.login获取</param>
+        /// <returns></returns>
+        [HttpGet("openId")]
+        public async Task<ActionResult> GetOpenId(string code)
+        {
+            Jscode2Session? j2s;
+            using (var client = new HttpClient())
+            {
+                var url = $"https://api.weixin.qq.com/sns/jscode2session?appid={_optionsAccessor.Value.AppId}&secret={_optionsAccessor.Value.AppSecret}&js_code={code}&grant_type=authorization_code";
+                var response1 = await client.GetAsync(url);
+                var result = await response1.Content.ReadAsStringAsync();
+                j2s = JsonConvert.DeserializeObject<Jscode2Session>(result);
+            }
+            if (j2s == null || j2s.ErrCode != int.MaxValue)
+            {
+                return BadRequest("调用失败。");
+            }
+            return Ok(j2s.OpenId);
+        }
+
+        /// <summary>
         /// 小程序支付-JSAPI下单
         /// </summary>
         /// <param name="viewModel"></param>

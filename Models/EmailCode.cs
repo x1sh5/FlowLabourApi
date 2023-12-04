@@ -36,6 +36,8 @@ namespace FlowLabourApi.Models
         /// 过期时间
         /// </summary>
         [Column("expires")]
-        public DateTime ExpireTime { get; set; } = DateTime.Now.AddMinutes(30);
+        public DateTime ExpireTime { get; set; } = DateTime.Now.AddMinutes(5);
+
+        public bool IsExpired => DateTime.Now > ExpireTime;
     }
 }
